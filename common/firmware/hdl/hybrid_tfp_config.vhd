@@ -74,7 +74,7 @@ constant numSectorsEta: natural :=  16;   -- number of eta sectors within a regi
 constant gpWidthAddr  : natural :=   6;   -- fifo depth in stub router firmware
 constant rangeGPz     : real    := 160.0; -- range of stub z residual w.r.t. sector center which needs to be covered
 constant numSectors   : natural := numSectorsPhi * numSectorsEta; --total numbers of sectors within a region
-constant etaBoundaries: reals( 0 to numSectorsEta ) := ( -2.50, -2.08, -1.68, -1.26, -0.90, -0.62, -0.41, -0.20, 0.0, 0.20, 0.41, 0.62, 0.90, 1.26, 1.68, 2.08, 2.50 ); -- eta boundaries defining eta sectors
+constant etaBoundaries: reals( 0 to numSectorsEta ) := ( -2.40, -2.08, -1.68, -1.26, -0.90, -0.62, -0.41, -0.20, 0.0, 0.20, 0.41, 0.62, 0.90, 1.26, 1.68, 2.08, 2.40 ); -- eta boundaries defining eta sectors
 
 constant numNodesGP: natural := numDTCsPerTFP; -- number of GP inputs
 

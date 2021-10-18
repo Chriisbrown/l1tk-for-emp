@@ -16,7 +16,7 @@ GENERIC(
 );
 PORT(  
   clk : IN  STD_LOGIC;
-  zT  : IN  SIGNED( widthKFzT -1  DOWNTO 0 );
+  zT  : IN  SIGNED( widthKFZT -1  DOWNTO 0 );
   cot : IN  SIGNED( widthKFcot -1 DOWNTO 0 );
   z0  : OUT SIGNED( widthZ0 -1    DOWNTO 0 ) := ( OTHERS => '0' )
 );
@@ -25,26 +25,26 @@ END ScaleZT;
 ARCHITECTURE RTL OF ScaleZT IS
 
     TYPE z0vector IS ARRAY( NATURAL RANGE <> ) OF SIGNED( widthZ0 - 1 DOWNTO 0 );
-    SIGNAL z0signal : SIGNED( widthz0 -1 DOWNTO 0 ) :=  ( OTHERS => '0' );
+    SIGNAL z0signal :  SIGNED( widthZ0 - 1 DOWNTO 0 ) :=  ( OTHERS => '0' );
     SIGNAL z0array  : z0vector( 0 TO zdelay - 1 )   :=  ( OTHERS => ( OTHERS => '0' ) );
 
-    SIGNAl A : SIGNED( widthKFcot - 1 DOWNTO 0 )                   := ( OTHERS => '0' );
-    SIGNAl B : SIGNED( widthKFZT  - 1 DOWNTO 0 )                   := ( OTHERS => '0' );
-    SIGNAl C : SIGNED( widthKFcot + DSP27precision - 1 DOWNTO 0 )  := ( OTHERS => '0' );
-    SIGNAl D : SIGNED( widthKFZT  - 1 DOWNTO 0 )                   := ( OTHERS => '0' );
+    SIGNAl A : SIGNED( DSP18precision - 1 DOWNTO 0 )  := ( OTHERS => '0' );
+    SIGNAl B : SIGNED( DSP18precision - 1 DOWNTO 0 )  := ( OTHERS => '0' );
+    SIGNAl C : SIGNED( DSP45Totalprecision - 1 DOWNTO 0 )  := ( OTHERS => '0' );
+    SIGNAl D : SIGNED( DSP45Totalprecision - 1 DOWNTO 0 )  := ( OTHERS => '0' );
 
     BEGIN
       PROCESS( clk )
       BEGIN
         IF RISING_EDGE(clk) THEN
         -- Clk 1 ------------------------
-          A <= cot;
-          B <= zT;
+          A <= RESIZE((2*cot)+1, DSP18precision);
+          B <= RESIZE((2*zT)+1, DSP18precision);
         -- Clk 2 -----------------------
           C <= A * TO_SIGNED( INTEGER( modChosenRofZ ), DSP27precision ); 
-          D <= B;
+          D <= B * TO_SIGNED( 2**z0Factor, DSP27precision );
         -- Clk 3 -----------------------
-        z0signal <= RESIZE( D - ( RESIZE( C / ( 2**z0Factor ), widthKFZT ) ),widthz0 );
+        z0signal <= RESIZE(shift_right((D - C)/2,z0Factor),widthZ0);
         -- Delay Signal
         z0array  <= z0signal & z0array( 0 TO zdelay - 2 );
         z0       <= z0array( zdelay - 1 );
@@ -81,16 +81,16 @@ END ScalePhi;
 
 ARCHITECTURE RTL of ScalePhi IS
 
-    SIGNAl A : SIGNED( widthKFphiT  - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
-    SIGNAL B : SIGNED( widthKFInv2R - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
-    SIGNAL C : SIGNED( widthKFphiT  - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
-    SIGNAL D : SIGNED( widthKFInv2R + DSP27precision - 1 DOWNTO 0 ) := ( OTHERS => '0' );
-    SIGNAL E : SIGNED( widthKFphiT  - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
-    SIGNAL BaseSectorCorr : SIGNED( widthKFphiT - 1 DOWNTO 0 )      := ( OTHERS => '0' );
+    SIGNAl A : SIGNED( DSP18precision  - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
+    SIGNAL B : SIGNED( DSP18precision  - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
+    SIGNAL C : SIGNED( DSP45Totalprecision  - 1 DOWNTO 0 )             := ( OTHERS => '0' );
+    SIGNAL D : SIGNED( DSP45Totalprecision - 1 DOWNTO 0 )              := ( OTHERS => '0' );
+    SIGNAL E : SIGNED( DSP45Totalprecision  - 1 DOWNTO 0 )             := ( OTHERS => '0' );
+    SIGNAL BaseSectorCorr : SIGNED( DSP18precision - 1 DOWNTO 0 )      := ( OTHERS => '0' );
 
     SIGNAL phi0signal : SIGNED( widthphi0 - 1 DOWNTO 0 ) := ( OTHERS => '0' );
 
-    TYPE phivector IS ARRAY( NATURAL range <> ) OF SIGNED(widthphi0 -1 DOWNTO 0 );
+    TYPE phivector IS ARRAY( NATURAL range <> ) OF SIGNED( widthphi0 - 1 DOWNTO 0 );
     SIGNAL phi0array  : phivector( 0 TO phidelay - 1)     := ( OTHERS => ( OTHERS => '0' ) ); 
 
     BEGIN
@@ -99,18 +99,18 @@ ARCHITECTURE RTL of ScalePhi IS
         IF RISING_EDGE(clk) THEN
 -- Clk 1 ------------------------------------------------------
           IF (phiSector = '0') THEN
-            BaseSectorCorr <= RESIZE( -SIGNED( UnsignedBaseSector ), widthKFphiT );
+            BaseSectorCorr <= RESIZE( -SIGNED( UnsignedBaseSector ), DSP18precision );
           ELSE
-            BaseSectorCorr <= RESIZE(  SIGNED( UnsignedBaseSector ), widthKFphiT );
+            BaseSectorCorr <= RESIZE(  SIGNED( UnsignedBaseSector ), DSP18precision );
           END IF;
-          A <= PhiT;
-          B <= inv2R/2;
+          A <= RESIZE((2*PhiT)+1, DSP18precision);
+          B <= RESIZE(inv2R+1, DSP18precision);
 -- Clk 2 ------------------------------------------------------
-          C <= A;
+          C <= A * TO_SIGNED( 2**phi0Factor, DSP27precision );
           D <= B * TO_SIGNED( INTEGER( modChosenRofPhi ), DSP27precision ); 
-          E <= BaseSectorCorr;
+          E <= BaseSectorCorr * TO_SIGNED( 2**phi0Factor, DSP27precision );
 -- Clk 3 ------------------------------------------------------
-          phi0signal <= RESIZE( ( C - ( RESIZE( D / (2**phi0Factor ), widthKFphiT ) ) + E ), widthphi0 );
+          phi0signal <= RESIZE( SHIFT_RIGHT(( C  - D )/2 - 2*E  ,phi0Factor), widthphi0 );
 -- Delay Signal
           phi0array <= phi0signal & phi0array( 0 TO phidelay - 2 );
           phi0      <= phi0array( phidelay - 1);
@@ -143,13 +143,13 @@ PORT(
 END CalculateChi;
 
 ARCHITECTURE RTL of CalculateChi IS
-  TYPE phizarray IS ARRAY(natural RANGE <> ) OF UNSIGNED( DSP45Totalprecision - 1 DOWNTO 0);
+  TYPE phizarray IS ARRAY(natural RANGE <> ) OF SIGNED( DSP45Totalprecision - 1 DOWNTO 0);
   SIGNAL rphi : phizarray( numLayers -1 DOWNTO 0 )            := ( OTHERS => ( OTHERS => '0' ) );
   SIGNAL rz   : phizarray( numLayers -1 DOWNTO 0 )            := ( OTHERS => ( OTHERS => '0' ) );
-  SIGNAL C    : UNSIGNED ( DSP45Totalprecision - 1 DOWNTO 0 ) := ( OTHERS => '0' ) ;
-  SIGNAL D    : UNSIGNED ( DSP45Totalprecision - 1 DOWNTO 0 ) := ( OTHERS => '0' ) ;
+  SIGNAL C    : SIGNED ( DSP45Totalprecision - 1 DOWNTO 0 ) := ( OTHERS => '0' ) ;
+  SIGNAL D    : SIGNED ( DSP45Totalprecision - 1 DOWNTO 0 ) := ( OTHERS => '0' ) ;
 
-  CONSTANT frame_delay : INTEGER := 2;
+  CONSTANT frame_delay : INTEGER := 3;
 
     BEGIN
     g1 : FOR i IN 0 TO numLayers - 1 GENERATE
@@ -160,11 +160,11 @@ ARCHITECTURE RTL of CalculateChi IS
       SIGNAL z          :   SIGNED( widthKFz       - 1 DOWNTO 0 ) := ( OTHERS => '0' );
       SIGNAL dphi       : UNSIGNED( widthKFdphi    - 1 DOWNTO 0 ) := ( OTHERS => '0' );
       SIGNAL dz         : UNSIGNED( widthKFdz      - 1 DOWNTO 0 ) := ( OTHERS => '0' );
-      SIGNAL phisquared :   SIGNED( DSP27precision - 1 DOWNTO 0 ) := ( OTHERS => '0' );
-      SIGNAL zsquared   :   SIGNED( DSP27precision - 1 DOWNTO 0 ) := ( OTHERS => '0' );
+      SIGNAL phisquared :   SIGNED( DSP18precision - 1 DOWNTO 0 ) := ( OTHERS => '0' );
+      SIGNAL zsquared   :   SIGNED( DSP18precision - 1 DOWNTO 0 ) := ( OTHERS => '0' );
 
-      SIGNAL tempv0 :   SIGNED( DSP18precision - 1 DOWNTO 0) := ( OTHERS => '0' ); 
-      SIGNAL tempv1 :   SIGNED( DSP18precision - 1 DOWNTO 0) := ( OTHERS => '0' ); 
+      SIGNAL tempv0 :   SIGNED( DSP27precision - 1 DOWNTO 0) := ( OTHERS => '0' ); 
+      SIGNAL tempv1 :   SIGNED( DSP27precision - 1 DOWNTO 0) := ( OTHERS => '0' ); 
 
       SIGNAL temprphi : SIGNED( DSP45Totalprecision - 1 DOWNTO 0 ):= ( OTHERS => '0' );
       SIGNAL temprz   : SIGNED( DSP45Totalprecision - 1 DOWNTO 0 ):= ( OTHERS => '0' );
@@ -181,17 +181,17 @@ ARCHITECTURE RTL of CalculateChi IS
           dz   <= UNSIGNED( stubs( i ).dZ   );
  
           --Clk 2 ----------------------------------------------
-          phisquared <= RESIZE( ( phi * phi ),DSP27precision );
-          tempv0     <= SIGNED( RESIZE( v0( dphi ), DSP18precision ) );
-          zsquared   <= RESIZE( ( z*z ), DSP27precision );
-          tempv1     <= SIGNED( RESIZE( v1( dz ), DSP18precision ) );
+          phisquared <= RESIZE( (4*phi*phi + 4*phi + 1) ,DSP18precision );
+          tempv0     <= TO_SIGNED( v0Bins( TO_INTEGER(SHIFT_RIGHT(dphi,WeightBinFraction) )), DSP27precision );
+          zsquared   <= RESIZE( (4*z*z + 4*z + 1)  , DSP18precision );
+          tempv1     <= TO_SIGNED( v1Bins( TO_INTEGER(SHIFT_RIGHT(dz, weightBinFraction))), DSP27precision );
           --Clk 3 ------------------------------------------------
-          temprphi <= phisquared * tempv0;
-          temprz   <= zsquared   * tempv1;
+          temprphi <= (phisquared  * tempv0 / 4)/ INTEGER(chiRescale);
+          temprz   <= (zsquared  * tempv1 / 4)/ INTEGER(chiRescale);
 
           IF validarray(frame_delay - 1) = '1' THEN
-            rphi( i ) <= UNSIGNED( temprphi );
-            rz( i )   <= UNSIGNED( temprz );
+            rphi( i ) <=  temprphi ;
+            rz( i )   <= temprz ;
           ELSE
             rphi( i ) <= ( OTHERS => '0' );
             rz( i )   <= ( OTHERS => '0' );
@@ -202,13 +202,13 @@ ARCHITECTURE RTL of CalculateChi IS
     END GENERATE;
 
     PROCESS( clk )
-    VARIABLE tempchi2rphi, tempchi2rz : UNSIGNED( DSP45Totalprecision - 1 DOWNTO 0 ) := ( OTHERS => '0' );
+    VARIABLE tempchi2rphi, tempchi2rz : SIGNED( DSP45Totalprecision - 1 DOWNTO 0 ) := ( OTHERS => '0' );
       BEGIN
       
       IF RISING_EDGE( clk ) THEN
         FOR i IN 0 TO numLayers - 1 LOOP
-          tempchi2rphi := tempchi2rphi + rphi( i ) / ChiRescale; 
-          tempchi2rz   := tempchi2rz   + rz( i )   / ChiRescale; 
+          tempchi2rphi := tempchi2rphi + rphi( i ) ; 
+          tempchi2rz   := tempchi2rz   + rz( i ) ; 
         END LOOP;
 
         -- Clk 4 ---------------------------------------------------
@@ -284,6 +284,8 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
     SIGNAL HitPattern_array : hitpatternARRAY( 0 TO chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
     SIGNAL Tanl_array       : TanlARRAY( 0 TO chiLatency - 1 )       := ( OTHERS => ( OTHERS =>'0'));
     SIGNAL InvR_array       : InvRARRAY( 0 TO chiLatency - 1 )       := ( OTHERS => ( OTHERS =>'0'));
+    
+    SIGNAL EtaSector : INTEGER RANGE 0 TO 16 := 0 ;
 
     COMPONENT ScaleZT
       GENERIC ( zdelay : NATURAL );
@@ -318,13 +320,13 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
   BEGIN 
 
-    scaleZentity : ScaleZT GENERIC MAP ( zdelay => chiLatency + 2 - zscaleLatency )
+    scaleZentity : ScaleZT GENERIC MAP ( zdelay => chiLatency - zscaleLatency )
                            PORT MAP    ( clk    => clk, 
                                           zT    => zT, 
                                          cot    => cot, 
                                           z0    => z0);
                                        
-    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => chiLatency + 2 - phiscaleLatency )
+    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => chiLatency - phiscaleLatency )
                               PORT MAP    ( clk       => clk, 
                                             phiT      => phiT, 
                                             inv2R     => inv2R, 
@@ -339,13 +341,14 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
     PROCESS (clk)
 
-      VARIABLE EtaSector : INTEGER RANGE 0 TO 16 := 0 ;
+     
+      VARIABLE EtaSign   : STD_LOGIC := '0';
       VARIABLE modCot   : SIGNED( widthTanL -1 DOWNTO 0 ) := ( OTHERS => '0' );
 
     BEGIN
       IF RISING_EDGE(clk) THEN
         frame_array <= KFObjectsIn( i ).track.valid & frame_array( 0 TO frame_delay - 2 );
-        sign_array  <= KFObjectsIn( i ).track.cot( widthKFcot - 1) & sign_array( 0 TO chiLatency - 2 );
+        sign_array  <= EtaSign & sign_array( 0 TO chiLatency - 2 );
 
         zT  <= SIGNED( KFObjectsIn( i ).track.zT );
         cot <= SIGNED( KFObjectsIn( i ).track.cot );
@@ -356,12 +359,15 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
         stubs     <= KFObjectsIn( i ).stubs;
 
-        EtaSector := TO_INTEGER(UNSIGNED( KFObjectsIn( i ).track.sector( widthKFsector - 2 downto 0 )));
+        EtaSector  <= TO_INTEGER(UNSIGNED( KFObjectsIn( i ).track.sector( widthKFsector - 2 downto 0 )));
+
+
+        EtaSign := '1' WHEN EtaSector < INTEGER(numSectorsEta/2) ELSE '0';
 
         HitPattern_array <= UNSIGNED(HitPattern(stubs)) & HitPattern_array( 0 TO chiLatency - 2 );
-        modCot           := RESIZE(SIGNED(cot) + CotBins(EtaSector),widthTanL);
+        modCot           := TO_SIGNED((TO_INTEGER(cot) + CotBins(EtaSector)),widthTanL);
         Tanl_array       <= modCot & Tanl_array( 0 TO chiLatency - 2 );
-        InvR_array       <= RESIZE(inv2R,widthinvr ) & InvR_array( 0 TO chiLatency - 2 );
+        InvR_array       <= RESIZE(-inv2R - 1,widthinvr ) & InvR_array( 0 TO chiLatency - 2 );
 
         Output( i ).TrackValid <=  frame_array( frame_delay- 1 );
         Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 1 ) );
@@ -373,10 +379,24 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
         Output( i ).Chi2RZ     <=  Chi2RZ;   
         Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
         Output( i ).Z0         <=  z0;
-        Output( i ).TanL       <=  Tanl_array( chiLatency - 1 );
+        Output( i ).TanL       <=  Tanl_array( chiLatency - 2 );
         Output( i ).Phi0       <=  phi0;
         Output( i ).InvR       <=  InvR_array( chiLatency - 2 );
-        Output( i ).SortKey    <=  TO_INTEGER( UNSIGNED'('0' & sign_array(chiLatency - 1)));
+        Output( i ).SortKey    <=  1 WHEN (sign_array(chiLatency - 3) = '1') ELSE 0;
+
+        --Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 1 ) );
+        --Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
+        --Output( i ).TQMVA      <=  TO_UNSIGNED( 0, WidthTQMVA );
+        --Output( i ).HitPattern <=  TO_UNSIGNED( 0, WidthHitPattern );
+        --Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
+        --Output( i ).Chi2RPhi   <=  TO_UNSIGNED( 0, widthChi2RPhi );
+        --Output( i ).Chi2RZ     <=  TO_UNSIGNED( 0, widthChi2RZ );   
+        --Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
+        --Output( i ).Z0         <=  TO_SIGNED( 0, widthZ0 );
+        --Output( i ).TanL       <=  TO_SIGNED( 0, widthTanL );
+        --Output( i ).Phi0       <=  TO_SIGNED( 0, widthPhi0 );
+        --Output( i ).InvR       <=  TO_SIGNED( 0, widthInvR );
+        --Output( i ).SortKey    <=  TO_INTEGER( UNSIGNED'('0' & sign_array(chiLatency - 3)));
 
         reset( i )        <= TO_STD_LOGIC(( frame_array( frame_delay - 1 ) = '0') AND ( frame_array( frame_delay - 2 )  = '1'));
         Output( i ).reset <= TO_STD_LOGIC(( frame_array( frame_delay - 1 ) = '0') AND ( frame_array( frame_delay - 2 )  = '1'));

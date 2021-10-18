@@ -1,3 +1,6 @@
+setup ../ucf/settings.tcl
+src ../ucf/serenity.tcl
+
 include payload.dep
 
 src -c emp-fwk:components/datapath emp_data_types.vhd

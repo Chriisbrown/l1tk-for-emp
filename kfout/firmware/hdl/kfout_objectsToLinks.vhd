@@ -117,10 +117,10 @@ BEGIN
           odd_even := odd_even + 1;
 
           IF odd_even = 2 THEN
-            Packets ( 0 )                                                          <= Tracks ( 0 )( widthpartialTTTrack*2  - 1 DOWNTO 0  );                     -- First 64 bits of track 1
+            Packets ( 2 )                                                          <= Tracks ( 0 )( widthpartialTTTrack*2  - 1 DOWNTO 0  );                     -- First 64 bits of track 1
             Packets ( 1 )( widthpartialTTTrack    - 1 DOWNTO 0 )                   <= Tracks ( 0 )( widthTTTrack - 1           DOWNTO widthpartialTTTrack*2 );  -- Last 32 bits of track 1
             Packets ( 1 )( widthpartialTTTrack*2  - 1 DOWNTO widthpartialTTTrack ) <= Tracks ( 1 )( widthpartialTTTrack - 1    DOWNTO 0  );                     -- First 32 bits of track 2
-            Packets ( 2 )                                                          <= Tracks ( 1 )( widthTTTrack - 1           DOWNTO widthpartialTTTrack );    -- Last 64 bits of track 2
+            Packets ( 0 )                                                          <= Tracks ( 1 )( widthTTTrack - 1           DOWNTO widthpartialTTTrack );    -- Last 64 bits of track 2
             odd_even := 0;
 
             If packet_counter > 0 THEN
