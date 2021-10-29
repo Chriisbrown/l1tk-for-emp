@@ -6,6 +6,9 @@ use work.hybrid_tools.all;
 
 package hybrid_config is
 
+constant widthDSPportA  : natural := 27; -- native DSP port A size of used FPGA 
+constant widthDSPportB  : natural := 18; -- native DSP port B size of used FPGA
+constant widthDSPportC  : natural := 45; -- native DSP port C size of used FPGA
 
 constant numDTCPS: natural := 9;
 constant numDTC2S: natural := 8;
@@ -17,7 +20,7 @@ constant numLinksTFP: natural := 2;
 
 constant numLayers: natural := 7;
 
-constant numNodesKF: natural := 2;
+constant numNodesKF: natural := 1;
 
 
 constant chosenRofPhi: real := 55.0;           -- offest radius used for phi sector definitionmaxRtimesMoverBend21.

@@ -11,7 +11,7 @@ package emp_project_decl is
 
 constant PAYLOAD_REV: std_logic_vector(31 downto 0) := X"CAFEBABE";
 
-constant LB_ADDR_WIDTH  : integer := 11;
+constant LB_ADDR_WIDTH  : integer := 10;
 
 constant CLOCK_AUX_DIV     : clock_divisor_array_t := (18, 9, 4);
 constant CLOCK_COMMON_RATIO: integer               := 36;

@@ -10,12 +10,12 @@ package emp_project_decl is
 
 constant PAYLOAD_REV: std_logic_vector(31 downto 0) := X"12345678";
 
-constant LHC_BUNCH_COUNT: integer := 3564;
+--constant LHC_BUNCH_COUNT: integer := 3564;
 constant LB_ADDR_WIDTH  : integer := 10;
 
 constant CLOCK_COMMON_RATIO: integer             := 36;
 constant CLOCK_RATIO       : integer             :=  9;
-constant CLOCK_AUX_RATIO   : clock_ratio_array_t := (2, 4, 6);
+constant CLOCK_AUX_RATIO   : clock_divisor_array_t := (2, 4, 6);
 
 constant PAYLOAD_LATENCY: integer := 1 + 7 * ( 5 + 16 - 1 ) + 7 + 2 - 3 + 1 + 13 + 5 + 2 - 6;
 

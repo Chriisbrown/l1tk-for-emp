@@ -9,7 +9,7 @@ USE work.kfout_config.all;
 ---------------------------------------------------------------------
 ENTITY PacketRam IS
   GENERIC(
-    Count : NATURAL := 20;
+    Count : NATURAL := 104;
     Style : STRING  := "block"
   );
   PORT(
@@ -17,8 +17,8 @@ ENTITY PacketRam IS
     Packet1      : IN STD_LOGIC_VECTOR( widthpartialTTTrack*2  - 1 DOWNTO 0 )  := (OTHERS=> '0');
     Packet2      : IN STD_LOGIC_VECTOR( widthpartialTTTrack*2  - 1 DOWNTO 0 )  := (OTHERS=> '0');
     Packet3      : IN STD_LOGIC_VECTOR( widthpartialTTTrack*2  - 1 DOWNTO 0 )  := (OTHERS=> '0');
-    WriteAddr    : IN NATURAL RANGE 0 TO( Count-1 )                            := 0;
-    ReadAddr     : IN NATURAL RANGE 0 TO( Count-1 )                            := 0;
+    WriteAddr    : IN NATURAL RANGE 0 TO( Count -1 )                            := 0;
+    ReadAddr     : IN NATURAL RANGE 0 TO( Count -1 )                            := 0;
     PacketOut    : OUT STD_LOGIC_VECTOR( widthpartialTTTrack*2  - 1 DOWNTO 0 ) := (OTHERS=> '0')
   );
 END PacketRam;
@@ -35,11 +35,11 @@ BEGIN
   PROCESS( clk )
   BEGIN
     IF RISING_EDGE( clk ) THEN
-        RAM(  WriteAddr MOD Count ) <= Packet1;
-        RAM( (WriteAddr + 1 ) MOD Count ) <= Packet2;
-        RAM( (WriteAddr + 2 ) MOD Count ) <= Packet3;
+        RAM( (WriteAddr) MOD count  ) <= Packet1;
+        RAM( (WriteAddr + 1 ) MOD count ) <= Packet2;
+        RAM( (WriteAddr + 2 ) MOD count ) <= Packet3;
 
-        PacketOut <= RAM ( ReadAddr MOD Count );  --Put packet on output link
+        PacketOut <= RAM ( ReadAddr MOD count );  --Put packet on output link
 
     END IF;
   END PROCESS;
@@ -124,7 +124,7 @@ BEGIN
             odd_even := 0;
 
             If packet_counter > 0 THEN
-              packet_counter <= packet_counter + 3;
+              packet_counter <= (packet_counter + 3) ;
             END IF;
           END IF;
 
@@ -134,7 +134,7 @@ BEGIN
             packet_counter <= 1;  -- Reset counters, based on KF reset signals
             Out_counter <= 1;
           ELSIF Out_counter /= packet_counter THEN
-            Out_counter <= Out_counter + 1;
+            Out_counter <= (Out_counter + 1);
             PacketData( i )  <= OutBuffer;
           ELSE
             PacketData( i )  <= (OTHERS => '0');

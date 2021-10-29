@@ -18,8 +18,8 @@ PACKAGE tracktransform_helper IS
   CONSTANT Chi2RZBins:   chi_array := init_chi2RZBins;
   CONSTANT CotBins :     INTEGER_VECTOR := init_cotBins;
 
-  CONSTANT v0Bins : weight_array := init_weightbins( basedPhi, numdPhiBins );
-  CONSTANT v1Bins : weight_array := init_weightbins( basedZ/chiRescale, numdZBins   );
+  CONSTANT v0Bins : weight_array := init_weightbins( basedPhi, numdPhiBins, chiPhiRescale );
+  CONSTANT v1Bins : weight_array := init_weightbins( basedZ, numdZBins,chiZRescale**(-1)   );
 
 END tracktransform_helper;
 

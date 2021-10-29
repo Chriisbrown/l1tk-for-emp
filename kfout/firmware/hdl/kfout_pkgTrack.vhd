@@ -173,7 +173,7 @@ PACKAGE BODY DataType IS
     lRet( bitloc.Chi2rphih   DOWNTO bitloc.Chi2rphil   )  := STD_LOGIC_VECTOR( aData.Chi2rphi   );
     lRet( bitloc.Phi0h       DOWNTO bitloc.Phi0l       )  := STD_LOGIC_VECTOR( aData.Phi0       );
     lRet( bitloc.InvRh       DOWNTO bitloc.InvRl       )  := STD_LOGIC_VECTOR( aData.InvR       );
-    lRet( bitloc.TrackValidi  )                           := to_std_logic( aData.DataValid );
+    lRet( bitloc.TrackValidi  )                           := aData.TrackValid ;
 
     lRet( bitloc.TrackValidi + 1 )                               := to_std_logic( aData.DataValid );
     lRet( bitloc.TrackValidi + 2 )                               := aData.Reset ;
