@@ -1,8 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 use work.kf_data_types.all;
 
 entity kf_delay is
@@ -84,7 +84,7 @@ end;
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.tfp_config.all;
+use work.hybrid_config.all;
 use work.kf_data_types.all;
 
 entity kf_delay_fit is
@@ -131,8 +131,8 @@ end;
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 use work.kf_data_types.all;
 
 entity kf_delay_residual is
@@ -180,8 +180,8 @@ end;
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 
 entity kf_delay_format is
 port (
@@ -230,10 +230,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
-use work.tfp_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
+use work.hybrid_tools.all;
 
 entity kf_delay_event is
 port (
@@ -324,10 +324,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
-use work.tfp_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
+use work.hybrid_tools.all;
 
 entity kf_delay_track is
 port (
@@ -405,11 +405,11 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.tfp_config.all;
+use work.hybrid_config.all;
 use work.kf_data_types.all;
-use work.tfp_data_formats.all;
+use work.hybrid_data_formats.all;
 use work.kf_data_formats.all;
-use work.tfp_tools.all;
+use work.hybrid_tools.all;
 
 entity kf_delay_stub is
 generic (

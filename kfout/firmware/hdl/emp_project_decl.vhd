@@ -21,10 +21,29 @@ constant PAYLOAD_LATENCY: integer := 22;
 
 -- mgt -> chk -> buf -> fmt -> (algo) -> (fmt) -> buf -> chk -> mgt -> clk -> altclk
 constant REGION_CONF : region_conf_array_t := (
-   0 => ( no_mgt, buf,    no_fmt, buf,    no_mgt ),
-   1 => ( no_mgt, buf,    no_fmt, no_buf, no_mgt ),
-  others => kDummyRegion
+  0  => kDummyRegion, -- service
+  1  => (gty25, buf, no_fmt, buf, gty25),
+  2  => (gty25, buf, no_fmt, buf, gty25),
+  3  => (gty25, buf, no_fmt, buf, gty25),
+  4  => kDummyRegion, -- tcds
+  5  => (gty25, buf, no_fmt, buf, gty25),
+  6  => (gty25, buf, no_fmt, buf, gty25),
+  7  => (gty25, buf, no_fmt, buf, gty25),
+  8  => (gty25, buf, no_fmt, buf, gty25),
+  9  => (gty25, buf, no_fmt, buf, gty25),
+  ------cross
+  10  => (gty25, buf, no_fmt, buf, gty25),
+  11  => (gty25, buf, no_fmt, buf, gty25),
+  12  => (gty25, buf, no_fmt, buf, gty25),
+  13  => (gty25, buf, no_fmt, buf, gty25),
+  14 => kDummyRegion, -- not used in apollo
+  15  => (gty25, buf, no_fmt, buf, gty25),
+  16  => (gty25, buf, no_fmt, buf, gty25),
+  17  => (gty25, buf, no_fmt, buf, gty25),
+  18 => kDummyRegion, -- service
+others => kDummyRegion
 );
+
 
 
 end;

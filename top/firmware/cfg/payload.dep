@@ -1,0 +1,9 @@
+src emp_payload.vhd
+src -c l1tk-for-emp:kfout kfout_isolation.vhd
+src -c l1tk-for-emp:kf    kf_isolation.vhd
+
+
+include -c l1tk-for-emp:kf components.dep
+include -c l1tk-for-emp:kfout components.dep
+include -c l1tk-for-emp:common hybrid_components.dep
+include -c l1tk-for-emp:common tfp_components.dep

@@ -1,8 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 use work.kf_data_types.all;
 
 

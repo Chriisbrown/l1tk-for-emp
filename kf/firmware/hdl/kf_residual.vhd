@@ -2,8 +2,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 use work.kf_data_types.all;
 
 entity kf_residual is
@@ -89,10 +89,10 @@ end;
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_formats.all;
-use work.tfp_data_types.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_formats.all;
+use work.hybrid_data_types.all;
 use work.kf_data_formats.all;
 use work.kf_data_types.all;
 

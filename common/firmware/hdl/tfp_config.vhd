@@ -24,15 +24,15 @@ constant numFramesInfra: natural :=  6;                                 -- numbe
 constant numFrames     : natural := tmp * integer( freqTFP / freqLHC ); -- number of clk ticks per TMP
 constant widthFrames   : natural := width( numFrames );                 -- number of bits used to represent frame number within one TMP
 
-constant chosenRofPhi: real := 55.0;           -- offest radius used for phi sector definitionmaxRtimesMoverBend21.
+constant chosenRofPhi: real := 67.24;          -- offest radius used for phi sector definitionmaxRtimesMoverBend21.
 constant chosenRofZ  : real := 50.0;           -- offest radius used for eta sector definition
-constant minPt       : real :=  1.34;          -- minimum pt of tracks considered as reconstructable
+constant minPt       : real :=  3.0;           -- minimum pt of tracks considered as reconstructable
 constant beamWindowZ : real := 15.0;           -- halve lumi region in z
-constant maxEta      : real :=  2.5;           -- maximum |eta| of tracks considered as reconstructable
+constant maxEta      : real :=  2.4;           -- maximum |eta| of tracks considered as reconstructable
 constant maxCot      : real := sinh( maxEta ); -- maximum |cot(theta)| of tracks considered as reconstructable 
 
 constant mindPhi: real :=  0.0001; -- minimum representable stub phi uncertainty
-constant maxdPhi: real :=  0.02;   -- maximum representable stub phi uncertainty
+constant maxdPhi: real :=  0.01;   -- maximum representable stub phi uncertainty
 constant mindZ  : real :=  0.1;    -- minimum representable stub z uncertainty
 constant maxdZ  : real := 30.0;    -- maximum representable stub z uncertainty
 
@@ -74,7 +74,7 @@ constant numSectorsEta: natural :=  16;   -- number of eta sectors within a regi
 constant gpWidthAddr  : natural :=   6;   -- fifo depth in stub router firmware
 constant rangeGPz     : real    := 160.0; -- range of stub z residual w.r.t. sector center which needs to be covered
 constant numSectors   : natural := numSectorsPhi * numSectorsEta; --total numbers of sectors within a region
-constant etaBoundaries: reals( 0 to numSectorsEta ) := ( -2.50, -2.08, -1.68, -1.26, -0.90, -0.62, -0.41, -0.20, 0.0, 0.20, 0.41, 0.62, 0.90, 1.26, 1.68, 2.08, 2.50 ); -- eta boundaries defining eta sectors
+constant etaBoundaries: reals( 0 to numSectorsEta ) := ( -2.40, -2.08, -1.68, -1.26, -0.90, -0.62, -0.41, -0.20, 0.0, 0.20, 0.41, 0.62, 0.90, 1.26, 1.68, 2.08, 2.40 ); -- eta boundaries defining eta sectors
 
 constant numNodesGP: natural := numDTCsPerTFP; -- number of GP inputs
 
@@ -116,7 +116,7 @@ constant rangeFactor: real := 2.0; -- search window of each track parameter in i
 
 constant maxStubs: natural := 4; -- maximum number of  layers added to a track
 
-constant numNodesKF: natural := 1; -- number of KF inputs
+constant numNodesKF: natural := 2; -- number of KF inputs
 
 -- DR
 

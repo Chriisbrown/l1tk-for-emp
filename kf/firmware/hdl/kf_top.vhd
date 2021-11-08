@@ -1,12 +1,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 
 use ieee.math_real.all;
-use work.tfp_tools.all;
-use work.tfp_data_formats.all;
+use work.hybrid_tools.all;
+use work.hybrid_data_formats.all;
 use work.kf_data_formats.all;
 
 
@@ -14,7 +14,7 @@ entity kf_top is
 port (
     clk: in std_logic;
     kf_din: in t_channelsSF( numNodesKF - 1 downto 0 );
-    kf_dout: out t_channelsKF( numNodesDR - 1 downto 0 )
+    kf_dout: out t_channelsKF( numNodesKF - 1 downto 0 )
 );
 end;
 

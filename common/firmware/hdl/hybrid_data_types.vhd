@@ -83,6 +83,41 @@ record
 end record;
 function nulll return t_candTracklet;
 
+type t_stubSF is
+  record
+      reset : std_logic;
+      valid : std_logic;
+      r     : std_logic_vector( widthSFr    - 1 downto 0 );
+      phi   : std_logic_vector( widthSFphi  - 1 downto 0 );
+      z     : std_logic_vector( widthSFz    - 1 downto 0 );
+      dPhi  : std_logic_vector( widthSFdPhi - 1 downto 0 );
+      dZ    : std_logic_vector( widthSFdZ   - 1 downto 0 );
+  end record;
+  type t_stubsSF is array ( natural range <> ) of t_stubSF;
+  function nulll return t_stubSF;
+  
+  type t_trackSF is
+  record
+      reset : std_logic;
+      valid : std_logic;
+      maybe : std_logic_vector( widthSFhits   - 1 downto 0 );
+      sector: std_logic_vector( widthSFsector - 1 downto 0 );
+      phiT  : std_logic_vector( widthSFphiT   - 1 downto 0 );
+      inv2R : std_logic_vector( widthSFinv2R  - 1 downto 0 );
+      zT    : std_logic_vector( widthSFzT     - 1 downto 0 );
+      cot   : std_logic_vector( widthSFcot    - 1 downto 0 );
+  end record;
+  type t_tracksSF is array ( natural range <> ) of t_trackSF;
+  function nulll return t_trackSF;
+  
+  type t_channelSF is
+  record
+      track: t_trackSF;
+      stubs: t_stubsSF(numLayers - 1 downto 0);
+  end record;
+  type t_channelsSF is array ( natural range <> ) of t_channelSF;
+  function nulll return t_channelSF;
+
 type t_stubKF is
 record
     reset: std_logic;
@@ -138,6 +173,11 @@ function nulll return t_candTracklet is begin return ( nulll, ( others => nulll 
 function nulll return t_stubKF is begin return ( '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_trackKF is begin return ( '0', '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_channelKF is begin return ( nulll, ( others => nulll ) ); end function;
+function nulll return t_channelSF is begin return ( nulll, ( others => nulll ) ); end function;
+function nulll return t_stubSF  is begin return ( '0', '0', others => ( others => '0' ) ); end function;
+function nulll return t_trackSF is begin return ( '0', '0', others => ( others => '0' ) ); end function;
+
+
 
 
 end;

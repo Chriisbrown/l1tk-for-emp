@@ -4,8 +4,8 @@ use ieee.std_logic_1164.all;
 use work.emp_device_decl.all;
 use work.emp_data_types.all;
 
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 
 entity kf_isolation_in is
 port (
@@ -50,9 +50,9 @@ use ieee.std_logic_1164.all;
 use work.emp_device_decl.all;
 use work.emp_data_types.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 
 entity kf_isolation_in_node is
 port (
@@ -111,10 +111,10 @@ use ieee.std_logic_1164.all;
 
 use work.emp_data_types.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
 
 entity kf_isolation_in_track is
 port (
@@ -178,10 +178,10 @@ use ieee.std_logic_1164.all;
 
 use work.emp_data_types.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
 
 entity kf_isolation_in_stub is
 port (
@@ -245,9 +245,9 @@ use ieee.std_logic_1164.all;
 use work.emp_device_decl.all;
 use work.emp_data_types.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 
 entity kf_isolation_out is
 port (
@@ -299,9 +299,9 @@ use ieee.std_logic_1164.all;
 use work.emp_data_types.all;
 use work.emp_project_decl.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 
 entity kf_isolation_out_node is
 port (
@@ -368,10 +368,10 @@ use ieee.std_logic_1164.all;
 use work.emp_data_types.all;
 use work.emp_project_decl.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
 
 entity kf_isolation_out_track is
 port (
@@ -432,10 +432,10 @@ use ieee.std_logic_1164.all;
 use work.emp_data_types.all;
 use work.emp_project_decl.all;
 
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
 
 entity kf_isolation_out_stub is
 port (
