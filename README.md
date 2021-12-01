@@ -77,7 +77,7 @@ ipbb sim setup-simlib
 ipbb sim ipcores
 ipbb sim generate-project (rerun this if you change VHDL)
 
-./run_sim -c work.top -Gsourcefile=<input.txt> -Gsinkfile=<out.txt> -Gplaylen=xyz -Gcaplen=xyz-do 'run 50.0us' -do quit 
+./run_sim -c work.top -Gsourcefile=<input.txt> -Gsinkfile=<out.txt> -Gplaylen=xyz -Gcaplen=xyz -do 'run 50.0us' -do quit 
   (where xyz = number of events * 108, where default assumes 9 events).
 ```
 where `input.txt` follows the standard pattern file convention.
