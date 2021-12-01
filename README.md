@@ -75,9 +75,10 @@ For questa simulation testbench:
 ```
 ipbb sim setup-simlib
 ipbb sim ipcores
-ipbb sim generate-project
+ipbb sim generate-project (rerun this if you change VHDL)
 
-./run_sim -c work.top -Gsourcefile=<input.txt> -Gsinkfile=<out.txt> 
+./run_sim -c work.top -Gsourcefile=<input.txt> -Gsinkfile=<out.txt> -Gplaylen=xyz -Gcaplen=xyz-do 'run 50.0us' -do quit 
+  (where xyz = number of events * 108, where default assumes 9 events).
 ```
 where `input.txt` follows the standard pattern file convention.
 *N.B.* The Xilinx simulation libraries can be shared between different ipbb projects and work areas. By default they are written to `${HOME}/.xilinx_sim_libs`, but they can be written to another directory by defining the environment variable `IPBB_SIMLIB_BASE` before running these two commands, or by adding the `-x` option to end of each command (e.g. `-x /path/to/simlib_directory`).
@@ -96,7 +97,7 @@ and open the project with vivado gui for simulation.
  * ipbb: `dev/2021i` pre-release or greater - the [IPbus Builder Tool](https://github.com/ipbus/ipbb). Note: a single `ipbb` installation is not work area specific and suffices for any number of projects.
  
 ```
-curl -L https://github.com/ipbus/ipbb/archive/dev/2021i.tar.gz | tar xvz
+curl -L https://github.com/ipbus/ipbb/archive/dev/2021j.tar.gz | tar xvz
 source ipbb-dev-2021i/env.sh
 (or if you use tcsh:  bash -c 'source ipbb-dev-2021i/env.sh; tcsh -l')
 ```
