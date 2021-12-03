@@ -432,7 +432,8 @@ end;
 
 architecture rtl of hybrid_format_out_stub is
 
-constant widthStub: natural := 1 + widthTrackletTrackId + widthTrackletStubId + widthTrackletR + widthTrackletPhi + widthTrackletZ;
+--constant widthStub: natural := 1 + widthTrackletTrackId + widthTrackletStubId + widthTrackletR + widthTrackletPhi + widthTrackletZ;
+constant widthStub: natural := 1 + widthTrackletR + widthTrackletPhi + widthTrackletZ;
 -- sr
 signal sr: std_logic_vector( PAYLOAD_LATENCY - 1 downto 0 ) := ( others => '0' );
 
@@ -442,7 +443,8 @@ signal dout: lword := ( ( others => '0' ), '0', '0', '1' );
 
 function conv( s: t_stubTracklet ) return std_logic_vector is
 begin
-  return s.valid & s.trackId & s.stubId & s.r & s.phi & s.z;
+  --return s.valid & s.trackId & s.stubId & s.r & s.phi & s.z;
+  return s.valid & s.r & s.phi & s.z;
 end function;
 
 begin

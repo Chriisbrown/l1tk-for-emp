@@ -73,7 +73,12 @@ if rising_edge( clk ) then
 end if;
 end process;
 
-c: entity work.TrackBuilder_L1L2 port map ( clk, reset, start, open, open, open, bx,
+c: entity work.TrackBuilder_L1L2 port map ( clk, reset, start, open, open, open,
+  dout( 0 ).data( r_trackWord ), notFull, dout( 0 ).valid,
+  dout( 1 ).data( r_stubWord ), notFull, dout( 1 ).valid,
+  dout( 2 ).data( r_stubWord ), notFull, dout( 2 ).valid,
+  dout( 3 ).data( r_stubWord ), notFull, dout( 3 ).valid,
+  dout( 4 ).data( r_stubWord ), notFull, dout( 4 ).valid, bx,
   rout( 0 ).addr( config_memories( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories( 0 ).RAM_WIDTH - 1 downto 0 ),
   rout( 1 ).addr( config_memories( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories( 1 ).RAM_WIDTH - 1 downto 0 ),
   rout( 2 ).addr( config_memories( 2 ).widthAddr - 1 downto 0 ), rout( 2 ).valid, din( 2 ).data( config_memories( 2 ).RAM_WIDTH - 1 downto 0 ),
@@ -83,12 +88,7 @@ c: entity work.TrackBuilder_L1L2 port map ( clk, reset, start, open, open, open,
   din( 2 ).nents( 0 )( config_memories( 2 ).widthNent - 1 downto 0 ), din( 2 ).nents( 1 )( config_memories( 2 ).widthNent - 1 downto 0 ),
   din( 3 ).nents( 0 )( config_memories( 3 ).widthNent - 1 downto 0 ), din( 3 ).nents( 1 )( config_memories( 3 ).widthNent - 1 downto 0 ),
   din( 4 ).nents( 0 )( config_memories( 4 ).widthNent - 1 downto 0 ), din( 4 ).nents( 1 )( config_memories( 4 ).widthNent - 1 downto 0 ),
-  open, open,
-  dout( 0 ).data( r_trackWord ), notFull, dout( 0 ).valid,
-  dout( 1 ).data( r_stubWord ), notFull, dout( 1 ).valid,
-  dout( 2 ).data( r_stubWord ), notFull, dout( 2 ).valid,
-  dout( 3 ).data( r_stubWord ), notFull, dout( 3 ).valid,
-  dout( 4 ).data( r_stubWord ), notFull, dout( 4 ).valid
+  open, open
 );
 
 gIn: for l in 0 to numInputs - 1 generate
