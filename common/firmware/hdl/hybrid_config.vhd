@@ -23,7 +23,7 @@ constant numLinksTFP: natural := 2;
 
 constant numLayers: natural := 7;
 
-constant numNodesKF: natural := 1;
+constant numNodesKF: natural := 2;
 
 
 constant chosenRofPhi: real := 55.0;           -- offest radius used for phi sector definitionmaxRtimesMoverBend21.

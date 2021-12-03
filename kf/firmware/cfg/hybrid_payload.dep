@@ -14,4 +14,4 @@ src kf_accumulator.vhd
 src kf_data_types.vhd
 src hybrid_data_formats.vhd
 
-include -c l1tk-for-emp:common components.dep
+include -c l1tk-for-emp:common hybrid_components.dep
