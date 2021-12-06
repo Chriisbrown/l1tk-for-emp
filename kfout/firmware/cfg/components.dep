@@ -1,11 +1,9 @@
-src kfout_top.vhd
+src --vhdl2008 kfout_top.vhd
 src --vhdl2008 kfout_distributionServer.vhd
 src --vhdl2008 kfout_dataPipe.vhd
 src --vhdl2008 kfout_trackTransform.vhd
-src kfout_trackTransform_helper.vhd
-src kfout_objectsToLinks.vhd
+src --vhdl2008 kfout_trackTransform_helper.vhd
+src --vhdl2008 kfout_objectsToLinks.vhd
 src --vhdl2008 kfout_pkgArrayTypes.vhd
-src kfout_dataRam.vhd
-src kfout_pkgTrack.vhd
-src kfout_config.vhd
-src kfout_data_formats.vhd
+src --vhdl2008 kfout_dataRam.vhd
+src --vhdl2008 kfout_pkgTrack.vhd

@@ -4,10 +4,10 @@ USE IEEE.NUMERIC_STD.ALL;
 
 LIBRARY work;
 
-USE work.tfp_tools.ALL;
-USE work.tfp_config.ALL;
-USE work.tfp_data_types.ALL;
-USE work.tfp_data_formats.ALL;
+USE work.hybrid_tools.ALL;
+USE work.hybrid_config.ALL;
+USE work.hybrid_data_types.ALL;
+USE work.hybrid_data_formats.ALL;
 USE work.kfout_config.ALL;
 
 USE work.constants.ALL;
@@ -35,10 +35,10 @@ BEGIN
 
 KFworkers : FOR i IN 0 TO numNodesKF-1 GENERATE
   SIGNAL input_features : txArray(0 to nFeatures-1) := (others => to_tx(0)); 
-  SIGNAL input_valid : boolean;
+  SIGNAL input_valid : boolean := FALSE;
 
-  SIGNAL ty_out : tyArray(0 to nClasses-1);
-  SIGNAL ty_vld : boolArray(0 to nClasses-1);
+  SIGNAL ty_out : tyArray(0 to nClasses-1) := (others => to_ty(0));
+  SIGNAL ty_vld : boolArray(0 to nClasses-1) := (others => False);
 
   BEGIN
   

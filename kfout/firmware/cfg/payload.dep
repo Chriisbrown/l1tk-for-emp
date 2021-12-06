@@ -2,5 +2,8 @@ src emp_payload.vhd
 src kfout_isolation.vhd
 
 include components.dep
+include -c l1tk-for-emp:tq components.dep
+src --vhdl2008 kfout_config.vhd
+src --vhdl2008 kfout_data_formats.vhd
 
 include -c l1tk-for-emp:common hybrid_components.dep

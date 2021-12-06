@@ -145,6 +145,14 @@ end record;
 type t_tracksKF is array ( natural range <> ) of t_trackKF;
 function nulll return t_trackKF;
 
+type t_channelTQ is
+    record
+      valid : BOOLEAN;
+      TQscore : INTEGER;
+  end record;
+  type t_channelsTQ is array ( natural range <> ) of t_channelTQ;
+  function nulll return t_channelTQ;
+
 type t_channelKF is
 record
     track: t_trackKF;
@@ -173,6 +181,7 @@ function nulll return t_candTracklet is begin return ( nulll, ( others => nulll 
 function nulll return t_stubKF is begin return ( '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_trackKF is begin return ( '0', '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_channelKF is begin return ( nulll, ( others => nulll ) ); end function;
+function nulll return t_channelTQ is begin return ( FALSE, 0 ); end function;
 function nulll return t_channelSF is begin return ( nulll, ( others => nulll ) ); end function;
 function nulll return t_stubSF  is begin return ( '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_trackSF is begin return ( '0', '0', others => ( others => '0' ) ); end function;
