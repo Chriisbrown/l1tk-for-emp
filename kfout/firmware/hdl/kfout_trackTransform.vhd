@@ -331,13 +331,13 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
   BEGIN 
 
-    scaleZentity : ScaleZT GENERIC MAP ( zdelay => frame_delay - zscaleLatency + 1)
+    scaleZentity : ScaleZT GENERIC MAP ( zdelay => frame_delay - zscaleLatency - 1)
                            PORT MAP    ( clk    => clk, 
                                           zT    => zT, 
                                          cot    => cot, 
                                           z0    => z0);
                                        
-    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => frame_delay - phiscaleLatency + 1 )
+    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => frame_delay - phiscaleLatency - 1 )
                               PORT MAP    ( clk       => clk, 
                                             phiT      => phiT, 
                                             inv2R     => inv2R, 
@@ -396,6 +396,40 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
           Output( i ).TrackValid <=  frame_array( frame_delay- 2 );
           Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 2 ) );
           Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
+          Output( i ).TQMVA      <=  TO_UNSIGNED( 0 , widthTQMVA );
+          Output( i ).HitPattern <=  HitPattern_array(frame_delay - 3 );
+          Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
+          Output( i ).Chi2RPhi   <=  Chi2Rphi_array( frame_delay - chiLatency - 2 );
+          Output( i ).Chi2RZ     <=  Chi2RZ_array( frame_delay - chiLatency - 2 );   
+          Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
+          Output( i ).Z0         <=  z0;
+          Output( i ).TanL       <=  Tanl_array( frame_delay - 3 );
+          Output( i ).Phi0       <=  phi0;
+          Output( i ).InvR       <=  InvR_array( frame_delay - 3 );
+          Output( i ).SortKey    <=  1 WHEN (sign_array(frame_delay - 4) = '1') ELSE 0;
+
+          TrackCounter := TrackCounter + 1;
+
+        ELSIF (frame_array( frame_delay - 2 ) = '0') AND ( frame_array( frame_delay - 1 )  = '1') AND (TrackCounter MOD 2 = 1) THEN -- Pad out final track so distribution server has equal numbers of inputs
+
+          --Output( i ).TrackValid <=  '0';
+          --Output( i ).DataValid  <=  True;
+          --Output( i ).SortKey    <=  i;
+          --Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
+          --Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );     --Blank for now
+          --Output( i ).HitPattern <=  TO_UNSIGNED( 0, widthHitPattern);
+          --Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
+          --Output( i ).Chi2RPhi   <=  TO_UNSIGNED( 0, widthChi2RPhi ); 
+          --Output( i ).Chi2RZ     <=  TO_UNSIGNED( 0, widthChi2RZ );   
+          --Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
+          --Output( i ).Z0         <=  TO_SIGNED( 0, widthZ0 ); 
+          --Output( i ).TanL       <=  TO_SIGNED( 0, widthTanL ); 
+          --Output( i ).Phi0       <=  TO_SIGNED( 0, widthphi0 ); 
+          --Output( i ).InvR       <=  TO_SIGNED( 0, widthInvR ); 
+          TrackCounter := 0;
+          Output( i ).TrackValid <=  frame_array( frame_delay- 2 );
+          Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 2 ) );
+          Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
           Output( i ).TQMVA      <=  TO_UNSIGNED( temp_MVA , widthTQMVA );
           Output( i ).HitPattern <=  HitPattern_array(frame_delay - 3 );
           Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
@@ -406,31 +440,25 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
           Output( i ).TanL       <=  Tanl_array( frame_delay - 3 );
           Output( i ).Phi0       <=  phi0;
           Output( i ).InvR       <=  InvR_array( frame_delay - 3 );
-          Output( i ).SortKey    <=  1 WHEN (sign_array(frame_delay - 3) = '1') ELSE 0;
-
-          TrackCounter := TrackCounter + 1;
-
-        ELSIF (frame_array( frame_delay - 2 ) = '0') AND ( frame_array( frame_delay - 1 )  = '1') AND (TrackCounter MOD 2 = 1) THEN -- Pad out final track so distribution server has equal numbers of inputs
-
-          Output( i ).TrackValid <=  '0';
-          Output( i ).DataValid  <=  True;
-          Output( i ).SortKey    <=  i;
-          Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
-          Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );     --Blank for now
-          Output( i ).HitPattern <=  TO_UNSIGNED( 0, widthHitPattern);
-          Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
-          Output( i ).Chi2RPhi   <=  TO_UNSIGNED( 0, widthChi2RPhi ); 
-          Output( i ).Chi2RZ     <=  TO_UNSIGNED( 0, widthChi2RZ );   
-          Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
-          Output( i ).Z0         <=  TO_SIGNED( 0, widthZ0 ); 
-          Output( i ).TanL       <=  TO_SIGNED( 0, widthTanL ); 
-          Output( i ).Phi0       <=  TO_SIGNED( 0, widthphi0 ); 
-          Output( i ).InvR       <=  TO_SIGNED( 0, widthInvR ); 
-          TrackCounter := 0;
+          Output( i ).SortKey    <=  1 WHEN (sign_array(frame_delay - 4) = '1') ELSE 0;
 
         ELSE
 
-          Output( i ) <= cNull;
+          --Output( i ) <= cNull;
+          Output( i ).TrackValid <=  frame_array( frame_delay- 2 );
+          Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 2 ) );
+          Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
+          Output( i ).TQMVA      <=  TO_UNSIGNED( temp_MVA , widthTQMVA );
+          Output( i ).HitPattern <=  HitPattern_array(frame_delay - 3 );
+          Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
+          Output( i ).Chi2RPhi   <=  Chi2Rphi_array( frame_delay - chiLatency - 2 );
+          Output( i ).Chi2RZ     <=  Chi2RZ_array( frame_delay - chiLatency - 2 );   
+          Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
+          Output( i ).Z0         <=  z0;
+          Output( i ).TanL       <=  Tanl_array( frame_delay - 3 );
+          Output( i ).Phi0       <=  phi0;
+          Output( i ).InvR       <=  InvR_array( frame_delay - 3 );
+          Output( i ).SortKey    <=  1 WHEN (sign_array(frame_delay - 4) = '1') ELSE 0;
 
         END IF;
 
