@@ -6,7 +6,7 @@ use ieee.numeric_std.all;
 library work;
 use work.Constants.all;
 
-package Types is
+package BDTTypes is
 
   type intArray is array(natural range <>) of integer;
   type boolArray is array(natural range <>) of boolean;
@@ -24,9 +24,9 @@ package Types is
   function to_txArray(xArray : intArray) return txArray;
   function to_txArray2D(xArray2D : intArray2D) return txArray2D;
   
-end Types;
+end BDTTypes;
 
-package body Types is
+package body BDTTypes is
   
   function addReduce(y : in tyArray) return ty is
     -- Sum an array using tree reduce
@@ -87,4 +87,4 @@ package body Types is
     return xArray2DCast;
   end to_txArray2D;
   
-end Types;
+end BDTTypes;

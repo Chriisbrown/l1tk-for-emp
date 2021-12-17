@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 library work;
 use work.Constants.all;
-use work.Types.all;
+use work.BDTTypes.all;
 
 entity AddReduce is
 generic(

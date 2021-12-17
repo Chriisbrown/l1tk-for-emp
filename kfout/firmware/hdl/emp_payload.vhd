@@ -32,37 +32,29 @@ end;
 
 architecture rtl of emp_payload is
 
-
-signal in_din: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
-signal in_dout: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
 component kfout_isolation_in
-port (
-    clk     : in std_logic;
-    in_din  : in ldata( 4 * N_REGION - 1 downto 0 );
-    in_dout : out t_channelsKF( numNodesKF - 1 downto 0 )
-);
+    port (
+        clk     : in std_logic;
+        in_din  : in ldata( 7 downto 0 );
+        in_dout : out t_channelsKF( numNodesKF - 1 downto 0 )
+    );
 end component;
 
-signal kfout_din: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
-signal kfout_dout: t_frames( numLinksTFP - 1 downto 0 ) := ( others => ( others => '0' ) );
 component kfout_top
-  port(
-    clk: in std_logic;
-    kfout_din: in t_channelsKF( numNodesKF - 1 downto 0 );
-    kfout_dout: out t_frames( numLinksTFP - 1 downto 0 )
-  );
+    port(
+        clk: in std_logic;
+        kfout_din: in t_channelsKF( numNodesKF - 1 downto 0 );
+        kfout_dout: out t_frames( numLinksTFP - 1 downto 0 )
+    );
 end component;
 
-signal out_packet: std_logic_vector( numLinksTFP - 1 downto 0 ) := ( others => '0' );
-signal out_din: t_frames( numLinksTFP - 1 downto 0 ) := ( others => ( others => '0' ) );
-signal out_dout: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
 component kfout_isolation_out
-port (
-    clk: in std_logic;
-    out_packet: in std_logic_vector( numLinksTFP - 1 downto 0 );
-    out_din: in t_frames( numLinksTFP - 1 downto 0 );
-    out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
-);
+    port (
+        clk: in std_logic;
+        out_packet: in std_logic_vector( numLinksTFP - 1 downto 0 );
+        out_din: in t_frames( numLinksTFP - 1 downto 0 );
+        out_dout: out ldata( 1 downto 0 )
+    );
 end component;
 
 function conv( l: ldata ) return std_logic_vector is
@@ -78,20 +70,42 @@ end;
 begin
 
 
-in_din <= d;
 
-kfout_din <= in_dout;
 
-out_packet <=  conv( d );
-out_din <= kfout_dout;
+g1 : FOR i IN 0 TO 8 GENERATE
 
-q <= out_dout;
+    signal in_din: ldata( 7 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+    signal in_dout: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
 
-fin: kfout_isolation_in port map ( clk_p, in_din, in_dout );
 
-kfout: kfout_top port map ( clk_p, kfout_din, kfout_dout);
+    signal kfout_din: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
+    signal kfout_dout: t_frames( numLinksTFP - 1 downto 0 ) := ( others => ( others => '0' ) );
 
-fout: kfout_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
+
+    signal out_packet: std_logic_vector( numLinksTFP - 1 downto 0 ) := ( others => '0' );
+    signal out_din: t_frames( numLinksTFP - 1 downto 0 ) := ( others => ( others => '0' ) );
+    signal out_dout: ldata( 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+
+BEGIN
+
+    
+
+    in_din <= d( i*8 + 7 DOWNTO i*8 );
+
+    kfout_din <= in_dout;
+
+    out_packet <=  conv( d );
+    out_din <= kfout_dout;
+
+    q( 2*i + 1 DOWNTO 2*i ) <= out_dout( 1 DOWNTO 0 );
+
+    fin: kfout_isolation_in port map ( clk_p, in_din, in_dout );
+
+    kfout: kfout_top port map ( clk_p, kfout_din, kfout_dout);
+
+    fout: kfout_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
+
+END GENERATE;
 
 ipb_out <= IPB_RBUS_NULL;
 bc0 <= '0';

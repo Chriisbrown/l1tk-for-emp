@@ -4,7 +4,7 @@ library ieee;
   use ieee.numeric_std.all;
 
   use work.Constants.all;
-  use work.Types.all;
+  use work.BDTTypes.all;
   package Arrays0 is
 
     constant initPredict : ty := to_ty(0);

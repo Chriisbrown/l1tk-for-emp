@@ -11,7 +11,7 @@ USE work.hybrid_data_formats.ALL;
 USE work.kfout_config.ALL;
 
 USE work.constants.ALL;
-USE work.Types.ALL;
+USE work.BDTTypes.ALL;
 
 USE work.emp_data_types.ALL;
 

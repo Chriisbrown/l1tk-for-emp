@@ -252,8 +252,8 @@ use work.hybrid_data_types.all;
 entity kf_isolation_out is
 port (
     clk: in std_logic;
-    out_packet: in std_logic_vector( numNodesDR * ( numLayers + 1 ) - 1 downto 0 );
-    out_din: in t_channelsKF( numNodesDR - 1 downto 0 );
+    out_packet: in std_logic_vector( numNodesKF * ( numLayers + 1 ) - 1 downto 0 );
+    out_din: in t_channelsKF( numNodesKF - 1 downto 0 );
     out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
 );
 end;

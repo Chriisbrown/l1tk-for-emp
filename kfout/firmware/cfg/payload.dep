@@ -1,4 +1,4 @@
-src emp_payload.vhd
+src emp_payload_loopback.vhd
 src kfout_isolation.vhd
 
 include components.dep

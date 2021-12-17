@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 
 library work;
 use work.Constants.all;
-use work.Types.all;
+use work.BDTTypes.all;
 use work.Arrays0;
 
 entity BDTTop is

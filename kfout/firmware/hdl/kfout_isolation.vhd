@@ -10,7 +10,7 @@ use work.hybrid_data_types.all;
 entity kfout_isolation_in is
 port (
     clk: in std_logic;
-    in_din: in ldata( 4 * N_REGION - 1 downto 0 );
+    in_din: in ldata( 7 downto 0 );
     in_dout: out t_channelsKF( numNodesKF - 1 downto 0 )
 );
 end;
@@ -252,13 +252,13 @@ port (
     clk: in std_logic;
     out_packet: in std_logic_vector( numLinksTFP - 1 downto 0 );
     out_din: in t_frames( numLinksTFP - 1 downto 0 );
-    out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
+    out_dout: out ldata( 1 downto 0 )
 );
 end;
 
 architecture rtl of kfout_isolation_out is
 
-signal dout: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+signal dout: ldata( 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
 component kfout_isolation_out_node
 port (
     clk: in std_logic;
