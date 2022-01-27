@@ -6,6 +6,16 @@ use work.emp_ttc_decl.all;
 use work.hybrid_config.all;
 use work.hybrid_data_types.all;
 
+-- This converts from EMP to/from Hybrid data format (FIX: misleading file name)
+-- 
+-- hybrid_format_in (EMP to Hybrid conversion) calls:
+--     hybrid_format_in_quad: creates "reset" from ("start","valid").
+--     hybrid_format_in_nodePS/2S: creates hybrid DTC stub words for PS & 2S, assuming smallest link numbers are PS.
+--
+-- hybrid_format_out (Hybrid to EMP conversion) calls: 
+--     hybrid_out_track: converts Hybrid tracks
+
+
 entity hybrid_format_in is
 port (
   clk: in std_logic;
@@ -435,6 +445,8 @@ architecture rtl of hybrid_format_out_stub is
 --constant widthStub: natural := 1 + widthTrackletTrackId + widthTrackletStubId + widthTrackletR + widthTrackletPhi + widthTrackletZ;
 constant widthStub: natural := 1 + widthTrackletR + widthTrackletPhi + widthTrackletZ;
 -- sr
+-- FIX: This signal used to create output "valid" signal by delaying input
+--      one by PAYLOAD_LATENCY. Better to take it from HLS ap_done signal.
 signal sr: std_logic_vector( PAYLOAD_LATENCY - 1 downto 0 ) := ( others => '0' );
 
 -- step 1

@@ -11,6 +11,11 @@ use work.hybrid_data_types.all;
 use work.tracklet_config.all;
 use work.tracklet_data_types.all;
 
+--  Top-level: converts EMP links I/O data (format ldata) to/from formats
+--  t_stubsDTC (hybrid DTC stub format for PS & 2S) / 
+--  t_trackTracklet (hybrid tracklet format)
+--  and calls hybrid_tracklet to run L1 tracking.
+
 
 entity emp_payload is
 port (
