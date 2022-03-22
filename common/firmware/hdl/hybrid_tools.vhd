@@ -24,6 +24,8 @@ function uint ( s: std_logic_vector ) return integer;
 function sint ( s: std_logic_vector ) return integer;
 function int ( val, base: real ) return integer;
 
+function bool( s: std_logic ) return boolean;
+
 function incr ( s: std_logic_vector ) return std_logic_vector;
 function decr ( s: std_logic_vector ) return std_logic_vector;
 
@@ -59,6 +61,7 @@ function max( v: reals    ) return real;
 function max( v: naturals ) return natural;
 function sum( v: naturals ) return natural;
 function sum( v: naturals; low, high: natural ) return natural;
+function sum( lhs, rhs: naturals ) return naturals;
 function nota( w, v: natural ) return naturals;
 
 function isElement( x: natural; v: naturals ) return boolean;
@@ -66,8 +69,9 @@ function isElement( x: natural; v: naturals ) return boolean;
 function "abs" ( x: std_logic_vector ) return std_logic_vector;
 function  sba  ( x: std_logic_vector ) return std_logic_vector;
 
-function overflowed ( x: unsigned; w:integer ) return boolean ;
-function overflowed ( x: signed;   w:integer ) return boolean ;
+function overflowed ( x: unsigned; w:integer ) return boolean;
+function overflowed ( x: signed;   w:integer ) return boolean;
+function overflowed ( std: std_logic_vector ) return boolean;
 
 function interleave ( l, r: unsigned ) return unsigned;
 function interleave ( l, r: signed   ) return signed  ;
@@ -108,6 +112,8 @@ function uint( s: std_logic_vector ) return integer is begin return to_integer( 
 function sint( s: std_logic_vector ) return integer is begin return to_integer( signed( s ) ); end function;
 
 function int ( val, base: real ) return integer is begin return integer( floor( val / base ) ); end function;
+
+function bool( s: std_logic ) return boolean is begin if s = '1' then return true; end if; return false; end function;
 
 function incr( s: std_logic_vector ) return std_logic_vector is begin return std_logic_vector( unsigned( s ) + 1 ); end function;
 function decr( s: std_logic_vector ) return std_logic_vector is begin return std_logic_vector( unsigned( s ) - 1 ); end function;
@@ -236,6 +242,16 @@ begin
     return s;
 end function;
 
+function sum( lhs, rhs: naturals ) return naturals is
+  variable res: naturals( lhs'range ) := ( others => 0 );
+begin
+  assert lhs'high = rhs'high and lhs'low = rhs'low report "sum(lhs, rhs: naturals) with different ranged naturals called.";
+  for k in res'range loop
+    res( k ) := lhs( k ) + rhs( k );
+  end loop;
+  return res;
+end function;
+
 function nota( w, v: natural ) return naturals is
   variable n: naturals( 0 to w - 1 );
 begin
@@ -281,6 +297,14 @@ begin
         return false;
     end if;
     return signed( x( x'high downto x'low + w - 1 ) ) /= 0 and signed( x( x'high downto x'low + w - 1 ) ) /= -1;
+end function;
+
+function overflowed ( std: std_logic_vector ) return boolean is
+begin
+  if unsigned( std ) = 0 or signed( std ) = -1 then
+    return false;
+  end if;
+  return true;
 end function;
  
 function interleave ( l, r: unsigned ) return unsigned is begin return l( l'high - l'length + r'length downto l'low ); end function;

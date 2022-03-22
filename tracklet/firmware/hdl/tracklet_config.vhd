@@ -141,6 +141,8 @@ subtype r_dataDTC   is natural range 39 - 1 downto 0;
 subtype r_trackWord is natural range 84 - 1 downto 0;
 subtype r_stubWord  is natural range 46 - 1 downto 0;
 
+constant widthTrackletLmap   : natural := 24;
+
 end;
 
 

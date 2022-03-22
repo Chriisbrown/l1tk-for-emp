@@ -52,7 +52,7 @@ signal din: t_datas( numInputs  - 1 downto 0 ) := ( others => nulll );
 signal rout: t_reads( numInputs  - 1 downto 0 ) := ( others => nulll );
 signal dout: t_datas( numOutputs  - 1 downto 0 ) := ( others => nulll );
 
-signal reset, start: std_logic := '0';
+signal reset, start, bxValid: std_logic := '0';
 signal bx: std_logic_vector ( widthBX - 1 downto 0 ) := ( others => '0' );
 
 begin
@@ -69,6 +69,7 @@ begin
 if rising_edge( clk ) then
 
   reset <= ft_din( offsetIn + 1 ).reset;
+  dout( 0 ).reset <= bxValid;
 
 end if;
 end process;
@@ -88,7 +89,7 @@ c: entity work.TrackBuilder_L1L2 port map ( clk, reset, start, open, open, open,
   din( 2 ).nents( 0 )( config_memories( 2 ).widthNent - 1 downto 0 ), din( 2 ).nents( 1 )( config_memories( 2 ).widthNent - 1 downto 0 ),
   din( 3 ).nents( 0 )( config_memories( 3 ).widthNent - 1 downto 0 ), din( 3 ).nents( 1 )( config_memories( 3 ).widthNent - 1 downto 0 ),
   din( 4 ).nents( 0 )( config_memories( 4 ).widthNent - 1 downto 0 ), din( 4 ).nents( 1 )( config_memories( 4 ).widthNent - 1 downto 0 ),
-  open, open
+  open, bxValid
 );
 
 gIn: for l in 0 to numInputs - 1 generate

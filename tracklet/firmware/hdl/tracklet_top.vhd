@@ -7,26 +7,26 @@ use work.tracklet_config.all;
 use work.tracklet_data_types.all;
 
 
-entity hybrid_tracklet is
+entity tracklet_top is
 port (
-    clk: in std_logic;
-    tracklet_reset: in t_resets( numQuads - 1 downto 0 );
-    tracklet_din: in t_stubsDTC;
-    tracklet_dout: out t_candTracklet
+  clk: in std_logic;
+  tracklet_reset: in t_resets( numPPquads - 1 downto 0 );
+  tracklet_din: in t_stubsDTC;
+  tracklet_dout: out t_channlesTB( numSeedTypes - 1 downto 0 )
 );
 end;
 
 
-architecture rtl of hybrid_tracklet is
+architecture rtl of tracklet_top is
 
 
-signal in_reset: t_resets( numQuads - 1 downto 0 ) := ( others => nulll );
+signal in_reset: t_resets( numPPquads - 1 downto 0 ) := ( others => nulll );
 signal in_din: t_stubsDTC := nulll;
 signal in_dout: t_datas( numInputsIR  - 1 downto 0 ) := ( others => nulll );
 component tracklet_format_in
 port (
   clk: in std_logic;
-  in_reset: in t_resets( numQuads - 1 downto 0 );
+  in_reset: in t_resets( numPPquads - 1 downto 0 );
   in_din: in t_stubsDTC;
   in_dout: out t_datas( numInputsIR  - 1 downto 0 )
 );
@@ -145,12 +145,12 @@ port (
 end component;
 
 signal out_din: t_datas( numOutputsFT - 1 downto 0 ) := ( others => nulll );
-signal out_dout: t_candTracklet := nulll;
+signal out_dout: t_channlesTB( numSeedTypes - 1 downto 0 ) := ( others => nulll );
 component tracklet_format_out
 port (
   clk: in std_logic;
   out_din: in t_datas( numOutputsFT - 1 downto 0 );
-  out_dout: out t_candTracklet
+  out_dout: out t_channlesTB( numSeedTypes - 1 downto 0 )
 );
 end component;
 

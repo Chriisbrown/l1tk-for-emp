@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use work.hybrid_tools.all;
+use work.hybrid_config.all;
 use work.hybrid_data_formats.all;
 use work.tracklet_config.all;
 use work.tracklet_config_memory.all;

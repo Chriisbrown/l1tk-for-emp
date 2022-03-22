@@ -15,7 +15,7 @@ constant WAIT_CYCLES_AT_START: integer := 0;
 constant PLAYBACK_OFFSET     : integer := 0;
 constant CAPTURE_OFFSET      : integer := PAYLOAD_LATENCY + 3;
 
-constant PLAYBACK_LOOP       : boolean := true;
+constant PLAYBACK_LOOP       : boolean := false;
 constant STRIP_HEADER        : boolean := false;
 constant INSERT_HEADER       : boolean := false;
 

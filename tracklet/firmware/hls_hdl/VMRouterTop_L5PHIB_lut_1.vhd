@@ -1,6 +1,6 @@
 -- ==============================================================
--- Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2020.1 (64-bit)
--- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+-- Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2019.2 (64-bit)
+-- Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 -- ==============================================================
 library ieee; 
 use ieee.std_logic_1164.all; 
@@ -16,6 +16,9 @@ entity VMRouterTop_L5PHIB_lut_1_rom is
           addr0      : in std_logic_vector(AWIDTH-1 downto 0); 
           ce0       : in std_logic; 
           q0         : out std_logic_vector(DWIDTH-1 downto 0);
+          addr1      : in std_logic_vector(AWIDTH-1 downto 0); 
+          ce1       : in std_logic; 
+          q1         : out std_logic_vector(DWIDTH-1 downto 0);
           clk       : in std_logic
     ); 
 end entity; 
@@ -24,6 +27,7 @@ end entity;
 architecture rtl of VMRouterTop_L5PHIB_lut_1_rom is 
 
 signal addr0_tmp : std_logic_vector(AWIDTH-1 downto 0); 
+signal addr1_tmp : std_logic_vector(AWIDTH-1 downto 0); 
 type mem_array is array (0 to MEM_SIZE-1) of std_logic_vector (DWIDTH-1 downto 0); 
 signal mem : mem_array := (
     0 to 11=> "000000", 12 to 15=> "000001", 16 to 24=> "000000", 25 to 31=> "000001", 32 to 38=> "000000", 
@@ -82,15 +86,21 @@ signal mem : mem_array := (
 
 signal q0_t0 : std_logic_vector(DWIDTH-1 downto 0);
 signal q0_t1 : std_logic_vector(DWIDTH-1 downto 0);
+signal q1_t0 : std_logic_vector(DWIDTH-1 downto 0);
+signal q1_t1 : std_logic_vector(DWIDTH-1 downto 0);
 begin 
 
 q0 <= q0_t1;
+q1 <= q1_t1;
 
 p_IO_pipeline_reg : process (clk)  
 begin
     if (clk'event and clk = '1') then
       if (ce0 = '1') then 
         q0_t1 <= q0_t0;
+      end if;
+      if (ce1 = '1') then 
+        q1_t1 <= q1_t0;
       end if;
     end if;
 end process;
@@ -107,11 +117,26 @@ begin
 --synthesis translate_on
 end process;
 
+memory_access_guard_1: process (addr1) 
+begin
+      addr1_tmp <= addr1;
+--synthesis translate_off
+      if (CONV_INTEGER(addr1) > mem_size-1) then
+           addr1_tmp <= (others => '0');
+      else 
+           addr1_tmp <= addr1;
+      end if;
+--synthesis translate_on
+end process;
+
 p_rom_access: process (clk)  
 begin 
     if (clk'event and clk = '1') then
         if (ce0 = '1') then 
             q0_t0 <= mem(CONV_INTEGER(addr0_tmp)); 
+        end if;
+        if (ce1 = '1') then 
+            q1_t0 <= mem(CONV_INTEGER(addr1_tmp)); 
         end if;
     end if;
 end process;
@@ -131,7 +156,10 @@ entity VMRouterTop_L5PHIB_lut_1 is
         clk : IN STD_LOGIC;
         address0 : IN STD_LOGIC_VECTOR(AddressWidth - 1 DOWNTO 0);
         ce0 : IN STD_LOGIC;
-        q0 : OUT STD_LOGIC_VECTOR(DataWidth - 1 DOWNTO 0));
+        q0 : OUT STD_LOGIC_VECTOR(DataWidth - 1 DOWNTO 0);
+        address1 : IN STD_LOGIC_VECTOR(AddressWidth - 1 DOWNTO 0);
+        ce1 : IN STD_LOGIC;
+        q1 : OUT STD_LOGIC_VECTOR(DataWidth - 1 DOWNTO 0));
 end entity;
 
 architecture arch of VMRouterTop_L5PHIB_lut_1 is
@@ -140,7 +168,10 @@ architecture arch of VMRouterTop_L5PHIB_lut_1 is
             clk : IN STD_LOGIC;
             addr0 : IN STD_LOGIC_VECTOR;
             ce0 : IN STD_LOGIC;
-            q0 : OUT STD_LOGIC_VECTOR);
+            q0 : OUT STD_LOGIC_VECTOR;
+            addr1 : IN STD_LOGIC_VECTOR;
+            ce1 : IN STD_LOGIC;
+            q1 : OUT STD_LOGIC_VECTOR);
     end component;
 
 
@@ -151,7 +182,10 @@ begin
         clk => clk,
         addr0 => address0,
         ce0 => ce0,
-        q0 => q0);
+        q0 => q0,
+        addr1 => address1,
+        ce1 => ce1,
+        q1 => q1);
 
 end architecture;
 

@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use work.hybrid_tools.all;
+use work.hybrid_config.all;
 use work.hybrid_data_formats.all;
 use work.tracklet_config.all;
 use work.tracklet_config_memory.all;
@@ -124,7 +125,7 @@ c: tf_lut generic map ( lut_file, lut_width, lut_depth, RAM_PERFORMANCE ) port m
 
 end generate;
 
-c: entity work.TrackletEngineTop port map ( clk, reset, start, done, open, open, bxIn,
+c: entity work.TrackletEngine_PS_PS port map ( clk, reset, start, done, open, open, bxIn,
   rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).RAM_WIDTH - 1 downto 0 ),
   din( 0 ).nents( 0 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 1 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).RAM_WIDTH - 1 downto 0 ),

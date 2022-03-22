@@ -6,29 +6,19 @@ use work.emp_ttc_decl.all;
 use work.hybrid_config.all;
 use work.hybrid_data_types.all;
 
--- This converts from EMP to/from Hybrid data format (FIX: misleading file name)
--- 
--- hybrid_format_in (EMP to Hybrid conversion) calls:
---     hybrid_format_in_quad: creates "reset" from ("start","valid").
---     hybrid_format_in_nodePS/2S: creates hybrid DTC stub words for PS & 2S, assuming smallest link numbers are PS.
---
--- hybrid_format_out (Hybrid to EMP conversion) calls: 
---     hybrid_out_track: converts Hybrid tracks
-
-
-entity hybrid_format_in is
+entity tracklet_isolation_in is
 port (
   clk: in std_logic;
   in_ttc: in ttc_stuff_array( N_REGION - 1 downto 0 );
   in_din: in ldata( 4 * N_REGION - 1 downto 0 );
-  in_reset: out t_resets( numQuads - 1 downto 0 );
+  in_reset: out t_resets( numPPquads - 1 downto 0 );
   in_dout: out t_stubsDTC
 );
 end;
 
-architecture rtl of hybrid_format_in is
+architecture rtl of tracklet_isolation_in is
 
-component hybrid_format_in_quad
+component tracklet_isolation_in_quad
 port (
   clk: in std_logic;
   quad_link: in std_logic;
@@ -37,7 +27,7 @@ port (
 );
 end component;
 
-component hybrid_format_in_nodePS
+component tracklet_isolation_in_nodePS
 port (
   clk: in std_logic;
   node_din: in lword;
@@ -45,7 +35,7 @@ port (
 );
 end component;
 
-component hybrid_format_in_node2S
+component tracklet_isolation_in_node2S
 port (
   clk: in std_logic;
   node_din: in lword;
@@ -55,7 +45,7 @@ end component;
 
 begin
 
-g: for k in 0 to numQuads - 1 generate
+g: for k in 0 to numPPquads - 1 generate
 
 signal quad_link: std_logic := '0';
 signal quad_ttc: ttc_stuff_t := TTC_STUFF_NULL;
@@ -67,11 +57,11 @@ quad_link <= in_din( 4 * k ).valid;
 quad_ttc <= in_ttc( k );
 in_reset( k ) <= quad_reset;
 
-c: hybrid_format_in_quad port map ( clk, quad_link, quad_ttc, quad_reset );
+c: tracklet_isolation_in_quad port map ( clk, quad_link, quad_ttc, quad_reset );
 
 end generate;
 
-gPS: for k in 0 to numDTCPS - 1 generate
+gPS: for k in 0 to numTypedStubs( t_stubTypes'pos( LayerPS ) ) - 1 generate
 
 signal node_din: lword := ( ( others => '0' ), '0', '0', '1' );
 signal node_dout: t_stubDTCPS := nulll;
@@ -81,21 +71,21 @@ begin
 node_din <= in_din( k );
 in_dout.ps( k ) <= node_dout;
 
-cPS: hybrid_format_in_nodePS port map ( clk, node_din, node_dout );
+cPS: tracklet_isolation_in_nodePS port map ( clk, node_din, node_dout );
 
 end generate;
 
-g2S: for k in 0 to numDTC2S - 1 generate
+g2S: for k in 0 to numTypedStubs( t_stubTypes'pos( Layer2S ) ) - 1 generate
 
 signal node_din: lword := ( ( others => '0' ), '0', '0', '1' );
 signal node_dout: t_stubDTC2S := nulll;
 
 begin
 
-node_din <= in_din( k + numDTCPS );
+node_din <= in_din( k + numTypedStubs( t_stubTypes'pos( LayerPS ) ) );
 in_dout.ss( k ) <= node_dout;
 
-c2S: hybrid_format_in_node2S port map ( clk, node_din, node_dout );
+c2S: tracklet_isolation_in_node2S port map ( clk, node_din, node_dout );
 
 end generate;
 
@@ -106,11 +96,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.emp_ttc_decl.all;
 use work.hybrid_tools.all;
+use work.hybrid_config.all;
 use work.hybrid_data_types.all;
 use work.hybrid_data_formats.all;
 use work.tracklet_config.all;
 
-entity hybrid_format_in_quad is
+entity tracklet_isolation_in_quad is
 port (
   clk: in std_logic;
   quad_link: in std_logic;
@@ -119,7 +110,7 @@ port (
 );
 end;
 
-architecture rtl of hybrid_format_in_quad is
+architecture rtl of tracklet_isolation_in_quad is
 
 signal link, ready: std_logic := '0';
 signal reset: t_reset := nulll;
@@ -166,7 +157,7 @@ use work.emp_data_types.all;
 use work.hybrid_data_types.all;
 use work.hybrid_data_formats.all;
 
-entity hybrid_format_in_nodePS is
+entity tracklet_isolation_in_nodePS is
 port (
   clk: in std_logic;
   node_din: in lword;
@@ -174,7 +165,7 @@ port (
 );
 end;
 
-architecture rtl of hybrid_format_in_nodePS is
+architecture rtl of tracklet_isolation_in_nodePS is
 
 -- step 1
 signal din: lword := ( ( others => '0' ), '0', '0', '1' );
@@ -186,11 +177,11 @@ function conv( l: std_logic_vector ) return t_stubDTCPS is
     variable s: t_stubDTCPS := nulll;
 begin
   s.bx    := l( LWORD_WIDTH - 2 downto LWORD_WIDTH - 4 );
-  s.r     := l( widthPSr + widthPSz + widthPSphi + widthPSbend + widthPSlayer + 1 - 1 downto widthPSz + widthPSphi + widthPSbend + widthPSlayer + 1 );
-  s.z     := l(            widthPSz + widthPSphi + widthPSbend + widthPSlayer + 1 - 1 downto            widthPSphi + widthPSbend + widthPSlayer + 1 );
-  s.phi   := l(                       widthPSphi + widthPSbend + widthPSlayer + 1 - 1 downto                         widthPSbend + widthPSlayer + 1 );
-  s.bend  := l(                                    widthPSbend + widthPSlayer + 1 - 1 downto                                       widthPSlayer + 1 );
-  s.layer := l(                                                  widthPSlayer + 1 - 1 downto                                                      1 );
+  s.r     := l( widthsIRr( 0 ) + widthsIRz( 0 ) + widthsIRphi( 0 ) + widthsIRbend( 0 ) + widthIRlayer + 1 - 1 downto widthsIRz( 0 ) + widthsIRphi( 0 ) + widthsIRbend( 0 ) + widthIRlayer + 1 );
+  s.z     := l(                  widthsIRz( 0 ) + widthsIRphi( 0 ) + widthsIRbend( 0 ) + widthIRlayer + 1 - 1 downto                  widthsIRphi( 0 ) + widthsIRbend( 0 ) + widthIRlayer + 1 );
+  s.phi   := l(                                   widthsIRphi( 0 ) + widthsIRbend( 0 ) + widthIRlayer + 1 - 1 downto                                     widthsIRbend( 0 ) + widthIRlayer + 1 );
+  s.bend  := l(                                                      widthsIRbend( 0 ) + widthIRlayer + 1 - 1 downto                                                         widthIRlayer + 1 );
+  s.layer := l(                                                                          widthIRlayer + 1 - 1 downto                                                                        1 );
   s.valid := l( 0 );
   return s;
 end function;
@@ -231,7 +222,7 @@ use work.emp_data_types.all;
 use work.hybrid_data_types.all;
 use work.hybrid_data_formats.all;
 
-entity hybrid_format_in_node2S is
+entity tracklet_isolation_in_node2S is
 port (
   clk: in std_logic;
   node_din: in lword;
@@ -239,7 +230,7 @@ port (
 );
 end;
 
-architecture rtl of hybrid_format_in_node2S is
+architecture rtl of tracklet_isolation_in_node2S is
 
 -- step 1
 signal din: lword := ( ( others => '0' ), '0', '0', '1' );
@@ -251,11 +242,11 @@ function conv( l: std_logic_vector ) return t_stubDTC2S is
     variable s: t_stubDTC2S := nulll;
 begin
   s.bx    := l( LWORD_WIDTH - 2 downto LWORD_WIDTH - 4 );
-  s.r     := l( width2Sr + width2Sz + width2Sphi + width2Sbend + width2Slayer + 1 - 1 downto width2Sz + width2Sphi + width2Sbend + width2Slayer + 1 );
-  s.z     := l(            width2Sz + width2Sphi + width2Sbend + width2Slayer + 1 - 1 downto            width2Sphi + width2Sbend + width2Slayer + 1 );
-  s.phi   := l(                       width2Sphi + width2Sbend + width2Slayer + 1 - 1 downto                         width2Sbend + width2Slayer + 1 );
-  s.bend  := l(                                    width2Sbend + width2Slayer + 1 - 1 downto                                       width2Slayer + 1 );
-  s.layer := l(                                                  width2Slayer + 1 - 1 downto                                                      1 );
+  s.r     := l( widthsIRr( 1 ) + widthsIRz( 1 ) + widthsIRphi( 1 ) + widthsIRbend( 1 ) + widthIRlayer + 1 - 1 downto widthsIRz( 1 ) + widthsIRphi( 1 ) + widthsIRbend( 1 ) + widthIRlayer + 1 );
+  s.z     := l(                  widthsIRz( 1 ) + widthsIRphi( 1 ) + widthsIRbend( 1 ) + widthIRlayer + 1 - 1 downto                  widthsIRphi( 1 ) + widthsIRbend( 1 ) + widthIRlayer + 1 );
+  s.phi   := l(                                   widthsIRphi( 1 ) + widthsIRbend( 1 ) + widthIRlayer + 1 - 1 downto                                     widthsIRbend( 1 ) + widthIRlayer + 1 );
+  s.bend  := l(                                                      widthsIRbend( 1 ) + widthIRlayer + 1 - 1 downto                                                         widthIRlayer + 1 );
+  s.layer := l(                                                                          widthIRlayer + 1 - 1 downto                                                                        1 );
   s.valid := l( 0 );
   return s;
 end function;
@@ -297,36 +288,33 @@ use work.emp_data_types.all;
 use work.hybrid_config.all;
 use work.hybrid_data_types.all;
 
-entity hybrid_format_out is
+entity tracklet_isolation_out is
 port (
   clk: in std_logic;
-  out_packet: in std_logic_vector( numLinksTracklet - 1 downto 0 );
-  out_din: in t_candTracklet;
+  out_packet: in std_logic_vector( limitsChannelTB( numSeedTypes ) - 1 downto 0 );
+  out_din: in t_channlesTB( numSeedTypes - 1 downto 0 );
   out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
 );
 end;
 
-architecture rtl of hybrid_format_out is
+architecture rtl of tracklet_isolation_out is
 
 signal dout: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
 
-signal track_packet: std_logic := '0';
-signal track_din: t_trackTracklet := nulll;
-signal track_dout: lword :=( ( others => '0' ), '0', '0', '1' );
-component hybrid_format_out_track
+component tracklet_isolation_out_track
 port (
   clk: in std_logic;
   track_packet: in std_logic;
-  track_din: in t_trackTracklet;
+  track_din: in t_trackTB;
   track_dout: out lword
 );
 end component;
 
-component hybrid_format_out_stub
+component tracklet_isolation_out_stub
 port (
   clk: in std_logic;
   stub_packet: in std_logic;
-  stub_din: in t_stubTracklet;
+  stub_din: in t_stubTB;
   stub_dout: out lword
 );
 end component;
@@ -335,25 +323,35 @@ begin
 
 out_dout <= dout;
 
-track_packet <= out_packet( 0 );
-track_din <= out_din.track;
-dout( 0 ) <= track_dout;
+gSeedTypes: for k in 0 to numSeedTypes - 1 generate
 
-cTrack: hybrid_format_out_track port map ( clk, track_packet, track_din, track_dout );
+signal track_packet: std_logic := '0';
+signal track_din: t_trackTB := nulll;
+signal track_dout: lword :=( ( others => '0' ), '0', '0', '1' );
 
-gStubs: for k in 0 to numStubsTracklet - 1 generate
+begin
+
+track_packet <= out_packet( limitsChannelTB( k ) );
+track_din <= out_din( k ).track;
+dout( limitsChannelTB( k ) ) <= track_dout;
+
+cTrack: tracklet_isolation_out_track port map ( clk, track_packet, track_din, track_dout );
+
+gStubs: for j in 0 to numsProjectionLayers( k ) - 1 generate
 
 signal stub_packet: std_logic := '0';
-signal stub_din: t_stubTracklet := nulll;
+signal stub_din: t_stubTB := nulll;
 signal stub_dout: lword := ( ( others => '0' ), '0', '0', '1' );
 
 begin
 
-stub_packet <= out_packet( k + 1 );
-stub_din <= out_din.stubs( k );
-dout( k + 1 ) <= stub_dout;
+stub_packet <= out_packet( j + 1 );
+stub_din <= out_din( k ).stubs( j );
+dout( limitsChannelTB( k ) + j + 1 ) <= stub_dout;
 
-cStub: hybrid_format_out_stub port map ( clk, stub_packet, stub_din, stub_dout );
+cStub: tracklet_isolation_out_stub port map ( clk, stub_packet, stub_din, stub_dout );
+
+end generate;
 
 end generate;
 
@@ -369,26 +367,26 @@ use work.emp_project_decl.all;
 use work.hybrid_data_types.all;
 use work.hybrid_data_formats.all;
 
-entity hybrid_format_out_track is
+entity tracklet_isolation_out_track is
 port (
   clk: in std_logic;
   track_packet: in std_logic;
-  track_din: in t_trackTracklet;
+  track_din: in t_trackTB;
   track_dout: out lword
 );
 end;
 
-architecture rtl of hybrid_format_out_track is
+architecture rtl of tracklet_isolation_out_track is
 
-constant widthTrack: natural := 1 + widthTrackletSeedType + widthTrackletInv2R + widthTrackletPhi0 + widthTrackletZ0 + widthTrackletCot;
+constant widthTrack: natural := 1 + widthTBseedType + widthTBinv2R + widthTBphi0 + widthTBz0 + widthTBcot;
 -- sr
 signal sr: std_logic_vector( PAYLOAD_LATENCY - 1 downto 0 ) := ( others => '0' );
 
 -- step 1
-signal din:  t_trackTracklet := nulll;
+signal din:  t_trackTB := nulll;
 signal dout: lword := ( ( others => '0' ), '0', '0', '1' );
 
-function conv( s: t_trackTracklet ) return std_logic_vector is
+function conv( s: t_trackTB ) return std_logic_vector is
 begin
   return s.valid & s.seedType & s.inv2R & s.phi0 & s.z0 & s.cot;
 end function;
@@ -431,32 +429,32 @@ use work.emp_project_decl.all;
 use work.hybrid_data_types.all;
 use work.hybrid_data_formats.all;
 
-entity hybrid_format_out_stub is
+entity tracklet_isolation_out_stub is
 port (
   clk: in std_logic;
   stub_packet: in std_logic;
-  stub_din: in t_stubTracklet;
+  stub_din: in t_stubTB;
   stub_dout: out lword
 );
 end;
 
-architecture rtl of hybrid_format_out_stub is
+architecture rtl of tracklet_isolation_out_stub is
 
 --constant widthStub: natural := 1 + widthTrackletTrackId + widthTrackletStubId + widthTrackletR + widthTrackletPhi + widthTrackletZ;
-constant widthStub: natural := 1 + widthTrackletR + widthTrackletPhi + widthTrackletZ;
+constant widthStub: natural := 1 + widthsTBr( 0 ) + widthsTBphi( 0 ) + widthsTBz( 0 );
 -- sr
 -- FIX: This signal used to create output "valid" signal by delaying input
 --      one by PAYLOAD_LATENCY. Better to take it from HLS ap_done signal.
 signal sr: std_logic_vector( PAYLOAD_LATENCY - 1 downto 0 ) := ( others => '0' );
 
 -- step 1
-signal din:  t_stubTracklet := nulll;
+signal din:  t_stubTB := nulll;
 signal dout: lword := ( ( others => '0' ), '0', '0', '1' );
 
-function conv( s: t_stubTracklet ) return std_logic_vector is
+function conv( s: t_stubTB ) return std_logic_vector is
 begin
   --return s.valid & s.trackId & s.stubId & s.r & s.phi & s.z;
-  return s.valid & s.r & s.phi & s.z;
+  return s.valid & s.r( widthsTBr( 0 ) - 1 downto 0 ) & s.phi( widthsTBphi( 0 ) - 1 downto 0 ) & s.z( widthsTBz( 0 ) - 1 downto 0 );
 end function;
 
 begin
