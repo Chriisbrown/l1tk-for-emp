@@ -119,6 +119,14 @@ constant widthLr  : natural := widthZHTr;
 constant widthLphi: natural := widthZHTphi;
 constant widthLz  : natural := widthZHTz;
 
+constant baseLinv2R: real := baseZHTinv2R;
+constant baseLcot  : real := baseZHTcot;
+constant baseLphiT : real := baseZHTphiT;
+constant baseLzT   : real := baseZHTzT;
+constant baseLr    : real := baseZHTr;
+constant baseLphi  : real := baseZHTphi;
+constant baseLz    : real := baseZHTz;
+
 constant widtRmaybe  : natural := numLayers;
 constant widthRsector: natural := widthLsectorPhi + widthLsectorEta;
 constant widthRinv2R : natural := widthLinv2R;
@@ -130,15 +138,26 @@ constant widthRr    : natural := widthLr;
 constant widthRphi  : natural := widthLphi;
 constant widthRz    : natural := widthLz;
 
+constant baseFinvR: real := 2.0 ** ( width( baseLr / trackerInnerRadius ) - widthDspbu ) / baseLr;
+constant baseShiftFz   : integer := width( baseLzT / baseLz );
+constant baseShiftFcot : integer := width( baseLz / baseLR / baseLcot );
+constant baseShiftFinvR: integer := width( baseHcot / baseFinvR / baseLcot / baseLr );
+
+constant unusedLSBFinvRr: natural := widthZHTr - widthAddrBRAM18;
+constant usedMSBFcot: natural := widthAddrBRAM18 - 3;
+
+constant baseShiftFlutCot: integer := usedMSBFcot - width( maxCot / baseLCot );
+
 constant baseF: real := baseZHTinv2R * baseZHTr;
 constant baseShiftF: integer := integer( floor( log2( baseF / baseZHTphi ) ) );
 constant maxPitchOverR: real := pitchPS / trackerInnerRadius;
 constant widthPitchOverR: natural := width( maxPitchOverR / baseF ) + 1;
 constant widthLengthZ: natural := width( maxdZ / baseZHTz );
 constant widthLengthR: natural := width( length2S / baseZHTr );
-constant widthIndexLength: natural := 3 + widthLSectorEta - 1 + widthZHTcot;
-constant widthIndexPitchOverR: natural := widthAddrBRAM18;
-constant unusedLSBFr: natural := widthZHTr - ( widthIndexPitchOverR - 1 );
+constant widthFcot: natural := width( 2.0 * maxCot / baseZHTcot );
+constant widthFcotCor: natural := widthDspbu;
+
+constant unusedLSBFr: natural := widthZHTr - ( widthAddrBRAM18 - 1 );
 
 
 end;

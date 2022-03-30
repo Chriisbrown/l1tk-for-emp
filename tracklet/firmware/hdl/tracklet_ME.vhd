@@ -86,7 +86,7 @@ end process;
 
 gL3: if k < 8 generate
 c: entity work.MatchEngineTop_L3 port map ( clk, reset, start, done, open, open, bxIn, bxOut, open,
-  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).widthData - 1 downto 0 ),
   din( 0 ).nents(  0 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  1 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  2 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  3 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  4 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  5 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
@@ -119,13 +119,13 @@ c: entity work.MatchEngineTop_L3 port map ( clk, reset, start, done, open, open,
   din( 0 ).nents( 58 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 59 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 60 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 61 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 62 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 63 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
-  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).widthData - 1 downto 0 ),
   din( 1 ).nents( 0 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents( 1 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
-  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).RAM_WIDTH - 1 downto 0 ) );
+  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 ) );
 end generate;
 gL4: if k >= 8 and k < 16 generate
 c: entity work.MatchEngineTop_L4 port map ( clk, reset, start, done, open, open, bxIn, bxOut, open,
-  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).widthData - 1 downto 0 ),
   din( 0 ).nents(  0 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  1 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  2 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  3 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  4 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  5 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
@@ -158,13 +158,13 @@ c: entity work.MatchEngineTop_L4 port map ( clk, reset, start, done, open, open,
   din( 0 ).nents( 58 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 59 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 60 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 61 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 62 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 63 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
-  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).widthData - 1 downto 0 ),
   din( 1 ).nents( 0 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents( 1 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
-  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).RAM_WIDTH - 1 downto 0 ) );
+  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 ) );
 end generate;
 gL5: if k >= 16 and k < 24 generate
 c: entity work.MatchEngineTop_L5 port map ( clk, reset, start, done, open, open, bxIn, bxOut, open,
-  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).widthData - 1 downto 0 ),
   din( 0 ).nents(  0 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  1 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  2 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  3 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  4 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  5 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
@@ -197,13 +197,13 @@ c: entity work.MatchEngineTop_L5 port map ( clk, reset, start, done, open, open,
   din( 0 ).nents( 58 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 59 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 60 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 61 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 62 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 63 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
-  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).widthData - 1 downto 0 ),
   din( 1 ).nents( 0 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents( 1 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
-  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).RAM_WIDTH - 1 downto 0 ) );
+  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 ) );
 end generate;
 gL6: if k >= 24 generate
 c: entity work.MatchEngineTop_L6 port map ( clk, reset, start, done, open, open, bxIn, bxOut, open,
-  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).widthData - 1 downto 0 ),
   din( 0 ).nents(  0 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  1 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  2 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  3 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents(  4 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents(  5 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
@@ -236,9 +236,9 @@ c: entity work.MatchEngineTop_L6 port map ( clk, reset, start, done, open, open,
   din( 0 ).nents( 58 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 59 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 60 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 61 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
   din( 0 ).nents( 62 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 63 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
-  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).widthData - 1 downto 0 ),
   din( 1 ).nents( 0 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents( 1 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
-  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).RAM_WIDTH - 1 downto 0 ) );
+  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 ) );
 end generate;
 
 gIn: for l in 0 to numInputs - 1 generate

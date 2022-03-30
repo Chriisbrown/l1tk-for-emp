@@ -132,10 +132,9 @@ constant widthAddr: natural := widthBX + widthFrames;
 constant widthNent: natural := widthFrames;
 constant widthData: natural := 84;
 
-constant NUM_MEM_BINS            : natural := 8;
-constant NUM_ENTRIES_PER_MEM_BINS: natural := 2 ** widthNent / NUM_MEM_BINS;
-
-constant numNent: natural := numPages * NUM_ENTRIES_PER_MEM_BINS;
+constant numBins     : natural := 8;
+constant widthNentBin: natural := widthNent - width( numBins );
+constant numNent     : natural := numPages * 2 ** widthNentBin;
 
 subtype r_dataDTC   is natural range 39 - 1 downto 0;
 subtype r_trackWord is natural range 84 - 1 downto 0;

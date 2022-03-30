@@ -89,6 +89,8 @@ constant numStubsPerLayer: natural := 4;  -- cut on number of stub per layer
 function init_rangeZHTzT return real;
 constant rangeZHTzT: real; -- range of variable zT
 
+function init_sectorCots return reals;
+constant sectorCots: reals( numSectorsEta - 1 downto 0 );
 
 -- KF
 
@@ -198,6 +200,16 @@ begin
     return res;
 end function;
 constant rangeZHTzT: real := init_rangeZHTzT;
+
+function init_sectorCots return reals is
+  variable res: reals( numSectorsEta - 1 downto 0 );
+begin
+  for k in res'range loop
+    res( k ) := ( sinh( etaBoundaries( k + 1 ) ) + sinh( etaBoundaries( k ) ) ) / 2.0;
+  end loop;
+  return res;
+end function;
+constant sectorCots: reals( numSectorsEta - 1 downto 0 ) := init_sectorCots;
 
 function init_numsProjectionLayers return naturals is
   variable res: naturals( 0 to numSeedTypes - 1 ) := ( others => 0 );

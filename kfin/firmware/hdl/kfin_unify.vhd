@@ -395,9 +395,9 @@ if rising_edge( clk ) then
   elsif sr( 3 ).valid = '1' then
     dout.valid <= '1';
     dout.r <= dsp.p( r_Sr );
-    if sint( dsp.p( r_Sr ) ) < int( ( psDiskLimitR( index ) - chosenRofPhi ), baseUr ) then
+    --if sint( dsp.p( r_Sr ) ) < int( ( psDiskLimitR( index ) - chosenRofPhi ), baseUr ) then
       dout.pst <= '1';
-    end if;
+    --end if;
   end if;
 
 end if;

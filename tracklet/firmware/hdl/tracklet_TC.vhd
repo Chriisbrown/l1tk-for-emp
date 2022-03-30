@@ -85,17 +85,17 @@ end if;
 end process;
 
 c: entity work.TrackletCalculator_L1L2F port map ( clk, reset, start, done, open, open, bxIn,
-  rout(  0 ).addr( config_memories_in(  0 ).widthAddr - 1 downto 0 ), rout(  0 ).valid, din(  0 ).data( config_memories_in(  0 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  1 ).addr( config_memories_in(  1 ).widthAddr - 1 downto 0 ), rout(  1 ).valid, din(  1 ).data( config_memories_in(  1 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  2 ).addr( config_memories_in(  2 ).widthAddr - 1 downto 0 ), rout(  2 ).valid, din(  2 ).data( config_memories_in(  2 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  3 ).addr( config_memories_in(  3 ).widthAddr - 1 downto 0 ), rout(  3 ).valid, din(  3 ).data( config_memories_in(  3 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  4 ).addr( config_memories_in(  4 ).widthAddr - 1 downto 0 ), rout(  4 ).valid, din(  4 ).data( config_memories_in(  4 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  5 ).addr( config_memories_in(  5 ).widthAddr - 1 downto 0 ), rout(  5 ).valid, din(  5 ).data( config_memories_in(  5 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  6 ).addr( config_memories_in(  6 ).widthAddr - 1 downto 0 ), rout(  6 ).valid, din(  6 ).data( config_memories_in(  6 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  7 ).addr( config_memories_in(  7 ).widthAddr - 1 downto 0 ), rout(  7 ).valid, din(  7 ).data( config_memories_in(  7 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  8 ).addr( config_memories_in(  8 ).widthAddr - 1 downto 0 ), rout(  8 ).valid, din(  8 ).data( config_memories_in(  8 ).RAM_WIDTH - 1 downto 0 ),
-  rout(  9 ).addr( config_memories_in(  9 ).widthAddr - 1 downto 0 ), rout(  9 ).valid, din(  9 ).data( config_memories_in(  9 ).RAM_WIDTH - 1 downto 0 ),
-  rout( 10 ).addr( config_memories_in( 10 ).widthAddr - 1 downto 0 ), rout( 10 ).valid, din( 10 ).data( config_memories_in( 10 ).RAM_WIDTH - 1 downto 0 ),
+  rout(  0 ).addr( config_memories_in(  0 ).widthAddr - 1 downto 0 ), rout(  0 ).valid, din(  0 ).data( config_memories_in(  0 ).widthData - 1 downto 0 ),
+  rout(  1 ).addr( config_memories_in(  1 ).widthAddr - 1 downto 0 ), rout(  1 ).valid, din(  1 ).data( config_memories_in(  1 ).widthData - 1 downto 0 ),
+  rout(  2 ).addr( config_memories_in(  2 ).widthAddr - 1 downto 0 ), rout(  2 ).valid, din(  2 ).data( config_memories_in(  2 ).widthData - 1 downto 0 ),
+  rout(  3 ).addr( config_memories_in(  3 ).widthAddr - 1 downto 0 ), rout(  3 ).valid, din(  3 ).data( config_memories_in(  3 ).widthData - 1 downto 0 ),
+  rout(  4 ).addr( config_memories_in(  4 ).widthAddr - 1 downto 0 ), rout(  4 ).valid, din(  4 ).data( config_memories_in(  4 ).widthData - 1 downto 0 ),
+  rout(  5 ).addr( config_memories_in(  5 ).widthAddr - 1 downto 0 ), rout(  5 ).valid, din(  5 ).data( config_memories_in(  5 ).widthData - 1 downto 0 ),
+  rout(  6 ).addr( config_memories_in(  6 ).widthAddr - 1 downto 0 ), rout(  6 ).valid, din(  6 ).data( config_memories_in(  6 ).widthData - 1 downto 0 ),
+  rout(  7 ).addr( config_memories_in(  7 ).widthAddr - 1 downto 0 ), rout(  7 ).valid, din(  7 ).data( config_memories_in(  7 ).widthData - 1 downto 0 ),
+  rout(  8 ).addr( config_memories_in(  8 ).widthAddr - 1 downto 0 ), rout(  8 ).valid, din(  8 ).data( config_memories_in(  8 ).widthData - 1 downto 0 ),
+  rout(  9 ).addr( config_memories_in(  9 ).widthAddr - 1 downto 0 ), rout(  9 ).valid, din(  9 ).data( config_memories_in(  9 ).widthData - 1 downto 0 ),
+  rout( 10 ).addr( config_memories_in( 10 ).widthAddr - 1 downto 0 ), rout( 10 ).valid, din( 10 ).data( config_memories_in( 10 ).widthData - 1 downto 0 ),
   din(  2 ).nents( 0 )( config_memories_in(  2 ).widthNent - 1 downto 0 ), din(  2 ).nents( 1 )( config_memories_in(  2 ).widthNent - 1 downto 0 ),
   din(  3 ).nents( 0 )( config_memories_in(  3 ).widthNent - 1 downto 0 ), din(  3 ).nents( 1 )( config_memories_in(  3 ).widthNent - 1 downto 0 ),
   din(  4 ).nents( 0 )( config_memories_in(  4 ).widthNent - 1 downto 0 ), din(  4 ).nents( 1 )( config_memories_in(  4 ).widthNent - 1 downto 0 ),
@@ -106,11 +106,11 @@ c: entity work.TrackletCalculator_L1L2F port map ( clk, reset, start, done, open
   din(  9 ).nents( 0 )( config_memories_in(  9 ).widthNent - 1 downto 0 ), din(  9 ).nents( 1 )( config_memories_in(  9 ).widthNent - 1 downto 0 ),
   din( 10 ).nents( 0 )( config_memories_in( 10 ).widthNent - 1 downto 0 ), din( 10 ).nents( 1 )( config_memories_in( 10 ).widthNent - 1 downto 0 ),
   bxOut, open,
-  writes( 4 ).addr( config_memories_out( 4 ).widthAddr - 1 downto 0 ), open, writes( 4 ).valid, writes( 4 ).data( config_memories_out( 4 ).RAM_WIDTH - 1 downto 0 ),
-  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).RAM_WIDTH - 1 downto 0 ),
-  writes( 1 ).addr( config_memories_out( 1 ).widthAddr - 1 downto 0 ), open, writes( 1 ).valid, writes( 1 ).data( config_memories_out( 1 ).RAM_WIDTH - 1 downto 0 ),
-  writes( 2 ).addr( config_memories_out( 2 ).widthAddr - 1 downto 0 ), open, writes( 2 ).valid, writes( 2 ).data( config_memories_out( 2 ).RAM_WIDTH - 1 downto 0 ),
-  writes( 3 ).addr( config_memories_out( 3 ).widthAddr - 1 downto 0 ), open, writes( 3 ).valid, writes( 3 ).data( config_memories_out( 3 ).RAM_WIDTH - 1 downto 0 )
+  writes( 4 ).addr( config_memories_out( 4 ).widthAddr - 1 downto 0 ), open, writes( 4 ).valid, writes( 4 ).data( config_memories_out( 4 ).widthData - 1 downto 0 ),
+  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 ),
+  writes( 1 ).addr( config_memories_out( 1 ).widthAddr - 1 downto 0 ), open, writes( 1 ).valid, writes( 1 ).data( config_memories_out( 1 ).widthData - 1 downto 0 ),
+  writes( 2 ).addr( config_memories_out( 2 ).widthAddr - 1 downto 0 ), open, writes( 2 ).valid, writes( 2 ).data( config_memories_out( 2 ).widthData - 1 downto 0 ),
+  writes( 3 ).addr( config_memories_out( 3 ).widthAddr - 1 downto 0 ), open, writes( 3 ).valid, writes( 3 ).data( config_memories_out( 3 ).widthData - 1 downto 0 )
 );
 
 gIn: for l in 0 to numInputs - 1 generate

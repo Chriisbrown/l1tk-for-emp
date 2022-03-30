@@ -14,8 +14,6 @@ src tracklet_FT.vhd
 src tracklet_memory.vhd
 
 src --vhdl2008 tf_lut.vhd
-src --vhdl2008 tf_mem.vhd
-src --vhdl2008 tf_mem_bin.vhd
 
 src tracklet_config_memory.vhd
 src tracklet_data_types.vhd

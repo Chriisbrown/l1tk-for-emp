@@ -6,27 +6,21 @@ use work.tracklet_data_types.all;
 package tracklet_config_memory is
 
 
-constant NUM_MEM_BINS            : natural := work.tracklet_config.NUM_MEM_BINS;
-constant NUM_ENTRIES_PER_MEM_BINS: natural := work.tracklet_config.NUM_ENTRIES_PER_MEM_BINS;
-constant INIT_FILE               : string  := "";
-constant INIT_HEX                : boolean := true;
-constant RAM_PERFORMANCE         : string  := "HIGH_PERFORMANCE";
-
-constant config_memory_IL36    : t_config_memory := ( tf_mem,      8, 7, 36, 2 );
-constant config_memory_AS36    : t_config_memory := ( tf_mem,     10, 7, 36, 8 );
-constant config_memory_VMSME16 : t_config_memory := ( tf_mem_bin, 10, 5, 16, 8 );
-constant config_memory_VMSME17 : t_config_memory := ( tf_mem_bin, 10, 5, 17, 8 );
-constant config_memory_VMSTE22 : t_config_memory := ( tf_mem,      8, 7, 22, 2 );
-constant config_memory_VMSTE16 : t_config_memory := ( tf_mem_bin,  8, 5, 16, 2 );
-constant config_memory_SP14    : t_config_memory := ( tf_mem,      8, 7, 14, 2 );
-constant config_memory_TPROJ60 : t_config_memory := ( tf_mem,      8, 7, 60, 2 );
-constant config_memory_TPROJ58 : t_config_memory := ( tf_mem,      8, 7, 58, 2 );
-constant config_memory_TPAR70  : t_config_memory := ( tf_mem,     10, 7, 70, 8 );
-constant config_memory_VMPROJ24: t_config_memory := ( tf_mem,      8, 7, 24, 2 );
-constant config_memory_AP60    : t_config_memory := ( tf_mem,     10, 7, 60, 8 );
-constant config_memory_AP58    : t_config_memory := ( tf_mem,     10, 7, 58, 8 );
-constant config_memory_CM14    : t_config_memory := ( tf_mem,      8, 7, 14, 2 );
-constant config_memory_FM52    : t_config_memory := ( tf_mem,      8, 7, 52, 2 );
+constant config_memory_IL36    : t_config_memory := ( 1,        8, 7, 36, rs_block );
+constant config_memory_AS36    : t_config_memory := ( 1,       10, 7, 36, rs_block );
+constant config_memory_VMSME16 : t_config_memory := ( numBins, 10, 5, 16, rs_block );
+constant config_memory_VMSME17 : t_config_memory := ( numBins, 10, 5, 17, rs_block );
+constant config_memory_VMSTE22 : t_config_memory := ( 1,        8, 7, 22, rs_block );
+constant config_memory_VMSTE16 : t_config_memory := ( numBins,  8, 5, 16, rs_block );
+constant config_memory_SP14    : t_config_memory := ( 1,        8, 7, 14, rs_block );
+constant config_memory_TPROJ60 : t_config_memory := ( 1,        8, 7, 60, rs_block );
+constant config_memory_TPROJ58 : t_config_memory := ( 1,        8, 7, 58, rs_block );
+constant config_memory_TPAR70  : t_config_memory := ( 1,       10, 7, 70, rs_block );
+constant config_memory_VMPROJ24: t_config_memory := ( 1,        8, 7, 24, rs_block );
+constant config_memory_AP60    : t_config_memory := ( 1,       10, 7, 60, rs_block );
+constant config_memory_AP58    : t_config_memory := ( 1,       10, 7, 58, rs_block );
+constant config_memory_CM14    : t_config_memory := ( 1,        8, 7, 14, rs_block );
+constant config_memory_FM52    : t_config_memory := ( 1,        8, 7, 52, rs_block );
 
 constant config_memories_VMR: t_config_memories( 0 to numVMR - 1 ) := ( 
   0      => config_memory_VMSTE22,

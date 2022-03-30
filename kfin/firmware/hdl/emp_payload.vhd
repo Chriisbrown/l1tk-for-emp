@@ -53,23 +53,23 @@ port (
 );
 end component;
 
-signal out_packet: std_logic_vector( numSeedTypes - 1 downto 0 ) := ( others => '0' );
+signal out_packet: std_logic_vector( numLayers + 1 - 1 downto 0 ) := ( others => '0' );
 signal out_din: t_channelsZHT( numSeedTypes - 1 downto 0 ) := ( others => nulll );
 signal out_dout: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
 component kfin_isolation_out
 port (
   clk: in std_logic;
-  out_packet: in std_logic_vector( numSeedTypes - 1 downto 0 );
+  out_packet: in std_logic_vector( numLayers + 1 - 1 downto 0 );
   out_din: in t_channelsZHT( numSeedTypes - 1 downto 0 );
   out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
 );
 end component;
 
 function conv( l: ldata ) return std_logic_vector is
-  variable s: std_logic_vector( numSeedTypes - 1 downto 0 );
+  variable s: std_logic_vector( numLayers + 1 - 1 downto 0 );
 begin
   for k in s'range loop
-    s( k ) := l( limitsChannelTB( k ) ).valid;
+    s( k ) := l( limitsChannelTB( numSeedTypes - 1 ) ).valid;
   end loop;
   return s;
 end;

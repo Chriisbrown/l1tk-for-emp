@@ -407,29 +407,59 @@ subtype r_Lz is natural range widthLz - baseShiftHz + 1 - 1 downto -baseShiftHz 
 subtype r_Ldz is natural range widthDspLzp - 1 downto -baseShiftLdz + 2;
 constant widthLdz: natural := max( widthDspLzp + baseShiftLdz - 1, widthSz ) + 1 - 2;
 
-constant widthDspFa: natural := 1 + widthLengthR + 1;
-constant widthDspFb: natural := widthZHTinv2R + 1;
-constant widthDspFc: natural := widthPitchOverR + 2;
-constant widthDspFd: natural := widthLengthR + 1;
-constant widthDspFp: natural := max( max( widthDspFa, widthDspFd ) + 1 + widthDspFb, widthDspFc ) + 1;
-type t_dspF is
+constant widthDspFdza: natural := widthLcot + 1;
+constant widthDspFdzb: natural := widthLr + 1;
+constant widthDspFdzc: natural := max( widthLzT  + 1 + baseShiftFz, widthLz + 1 ) + 1 + 1 + baseShiftFcot;
+constant widthDspFdzp: natural := max( widthDspFdza + widthDspFdzb, widthDspFdzc ) + 1;
+type t_dspFdZ is
 record
-  A : std_logic_vector( widthDspFa - 1 downto 0 );
-  B0: std_logic_vector( widthDspFb - 1 downto 0 );
-  B1: std_logic_vector( widthDspFb - 1 downto 0 );
-  C : std_logic_vector( widthDspFc - 1 downto 0 );
-  D : std_logic_vector( widthDspFd - 1 downto 0 );
-  P : std_logic_vector( widthDspFp - 1 downto 0 );
+  A: std_logic_vector( widthDspFdZa - 1 downto 0 );
+  B: std_logic_vector( widthDspFdZb - 1 downto 0 );
+  C: std_logic_vector( widthDspFdZc - 1 downto 0 );
+  P: std_logic_vector( widthDspFdZp - 1 downto 0 );
+end record;
+subtype r_FdZ is natural range widthDspFdzp - 1 downto 2;
+
+type t_ramFinvR is array ( 0 to 2 ** widthAddrBRAM18 - 1 ) of std_logic_vector( widthDspbu - 1 downto 0 );
+function init_ramFinvR return t_ramFinvR;
+subtype r_FinvRr is natural range widthLr - 1 downto unusedLSBFinvRr;
+
+constant widthDspFcota: natural := widthDspFdzp - 2;
+constant widthDspFcotb: natural := 1 + widthDspbu + 1;
+constant widthDspFcotc: natural := max( widthHcot  + 1, widthLcot + 1 + baseShiftFcot ) + 1 + 1 + baseShiftFinvR;
+constant widthDspFcotp: natural := max( widthDspFdza + widthDspFdzb, widthDspFdzc ) + 1;
+type t_dspFcot is
+record
+  A: std_logic_vector( widthDspFcota - 1 downto 0 );
+  B: std_logic_vector( widthDspFcotb - 1 downto 0 );
+  C: std_logic_vector( widthDspFcotc - 1 downto 0 );
+  P: std_logic_vector( widthDspFcotp - 1 downto 0 );
+end record;
+subtype r_Fcot is natural range usedMSBFcot + 2 + baseShiftFinvR + baseShiftFlutCot - 1 downto 2 + baseShiftFinvR + baseShiftFlutCot;
+
+constant widthDspFdPhia: natural := 1 + widthLengthR + 1;
+constant widthDspFdPhib: natural := widthZHTinv2R + 1;
+constant widthDspFdPhic: natural := widthPitchOverR + 2;
+constant widthDspFdPhid: natural := widthLengthR + 1;
+constant widthDspFdPhip: natural := max( max( widthDspFdPhia, widthDspFdPhid ) + 1 + widthDspFdPhib, widthDspFdPhic ) + 1;
+type t_dspFdPhi is
+record
+  A : std_logic_vector( widthDspFdPhia - 1 downto 0 );
+  B0: std_logic_vector( widthDspFdPhib - 1 downto 0 );
+  B1: std_logic_vector( widthDspFdPhib - 1 downto 0 );
+  C : std_logic_vector( widthDspFdPhic - 1 downto 0 );
+  D : std_logic_vector( widthDspFdPhid - 1 downto 0 );
+  P : std_logic_vector( widthDspFdPhip - 1 downto 0 );
 end record;
 
 subtype r_Fr is natural range widthZHTr - 1 downto unusedLSBFr;
 subtype r_FdPhi is natural range widthZHTdPhi + 2 - baseShiftF - 1 downto 2 - baseShiftF;
 
-type t_ramLengths is array ( 0 to 2 ** widthIndexLength - 1 ) of std_logic_vector( widthLengthZ + widthLengthR - 1 downto 0 );
+type t_ramLengths is array ( 0 to 2 ** widthAddrBRAM18 - 1 ) of std_logic_vector( widthLengthZ + widthLengthR - 1 downto 0 );
 function init_ramLengths return t_ramLengths;
 constant ramLengths: t_ramLengths;
 
-type t_ramPitchOverRs is array ( 0 to 2 ** widthIndexPitchOverR - 1 ) of std_logic_vector( widthPitchOverR - 1 downto 0 ); 
+type t_ramPitchOverRs is array ( 0 to 2 ** widthAddrBRAM18 - 1 ) of std_logic_vector( widthPitchOverR - 1 downto 0 ); 
 function init_ramPitchOverRs return t_ramPitchOverRs;
 constant ramPitchOverRs: t_ramPitchOverRs;
 
@@ -470,13 +500,13 @@ end function;
 
 function init_ramLengths return t_ramLengths is
   variable ram: t_ramLengths := ( others => ( others => '0' ) );
-  variable index: std_logic_vector( widthIndexLength - 1 downto 0 );
+  variable index: std_logic_vector( widthAddrBRAM18 - 1 downto 0 );
   variable barrel, ps, tilt: boolean;
   variable eta: natural;
   variable cot, lengthZ, lengthR: real;
 begin
   for k in ram'range loop
-    index := stdu( k, widthIndexLength );
+    index := stdu( k, widthAddrBRAM18 );
     barrel := bool( index( index'high ) );
     ps := bool( index( index'high - 1 ) );
     tilt := bool( index( index'high - 2 ) );
@@ -511,16 +541,32 @@ begin
   return ram;
 end function;
 constant ramLengths: t_ramLengths := init_ramLengths;
+
+function init_ramFinvR return t_ramFinvR is
+  variable ram: t_ramFinvR := ( others => ( others => '0' ) );
+  variable index: std_logic_vector( widthAddrBRAM18 - 1 downto 0 );
+  variable r, invR: real;
+begin
+  for k in ram'range loop
+    index := stdu( k, widthAddrBRAM18 );
+    r := ( real( sint( index ) ) + 0.5 ) * baseZHTr * 2.0 ** unusedLSBFinvRr + chosenRofPhi;
+    invR := 1.0 / r;
+    if invR < baseFinvR * 2.0 ** widthDspbu then
+      ram( k ) := stdu( invR / baseFinvR, widthDspbu );
+    end if;
+  end loop;
+  return ram;
+end function;
  
 function init_ramPitchOverRs return t_ramPitchOverRs is
   variable ram: t_ramPitchOverRs := ( others => ( others => '0' ) );
-  variable index: std_logic_vector( widthIndexPitchOverR - 1 downto 0 );
+  variable index: std_logic_vector( widthAddrBRAM18 - 1 downto 0 );
   variable ps: boolean;
   variable r: real;
   variable pitch: real;
 begin
   for k in ram'range loop
-    index := stdu( k, widthIndexPitchOverR );
+    index := stdu( k, widthAddrBRAM18 );
     ps := bool( index( index'high ) );
     r := ( real( sint( index( index'high - 1 downto 0 ) ) ) + 0.5 ) * baseZHTr * 2.0 ** unusedLSBFr + chosenRofPhi;
     pitch := pitch2S;

@@ -126,9 +126,9 @@ c: tf_lut generic map ( lut_file, lut_width, lut_depth, RAM_PERFORMANCE ) port m
 end generate;
 
 c: entity work.TrackletEngine_PS_PS port map ( clk, reset, start, done, open, open, bxIn,
-  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 0 ).addr( config_memories_in( 0 ).widthAddr - 1 downto 0 ), rout( 0 ).valid, din( 0 ).data( config_memories_in( 0 ).widthData - 1 downto 0 ),
   din( 0 ).nents( 0 )( config_memories_in( 0 ).widthNent - 1 downto 0 ), din( 0 ).nents( 1 )( config_memories_in( 0 ).widthNent - 1 downto 0 ),
-  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).RAM_WIDTH - 1 downto 0 ),
+  rout( 1 ).addr( config_memories_in( 1 ).widthAddr - 1 downto 0 ), rout( 1 ).valid, din( 1 ).data( config_memories_in( 1 ).widthData - 1 downto 0 ),
   din( 1 ).nents(  0 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents(  1 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
   din( 1 ).nents(  2 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents(  3 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
   din( 1 ).nents(  4 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents(  5 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
@@ -139,7 +139,7 @@ c: entity work.TrackletEngine_PS_PS port map ( clk, reset, start, done, open, op
   din( 1 ).nents( 14 )( config_memories_in( 1 ).widthNent - 1 downto 0 ), din( 1 ).nents( 15 )( config_memories_in( 1 ).widthNent - 1 downto 0 ),
   lutRead( 0 ).addr( 8 - 1 downto 0 ), lutRead( 0 ).valid, lutData( 0 ),
   lutRead( 1 ).addr( 8 - 1 downto 0 ), lutRead( 1 ).valid, lutData( 1 ), bxOut, open,
-  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).RAM_WIDTH - 1 downto 0 )
+  writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 )
 );
 
 gIn: for l in 0 to numInputs - 1 generate

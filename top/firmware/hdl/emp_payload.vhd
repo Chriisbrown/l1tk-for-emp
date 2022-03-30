@@ -19,7 +19,7 @@ port (
   clk_p: in std_logic;
   rst_loc: in std_logic_vector( N_REGION - 1 downto 0 );
   clken_loc: in std_logic_vector( N_REGION - 1 downto 0 );
-  ctrs: in ttc_stuff_array;
+  ctrs: in ttc_stuff_array( N_REGION - 1 downto 0 );
   d: in ldata( 4 * N_REGION - 1 downto 0 );
   ipb_out: out ipb_rbus;
   bc0: out std_logic;

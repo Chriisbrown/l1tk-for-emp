@@ -142,60 +142,90 @@ end;
 architecture rtl of format_stub is
 
 attribute ram_style: string;
-type t_word is
+type t_word0 is
+record
+  reset : std_logic;
+  valid : std_logic;
+  barrel: std_logic;
+  ps    : std_logic;
+  tilt  : std_logic;
+  inv2R : std_logic_vector( widthZHTinv2R - 1 downto 0 );
+  r     : std_logic_vector( widthZHTr     - 1 downto 0 );
+  phi   : std_logic_vector( widthZHTphi   - 1 downto 0 );
+  z     : std_logic_vector( widthZHTz     - 1 downto 0 );
+end record;
+type t_sr0 is array ( natural range <> ) of t_word0;
+function nulll return t_word0 is begin return ( '0', '0', '0', '0', '0', others => ( others => '0' ) ); end function;
+type t_word1 is
 record
   reset: std_logic;
   valid: std_logic;
   r    : std_logic_vector( widthZHTr   - 1 downto 0 );
   phi  : std_logic_vector( widthZHTphi - 1 downto 0 );
   z    : std_logic_vector( widthZHTz   - 1 downto 0 );
+  dz   : std_logic_vector( widthZHTdz  - 1 downto 0 );
 end record;
-type t_sr is array ( natural range <> ) of t_word;
-function nulll return t_word is begin return ( '0', '0', others => ( others => '0' ) ); end function;
-type t_dZs is array ( natural range <> ) of std_logic_vector( widthZHTdZ - 1 downto 0 );
-function f_index( track: t_trackR; stub: t_stubR ) return std_logic_vector is
-begin
-  if track.sector( widthLSectorEta - 1 ) = '1' then
-    return stub.barrel & stub.ps & stub.tilt & track.sector( widthLSectorEta - 1 - 1 downto 0 ) & track.cot;
-  end if;
-  return stub.barrel & stub.ps & stub.tilt & not track.sector( widthLSectorEta - 1 - 1 downto 0 ) & not track.cot;
-end function;
+type t_sr1 is array ( natural range <> ) of t_word1;
+function nulll return t_word1 is begin return ( '0', '0', others => ( others => '0' ) ); end function;
 
 -- step 1
 
-signal din: t_word := nulll;
-signal sr: t_sr( 4 downto 2 ) := ( others => nulll );
-signal dsp: t_dspF := ( others => ( others => '0' ) );
-signal pitchOverR: std_logic_vector( widthPitchOverR - 1 downto 0 ) := ( others => '0' );
-signal indexLength: std_logic_vector( widthIndexLength - 1 downto 0 ) := ( others => '0' );
-signal indexPitchOverR: std_logic_vector( widthIndexPitchOverR - 1 downto 0 ) := ( others => '0' );
-signal lengths: std_logic_vector( widthLengthZ + widthLengthR - 1 downto 0 ) := ( others => '0' );
-signal ramLengths: t_ramLengths := ramLengths;
-signal ramPitchOverRs: t_ramPitchOverRs := ramPitchOverRs;
-attribute ram_style of ramLengths, ramPitchOverRs: signal is "block";
+signal w0: t_word0 := nulll;
+signal sr0: t_sr0( 6 downto 2 ) := ( others => nulll );
+signal dspDz: t_dspFdz := ( others => ( others => '0' ) );
+signal indexInvR: std_logic_vector( widthAddrBRAM18 - 1 downto 0 ) := ( others => '0' );
+signal ramInvR: t_ramFinvR := init_ramFinvR;
+signal optionalInvR: std_logic_vector( widthDSPbu - 1 downto 0 ) := ( others => '0' );
+signal cotSector: std_logic_vector( widthHcot - 1 downto 0 ) := ( others => '0' );
+signal cotTrack: std_logic_vector( widthLcot - 1 downto 0 ) := ( others => '0' );
 
 -- step 2
 
-signal lengthZ: std_logic_vector( widthLengthZ - 1 downto 0 ) := ( others => '0' );
-signal lengthR: std_logic_vector( widthLengthR - 1 downto 0 ) := ( others => '0' );
-signal dZs: t_dZs( 4 downto 3 ) := ( others => ( others => '0' ) );
+signal invR: std_logic_vector( widthDSPbu - 1 downto 0 ) := ( others => '0' );
+signal cot: std_logic_vector( widthHcot + 1 - 1 downto 0 ) := ( others => '0' );
+
+-- step 3
+
+signal dspCot: t_dspFcot := ( others => ( others => '0' ) );
 
 -- step 4
+
+signal dspDphi: t_dspFdPhi := ( others => ( others => '0' ) );
+signal pitchOverR: std_logic_vector( widthAddrBRAM18 - 1 downto 0 ) := ( others => '0' );
+signal indexLength: std_logic_vector( widthAddrBRAM18 - 1 downto 0 ) := ( others => '0' );
+signal indexPitchOverR: std_logic_vector( widthAddrBRAM18 - 1 downto 0 ) := ( others => '0' );
+signal lengths: std_logic_vector( widthLengthZ + widthLengthR - 1 downto 0 ) := ( others => '0' );
+signal ramLengths: t_ramLengths := ramLengths;
+signal ramPitchOverRs: t_ramPitchOverRs := ramPitchOverRs;
+attribute ram_style of ramLengths, ramPitchOverRs, ramInvR: signal is "block";
+
+-- step 5
+
+signal lengthZ: std_logic_vector( widthLengthZ - 1 downto 0 ) := ( others => '0' );
+signal lengthR: std_logic_vector( widthLengthR - 1 downto 0 ) := ( others => '0' );
+signal w1: t_word1 := nulll;
+signal sr1: t_sr1( 8 downto 7 ) := ( others => nulll );
+
+-- step 7
 
 signal dout: t_stubZHT := nulll;
 
 begin
 
 --step 1
-din <= ( stub_din.reset, stub_din.valid, stub_din.r, stub_din.phi, stub_din.z );
-indexLength <= f_index( stub_track, stub_din );
-indexPitchOverR <= stub_din.ps & stub_din.r( r_Fr );
+w0 <= ( stub_din.reset, stub_din.valid, stub_din.barrel, stub_din.ps, stub_din.tilt, stub_track.inv2R, stub_din.r, stub_din.phi, stub_din.z );
+indexInvR <= stub_din.r( r_FinvRr );
 
--- step 2
+-- step 5
+indexLength <= sr0( 5 ).barrel & sr0( 5 ).ps & sr0( 5 ).tilt & abs( dspCot.p( r_Fcot ) );
+indexPitchOverR <= sr0( 5 ).ps & sr0( 5 ).r( r_Fr );
+
+-- step 6
 lengthZ <= lengths( widthLengthZ + widthLengthR - 1 downto widthLengthR );
 lengthR <= lengths(                widthLengthR - 1 downto            0 );
+w1 <= ( sr0( 6 ).reset, sr0( 6 ).valid, sr0( 6 ).r, sr0( 6 ).phi, sr0( 6 ).z, lengthZ );
 
---step 4
+--step 8
 stub_dout <= dout;
 
 process ( clk ) is
@@ -204,36 +234,60 @@ if rising_edge( clk ) then
 
   -- step 1
 
-  sr <= sr( sr'high - 1 downto sr'low ) & din;
-  
-  lengths <= ramLengths( uint( indexLength ) );
-  pitchOverR <= ramPitchOverRs( uint( indexPitchOverR ) );
-  dsp.b0 <= '0' & abs( stub_track.inv2R ) & '1';
+  sr0 <= sr0( sr0'high - 1 downto sr0'low ) & w0;
+  dspDz.a <= stub_track.cot & '1';
+  dspDz.b <= stds( chosenRofZ / baseLr, widthLr ) & '1';
+  dspDz.c <= ( ( stub_track.zT & '1' & ( baseShiftFz - 1 downto 0 => '0' ) ) + ( stub_din.z & '1' ) ) & ( baseShiftFcot downto 0 => '0' );
+  optionalInvR <= ramInvR( uint( indexInvR ) );
+  cotSector <= stds( sectorCots( uint( stub_track.sector( widthLSectorEta - 1 downto 0 ) ) ) / baseHcot, widthHcot );
+  cotTrack <= stub_track.cot;
 
   -- step 2
 
-  dZs <= dZs( dZs'high - 1 downto dZs'low ) & lengthZ;
-  dsp.b1 <= dsp.b0;
-  dsp.a <= '0' & lengthR & '1';
-  dsp.d <= stds( scattering / baseZHTr, widthLengthR ) & '1';
-  dsp.c <= pitchOverR & "10";
+  dspDz.p <= dspDz.a * dspDz.b + dspDz.c;
+  invR <= optionalInvR;
+  cot <= ( cotSector & '1' ) + ( cotTrack & '1' & ( baseShiftFcot - 2 downto 0 => '0' ) );
 
   -- step 3
 
-  dsp.p <= ( dsp.a + dsp.d ) * dsp.b1 + dsp.c;
+  dspCot.a <= dspDz.p( r_FdZ ) & '1';
+  dspCot.b <= '0' & invR & '1';
+  dspCot.c <= cot & '1' & ( baseShiftFinvR downto 0 => '0' );
 
   -- step 4
 
+  dspCot.p <= dspCot.a * dspCot.b + dspCot.c;
+
+  -- step 5
+
+  lengths <= ramLengths( uint( indexLength ) );
+  pitchOverR <= ramPitchOverRs( uint( indexPitchOverR ) );
+  dspDphi.b0 <= '0' & abs( sr0( 5 ).inv2R ) & '1';
+
+  -- step 6
+
+  sr1 <= sr1( sr1'high - 1 downto sr1'low ) & w1;
+  dspdPhi.b1 <= dspdPhi.b0;
+  dspdPhi.a <= '0' & lengthR & '1';
+  dspdPhi.d <= stds( scattering / baseZHTr, widthLengthR ) & '1';
+  dspdPhi.c <= pitchOverR & "10";
+
+  -- step 7
+
+  dspdPhi.p <= ( dspdPhi.a + dspdPhi.d ) * dspdPhi.b1 + dspdPhi.c;
+
+  -- step 8
+
   dout <= nulll;
-  if sr( 4 ).reset = '1' then
+  if sr1( 8 ).reset = '1' then
     dout.reset <= '1';
-  elsif  sr( 4 ).valid = '1' then
+  elsif  sr1( 8 ).valid = '1' then
     dout.valid <= '1';
-    dout.r <= sr( 4 ).r;
-    dout.phi <= sr( 4 ).phi;
-    dout.z <= sr( 4 ).z;
-    dout.dPhi <= incr( dsp.p( r_FdPhi ) );
-    dout.dz <= dZs( 4 );
+    dout.r <= sr1( 8 ).r;
+    dout.phi <= sr1( 8 ).phi;
+    dout.z <= sr1( 8 ).z;
+    dout.dPhi <= incr( dspdPhi.p( r_FdPhi ) );
+    dout.dz <= sr1( 8 ).dZ;
   end if;
 
 end if;
