@@ -138,10 +138,11 @@ constant widthRr    : natural := widthLr;
 constant widthRphi  : natural := widthLphi;
 constant widthRz    : natural := widthLz;
 
-constant baseFinvR: real := 2.0 ** ( width( baseLr / trackerInnerRadius ) - widthDspbu ) / baseLr;
+constant baseFinvR: real := 2.0 ** ( integer( ceil( log2( baseLr / trackerInnerRadiusTB ) ) ) - widthDspbu ) / baseLr;
 constant baseShiftFz   : integer := width( baseLzT / baseLz );
 constant baseShiftFcot : integer := width( baseLz / baseLR / baseLcot );
 constant baseShiftFinvR: integer := width( baseHcot / baseFinvR / baseLcot / baseLr );
+constant baseShiftLcot : integer := width( baseLcot / baseHcot );
 
 constant unusedLSBFinvRr: natural := widthZHTr - widthAddrBRAM18;
 constant usedMSBFcot: natural := widthAddrBRAM18 - 3;
@@ -150,12 +151,11 @@ constant baseShiftFlutCot: integer := usedMSBFcot - width( maxCot / baseLCot );
 
 constant baseF: real := baseZHTinv2R * baseZHTr;
 constant baseShiftF: integer := integer( floor( log2( baseF / baseZHTphi ) ) );
-constant maxPitchOverR: real := pitchPS / trackerInnerRadius;
+constant maxPitchOverR: real := pitchPS / trackerInnerRadiusTB;
 constant widthPitchOverR: natural := width( maxPitchOverR / baseF ) + 1;
 constant widthLengthZ: natural := width( maxdZ / baseZHTz );
 constant widthLengthR: natural := width( length2S / baseZHTr );
 constant widthFcot: natural := width( 2.0 * maxCot / baseZHTcot );
-constant widthFcotCor: natural := widthDspbu;
 
 constant unusedLSBFr: natural := widthZHTr - ( widthAddrBRAM18 - 1 );
 

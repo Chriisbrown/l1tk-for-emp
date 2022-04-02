@@ -1,12 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use work.hybrid_tools.all;
-use work.hybrid_config.all;
-use work.hybrid_data_formats.all;
 use work.tracklet_config.all;
-use work.tracklet_config_memory.all;
 use work.tracklet_data_types.all;
-
 
 entity tracklet_TE is
 port (
@@ -18,22 +13,66 @@ port (
 );
 end;
 
-
-
 architecture rtl of tracklet_TE is
 
-
-component tracklet_memory
-generic (
-  index: natural
-);
+signal process_din: t_datas( numInputsTE  - 1 downto 0 ) := ( others => nulll );
+signal process_rout: t_reads( numInputsTE  - 1 downto 0 ) := ( others => nulll );
+signal process_dout: t_writes( numOutputsTE  - 1 downto 0 ) := ( others => nulll );
+component TE_process
 port (
   clk: in std_logic;
-  memory_din: in t_write;
-  memory_read: in t_read;
-  memory_dout: out t_data
+  process_din: in t_datas( numInputsTE  - 1 downto 0 );
+  process_rout: out t_reads( numInputsTE  - 1 downto 0 );
+  process_dout: out t_writes( numOutputsTE  - 1 downto 0 )
 );
 end component;
+
+signal memories_din: t_writes( numOutputsTE  - 1 downto 0 ) := ( others => nulll );
+signal memories_rin: t_reads( numOutputsTE  - 1 downto 0 ) := ( others => nulll );
+signal memories_dout: t_datas( numOutputsTE  - 1 downto 0 ) := ( others => nulll );
+component TE_memories
+port (
+  clk: in std_logic;
+  memories_din: in t_writes( numOutputsTE  - 1 downto 0 );
+  memories_rin: in t_reads( numOutputsTE  - 1 downto 0 );
+  memories_dout: out t_datas( numOutputsTE  - 1 downto 0 )
+);
+end component;
+
+begin
+
+process_din <= te_din;
+memories_din <= process_dout;
+memories_rin <= te_rin;
+
+te_rout <= process_rout;
+te_dout <= memories_dout;
+
+cP: TE_process port map ( clk, process_din, process_rout, process_dout );
+
+cM: TE_memories port map ( clk, memories_din, memories_rin, memories_dout );
+
+end;
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.tracklet_config.all;
+use work.tracklet_config_memory.all;
+use work.tracklet_data_types.all;
+
+entity TE_process is
+port (
+  clk: in std_logic;
+  process_din: in t_datas( numInputsTE  - 1 downto 0 );
+  process_rout: out t_reads( numInputsTE  - 1 downto 0 );
+  process_dout: out t_writes( numOutputsTE  - 1 downto 0 )
+);
+end;
+
+architecture rtl of TE_process is
 
 constant lut_width: integer := 1;
 constant lut_depth: integer := 256;
@@ -54,9 +93,7 @@ port (
 );
 end component;
 
-
 begin
-
 
 g: for k in 0 to numTE - 1 generate
 
@@ -81,17 +118,18 @@ signal writes: t_writes( numOutputs - 1 downto 0 ) := ( others => nulll );
 
 begin
 
-din <= te_din( offsetIn + numInputs - 1 downto offsetIn );
-te_rout( offsetIn + numInputs - 1 downto offsetIn ) <= rout;
+din <= process_din( offsetIn + numInputs - 1 downto offsetIn );
+process_rout( offsetIn + numInputs - 1 downto offsetIn ) <= rout;
+process_dout( offsetOut + numOutputs - 1 downto offsetOut ) <= writes;
 
-start <= te_din( offsetIn ).start;
-bxIn <= te_din( offsetIn ).bx;
+start <= process_din( offsetIn ).start;
+bxIn <= process_din( offsetIn ).bx;
 
 process ( clk ) is
 begin
 if rising_edge( clk ) then
 
-  reset <= te_din( offsetIn ).reset;
+  reset <= process_din( offsetIn ).reset;
   counter <= incr( counter );
   if enable = '1' and uint( counter ) = numFrames - 1 then
     enable <= '0';
@@ -106,6 +144,16 @@ if rising_edge( clk ) then
 
 end if;
 end process;
+
+gIn: for l in 0 to numInputs - 1 generate
+rout( l ).start <= start;
+end generate;
+
+gOut: for l in 0 to numOutputs - 1 generate
+writes( l ).reset <= reset;
+writes( l ).start <= done or enable;
+writes( l ).bx <= bxOut;
+end generate;
 
 gLUT: for l in 0 to 2 - 1 generate
 
@@ -142,11 +190,43 @@ c: entity work.TrackletEngine_PS_PS port map ( clk, reset, start, done, open, op
   writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 )
 );
 
-gIn: for l in 0 to numInputs - 1 generate
-rout( l ).start <= start;
 end generate;
 
-gOut: for l in 0 to numOutputs - 1 generate
+end;
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use work.tracklet_config.all;
+use work.tracklet_data_types.all;
+
+entity TE_memories is
+port (
+  clk: in std_logic;
+  memories_din: in t_writes( numOutputsTE  - 1 downto 0 );
+  memories_rin: in t_reads( numOutputsTE  - 1 downto 0 );
+  memories_dout: out t_datas( numOutputsTE  - 1 downto 0 )
+);
+end;
+
+architecture rtl of TE_memories is
+
+component tracklet_memory
+generic (
+  index: natural
+);
+port (
+  clk: in std_logic;
+  memory_din: in t_write;
+  memory_read: in t_read;
+  memory_dout: out t_data
+);
+end component;
+
+begin
+
+
+g: for k in 0 to numOutputsTE - 1 generate
 
 signal memory_din: t_write := nulll;
 signal memory_read: t_read := nulll;
@@ -154,21 +234,12 @@ signal memory_dout: t_data := nulll;
 
 begin
 
-writes( l ).reset <= reset;
-writes( l ).start <= done or enable;
-writes( l ).bx <= bxOut;
+memory_din <= memories_din( k );
+memory_read <= memories_rin( k );
+memories_dout( k ) <= memory_dout;
 
-memory_din <= writes( l );
-
-memory_read <= te_rin( offsetOut + l );
-
-te_dout( offsetOut + l ) <= memory_dout;
-
-c: tracklet_memory generic map ( sumMemOutVMR + offsetOut + l ) port map ( clk, memory_din, memory_read, memory_dout );
+c: tracklet_memory generic map ( sumMemOutVMR + k ) port map ( clk, memory_din, memory_read, memory_dout );
 
 end generate;
-
-end generate;
-
 
 end;

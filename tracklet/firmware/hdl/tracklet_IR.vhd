@@ -1,12 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use work.hybrid_tools.all;
-use work.hybrid_config.all;
-use work.hybrid_data_formats.all;
 use work.tracklet_config.all;
 use work.tracklet_data_types.all;
-use work.tracklet_config_memory.all;
-
 
 entity tracklet_IR is
 port (
@@ -18,30 +13,72 @@ port (
 );
 end;
 
-
-
 architecture rtl of tracklet_IR is
 
-
-component tracklet_memory is
-generic (
-  index: natural
-);
+signal process_din: t_datas( numInputsIR  - 1 downto 0 ) := ( others => nulll );
+signal process_rout: t_reads( numInputsIR  - 1 downto 0 ) := ( others => nulll );
+signal process_dout: t_writes( numOutputsIR  - 1 downto 0 ) := ( others => nulll );
+component IR_process
 port (
   clk: in std_logic;
-  memory_din: in t_write;
-  memory_read: in t_read;
-  memory_dout: out t_data
+  process_din: in t_datas( numInputsIR  - 1 downto 0 );
+  process_rout: out t_reads( numInputsIR  - 1 downto 0 );
+  process_dout: out t_writes( numOutputsIR  - 1 downto 0 )
 );
 end component;
 
-signal notEmpty: std_logic := '1';
-
+signal memories_din: t_writes( numOutputsIR  - 1 downto 0 ) := ( others => nulll );
+signal memories_rin: t_reads( numOutputsIR  - 1 downto 0 ) := ( others => nulll );
+signal memories_dout: t_datas( numOutputsIR  - 1 downto 0 ) := ( others => nulll );
+component IR_memories
+port (
+  clk: in std_logic;
+  memories_din: in t_writes( numOutputsIR  - 1 downto 0 );
+  memories_rin: in t_reads( numOutputsIR  - 1 downto 0 );
+  memories_dout: out t_datas( numOutputsIR  - 1 downto 0 )
+);
+end component;
 
 begin
 
+process_din <= ir_din;
+ir_rout <= process_rout;
 
-ir_rout <= ( others => nulll );
+memories_din <= process_dout;
+memories_rin <= ir_rin;
+ir_dout <= memories_dout;
+
+cP: IR_process port map ( clk, process_din, process_rout, process_dout );
+
+cM: IR_memories port map ( clk, memories_din, memories_rin, memories_dout );
+
+end;
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.tracklet_config.all;
+use work.tracklet_data_types.all;
+use work.tracklet_config_memory.all;
+
+entity IR_process is
+port (
+  clk: in std_logic;
+  process_din: in t_datas( numInputsIR  - 1 downto 0 );
+  process_rout: out t_reads( numInputsIR  - 1 downto 0 );
+  process_dout: out t_writes( numOutputsIR  - 1 downto 0 )
+);
+end;
+
+architecture rtl of IR_process is
+
+signal notEmpty: std_logic := '1';
+
+begin
+
+process_rout <= ( others => nulll );
 
 g: for k in 0 to numIR - 1 generate
 
@@ -59,15 +96,17 @@ signal writes: t_writes( numOutputs - 1 downto 0 ) := ( others => nulll );
 
 begin
 
-start <= ir_din( k ).start;
-bxIn <= ir_din( k ).bx;
-data  <= ir_din( k ).data( r_dataDTC );
+process_dout( offsetOut + numOutputs - 1 downto offsetOut ) <= writes;
+
+start <= process_din( k ).start;
+bxIn <= process_din( k ).bx;
+data  <= process_din( k ).data( r_dataDTC );
 
 process ( clk ) is
 begin
 if rising_edge( clk ) then
 
-  reset <= ir_din( k ).reset;
+  reset <= process_din( k ).reset;
   counter <= incr( counter );
   if enable = '1' and uint( counter ) = numFrames - 1 then
     enable <= '0';
@@ -82,6 +121,12 @@ if rising_edge( clk ) then
 
 end if;
 end process;
+
+gOut: for l in 0 to numOutputs - 1 generate
+writes( l ).reset <= reset;
+writes( l ).start <= done or enable;
+writes( l ).bx <= bxOut;
+end generate;
 
 g0: if k = 0 generate
 c: entity work.InputRouterTop_IR_DTC_PS10G_1_A port map ( clk, reset, start, done, open, open, data, notEmpty, open,
@@ -187,7 +232,42 @@ c: entity work.InputRouterTop_IR_DTC_2S_4_B port map ( clk, reset, start, done, 
   open, writes( 0 ).valid, writes( 0 ).data( config_memories( 0 ).widthData - 1 downto 0 ) );
 end generate;
 
-gOut: for l in 0 to numOutputs - 1 generate
+end generate;
+
+end;
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use work.tracklet_config.all;
+use work.tracklet_data_types.all;
+
+entity IR_memories is
+port (
+  clk: in std_logic;
+  memories_din: in t_writes( numOutputsIR  - 1 downto 0 );
+  memories_rin: in t_reads( numOutputsIR  - 1 downto 0 );
+  memories_dout: out t_datas( numOutputsIR  - 1 downto 0 )
+);
+end;
+
+architecture rtl of IR_memories is
+
+component tracklet_memory is
+generic (
+  index: natural
+);
+port (
+  clk: in std_logic;
+  memory_din: in t_write;
+  memory_read: in t_read;
+  memory_dout: out t_data
+);
+end component;
+
+begin
+
+g: for k in 0 to numOutputsIR - 1 generate
 
 signal memory_din: t_write := nulll;
 signal memory_read: t_read := nulll;
@@ -195,19 +275,11 @@ signal memory_dout: t_data := nulll;
 
 begin
 
-writes( l ).reset <= reset;
-writes( l ).start <= done or enable;
-writes( l ).bx <= bxOut;
+memory_din <= memories_din( k );
+memory_read <= memories_rin( k );
+memories_dout( k ) <= memory_dout;
 
-memory_din <= writes( l );
-
-memory_read <= ir_rin( offsetOut + l );
-
-ir_dout( offsetOut + l ) <= memory_dout;
-
-c: tracklet_memory generic map ( offsetOut + l ) port map ( clk, memory_din, memory_read, memory_dout );
-
-end generate;
+c: tracklet_memory generic map ( k ) port map ( clk, memory_din, memory_read, memory_dout );
 
 end generate;
 

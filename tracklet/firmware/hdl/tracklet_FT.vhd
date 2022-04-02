@@ -18,21 +18,8 @@ port (
 end;
 
 
-
 architecture rtl of tracklet_FT is
 
-
-component tracklet_memory is
-generic (
-  index: natural
-);
-port (
-  clk: in std_logic;
-  memory_din: in t_write;
-  memory_read: in t_read;
-  memory_dout: out t_data
-);
-end component;
 
 signal notFull: std_logic := '1';
 

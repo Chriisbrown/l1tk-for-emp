@@ -1,12 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use work.hybrid_tools.all;
-use work.hybrid_config.all;
-use work.hybrid_data_formats.all;
 use work.tracklet_config.all;
-use work.tracklet_config_memory.all;
 use work.tracklet_data_types.all;
-
 
 entity tracklet_MC is
 port (
@@ -18,26 +13,68 @@ port (
 );
 end;
 
-
-
 architecture rtl of tracklet_MC is
 
-
-component tracklet_memory is
-generic (
-  index: natural
-);
+signal process_din: t_datas( numInputsMC  - 1 downto 0 ) := ( others => nulll );
+signal process_rout: t_reads( numInputsMC  - 1 downto 0 ) := ( others => nulll );
+signal process_dout: t_writes( numOutputsMC  - 1 downto 0 ) := ( others => nulll );
+component MC_process
 port (
   clk: in std_logic;
-  memory_din: in t_write;
-  memory_read: in t_read;
-  memory_dout: out t_data
+  process_din: in t_datas( numInputsMC  - 1 downto 0 );
+  process_rout: out t_reads( numInputsMC  - 1 downto 0 );
+  process_dout: out t_writes( numOutputsMC  - 1 downto 0 )
 );
 end component;
 
+signal memories_din: t_writes( numOutputsMC  - 1 downto 0 ) := ( others => nulll );
+signal memories_rin: t_reads( numOutputsMC  - 1 downto 0 ) := ( others => nulll );
+signal memories_dout: t_datas( numOutputsMC  - 1 downto 0 ) := ( others => nulll );
+component MC_memories
+port (
+  clk: in std_logic;
+  memories_din: in t_writes( numOutputsMC  - 1 downto 0 );
+  memories_rin: in t_reads( numOutputsMC  - 1 downto 0 );
+  memories_dout: out t_datas( numOutputsMC  - 1 downto 0 )
+);
+end component;
 
 begin
 
+process_din <= mc_din;
+memories_din <= process_dout;
+memories_rin <= mc_rin;
+
+mc_rout <= process_rout;
+mc_dout <= memories_dout;
+
+cP: MC_process port map ( clk, process_din, process_rout, process_dout );
+
+cM: MC_memories port map ( clk, memories_din, memories_rin, memories_dout );
+
+end;
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.tracklet_config.all;
+use work.tracklet_config_memory.all;
+use work.tracklet_data_types.all;
+
+entity MC_process is
+port (
+  clk: in std_logic;
+  process_din: in t_datas( numInputsMC  - 1 downto 0 );
+  process_rout: out t_reads( numInputsMC  - 1 downto 0 );
+  process_dout: out t_writes( numOutputsMC  - 1 downto 0 )
+);
+end;
+
+architecture rtl of MC_process is
+
+begin
 
 g: for k in 0 to numMC - 1 generate
 
@@ -58,17 +95,18 @@ signal writes: t_writes( numOutputs - 1 downto 0 ) := ( others => nulll );
 
 begin
 
-din <= mc_din( offsetIn + numInputs - 1 downto offsetIn );
-mc_rout( offsetIn + numInputs - 1 downto offsetIn ) <= rout;
+din <= process_din( offsetIn + numInputs - 1 downto offsetIn );
+process_rout( offsetIn + numInputs - 1 downto offsetIn ) <= rout;
+process_dout( offsetOut + numOutputs - 1 downto offsetOut ) <= writes;
 
-start <= mc_din( offsetIn ).start;
-bxIn <= mc_din( offsetIn ).bx;
+start <= process_din( offsetIn ).start;
+bxIn <= process_din( offsetIn ).bx;
 
 process ( clk ) is
 begin
 if rising_edge( clk ) then
 
-  reset <= mc_din( offsetIn ).reset;
+  reset <= process_din( offsetIn ).reset;
   counter <= incr( counter );
   if enable = '1' and uint( counter ) = numFrames - 1 then
     enable <= '0';
@@ -83,6 +121,16 @@ if rising_edge( clk ) then
 
 end if;
 end process;
+
+gIn: for l in 0 to numInputs - 1 generate
+rout( l ).start <= start;
+end generate;
+
+gOut: for l in 0 to numOutputs - 1 generate
+writes( l ).reset <= reset;
+writes( l ).start <= done or enable;
+writes( l ).bx <= bxOut;
+end generate;
 
 g0: if k = 0 generate
 c: entity work.MatchCalculator_L3PHIB port map ( clk, reset, start, done, open, open, bxIn,
@@ -177,11 +225,42 @@ c: entity work.MatchCalculator_L6PHIB port map ( clk, reset, start, done, open, 
   writes( 0 ).addr( config_memories_out( 0 ).widthAddr - 1 downto 0 ), open, writes( 0 ).valid, writes( 0 ).data( config_memories_out( 0 ).widthData - 1 downto 0 ) );
 end generate;
 
-gIn: for l in 0 to numInputs - 1 generate
-rout( l ).start <= start;
 end generate;
 
-gOut: for l in 0 to numOutputs - 1 generate
+end;
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use work.tracklet_config.all;
+use work.tracklet_data_types.all;
+
+entity MC_memories is
+port (
+  clk: in std_logic;
+  memories_din: in t_writes( numOutputsMC  - 1 downto 0 );
+  memories_rin: in t_reads( numOutputsMC  - 1 downto 0 );
+  memories_dout: out t_datas( numOutputsMC  - 1 downto 0 )
+);
+end;
+
+architecture rtl of MC_memories is
+
+component tracklet_memory is
+generic (
+  index: natural
+);
+port (
+  clk: in std_logic;
+  memory_din: in t_write;
+  memory_read: in t_read;
+  memory_dout: out t_data
+);
+end component;
+
+begin
+
+g: for k in 0 to numOutputsMC - 1 generate
 
 signal memory_din: t_write := nulll;
 signal memory_read: t_read := nulll;
@@ -189,21 +268,12 @@ signal memory_dout: t_data := nulll;
 
 begin
 
-writes( l ).reset <= reset;
-writes( l ).start <= done or enable;
-writes( l ).bx <= bxOut;
+memory_din <= memories_din( k );
+memory_read <= memories_rin( k );
+memories_dout( k ) <= memory_dout;
 
-memory_din <= writes( l );
-
-memory_read <= mc_rin( offsetOut + l );
-
-mc_dout( offsetOut + l ) <= memory_dout;
-
-c: tracklet_memory generic map ( sumMemOutME + offsetOut + l ) port map ( clk, memory_din, memory_read, memory_dout );
+c: tracklet_memory generic map ( sumMemOutME + k ) port map ( clk, memory_din, memory_read, memory_dout );
 
 end generate;
-
-end generate;
-
 
 end;

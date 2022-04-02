@@ -88,9 +88,9 @@ end function;
 -- step 1
 
 signal din: t_trackZHT := nulll;
-signal sr: t_tracksZHT( 4 downto 2 ) := ( others => nulll );
+signal sr: t_tracksZHT( 8 downto 2 ) := ( others => nulll );
 
--- step 4
+-- step 8
 
 signal dout: t_trackZHT := nulll;
 
@@ -99,7 +99,7 @@ begin
 -- step 1
 din <= conv( track_din );
 
--- step 4
+-- step 8
 track_dout <= dout;
 
 process ( clk ) is
@@ -110,9 +110,9 @@ if rising_edge( clk ) then
 
   sr <= sr( sr'high - 1 downto sr'low ) & din;
 
-  -- step 4
+  -- step 8
 
-  dout <= sr( 4 );
+  dout <= sr( 8 );
 
 end if;
 end process;
@@ -182,7 +182,7 @@ signal cotTrack: std_logic_vector( widthLcot - 1 downto 0 ) := ( others => '0' )
 -- step 2
 
 signal invR: std_logic_vector( widthDSPbu - 1 downto 0 ) := ( others => '0' );
-signal cot: std_logic_vector( widthHcot + 1 - 1 downto 0 ) := ( others => '0' );
+signal cot: std_logic_vector( widthHcot + 2 - 1 downto 0 ) := ( others => '0' );
 
 -- step 3
 
@@ -191,7 +191,7 @@ signal dspCot: t_dspFcot := ( others => ( others => '0' ) );
 -- step 4
 
 signal dspDphi: t_dspFdPhi := ( others => ( others => '0' ) );
-signal pitchOverR: std_logic_vector( widthAddrBRAM18 - 1 downto 0 ) := ( others => '0' );
+signal pitchOverR: std_logic_vector( widthPitchOverR - 1 downto 0 ) := ( others => '0' );
 signal indexLength: std_logic_vector( widthAddrBRAM18 - 1 downto 0 ) := ( others => '0' );
 signal indexPitchOverR: std_logic_vector( widthAddrBRAM18 - 1 downto 0 ) := ( others => '0' );
 signal lengths: std_logic_vector( widthLengthZ + widthLengthR - 1 downto 0 ) := ( others => '0' );
@@ -225,7 +225,7 @@ lengthZ <= lengths( widthLengthZ + widthLengthR - 1 downto widthLengthR );
 lengthR <= lengths(                widthLengthR - 1 downto            0 );
 w1 <= ( sr0( 6 ).reset, sr0( 6 ).valid, sr0( 6 ).r, sr0( 6 ).phi, sr0( 6 ).z, lengthZ );
 
---step 8
+----step 8
 stub_dout <= dout;
 
 process ( clk ) is
@@ -244,15 +244,15 @@ if rising_edge( clk ) then
 
   -- step 2
 
-  dspDz.p <= dspDz.a * dspDz.b + dspDz.c;
+  dspDz.p <= dspDz.c - dspDz.a * dspDz.b;
   invR <= optionalInvR;
-  cot <= ( cotSector & '1' ) + ( cotTrack & '1' & ( baseShiftFcot - 2 downto 0 => '0' ) );
+  cot <= ( cotSector & '1' ) + ( cotTrack & '1' & ( baseShiftLcot - 1 downto 0 => '0' ) );
 
   -- step 3
 
   dspCot.a <= dspDz.p( r_FdZ ) & '1';
   dspCot.b <= '0' & invR & '1';
-  dspCot.c <= cot & '1' & ( baseShiftFinvR downto 0 => '0' );
+  dspCot.c <= cot & ( baseShiftFinvR downto 0 => '0' );
 
   -- step 4
 
@@ -270,7 +270,7 @@ if rising_edge( clk ) then
   dspdPhi.b1 <= dspdPhi.b0;
   dspdPhi.a <= '0' & lengthR & '1';
   dspdPhi.d <= stds( scattering / baseZHTr, widthLengthR ) & '1';
-  dspdPhi.c <= pitchOverR & "10";
+  dspdPhi.c <= '0' & pitchOverR & "10";
 
   -- step 7
 

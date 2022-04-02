@@ -266,7 +266,7 @@ use work.hybrid_data_types.all;
 entity kfin_isolation_out is
 port (
   clk: in std_logic;
-  out_packet: in std_logic_vector( numLayers + 1 - 1 downto 0 );
+  out_packet: in std_logic;
   out_din: in t_channelsZHT( numSeedTypes - 1 downto 0 );
   out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
 );
@@ -296,7 +296,7 @@ signal node_dout: ldata( numLayers + 1 - 1 downto 0 ) := ( others => ( ( others 
 
 begin
 
-node_packet <= out_packet;
+node_packet <= ( others => out_packet );
 node_din <= out_din( k );
 dout( ( k + 1 ) * ( numLayers + 1 ) - 1 downto k * ( numLayers + 1 ) ) <= node_dout;
 

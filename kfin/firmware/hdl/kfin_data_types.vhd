@@ -424,10 +424,10 @@ type t_ramFinvR is array ( 0 to 2 ** widthAddrBRAM18 - 1 ) of std_logic_vector( 
 function init_ramFinvR return t_ramFinvR;
 subtype r_FinvRr is natural range widthLr - 1 downto unusedLSBFinvRr;
 
-constant widthDspFcota: natural := widthDspFdzp - 2;
+constant widthDspFcota: natural := widthDspFdzp - 2 + 1;
 constant widthDspFcotb: natural := 1 + widthDspbu + 1;
-constant widthDspFcotc: natural := max( widthHcot  + 1, widthLcot + 1 + baseShiftFcot ) + 1 + 1 + baseShiftFinvR;
-constant widthDspFcotp: natural := max( widthDspFdza + widthDspFdzb, widthDspFdzc ) + 1;
+constant widthDspFcotc: natural := max( widthHcot  + 2, widthLcot + 1 + baseShiftLcot ) + 1 + baseShiftFinvR;
+constant widthDspFcotp: natural := max( widthDspFcota + widthDspFcotb, widthDspFcotc ) + 1;
 type t_dspFcot is
 record
   A: std_logic_vector( widthDspFcota - 1 downto 0 );
@@ -435,11 +435,11 @@ record
   C: std_logic_vector( widthDspFcotc - 1 downto 0 );
   P: std_logic_vector( widthDspFcotp - 1 downto 0 );
 end record;
-subtype r_Fcot is natural range usedMSBFcot + 2 + baseShiftFinvR + baseShiftFlutCot - 1 downto 2 + baseShiftFinvR + baseShiftFlutCot;
+subtype r_Fcot is natural range 1 + usedMSBFcot + 2 + baseShiftFinvR + baseShiftLcot - baseShiftFlutCot - 1 downto 2 + baseShiftFinvR + baseShiftLcot - baseShiftFlutCot;
 
 constant widthDspFdPhia: natural := 1 + widthLengthR + 1;
 constant widthDspFdPhib: natural := widthZHTinv2R + 1;
-constant widthDspFdPhic: natural := widthPitchOverR + 2;
+constant widthDspFdPhic: natural := 1 + widthPitchOverR + 2;
 constant widthDspFdPhid: natural := widthLengthR + 1;
 constant widthDspFdPhip: natural := max( max( widthDspFdPhia, widthDspFdPhid ) + 1 + widthDspFdPhib, widthDspFdPhic ) + 1;
 type t_dspFdPhi is
@@ -502,7 +502,6 @@ function init_ramLengths return t_ramLengths is
   variable ram: t_ramLengths := ( others => ( others => '0' ) );
   variable index: std_logic_vector( widthAddrBRAM18 - 1 downto 0 );
   variable barrel, ps, tilt: boolean;
-  variable eta: natural;
   variable cot, lengthZ, lengthR: real;
 begin
   for k in ram'range loop
@@ -510,10 +509,7 @@ begin
     barrel := bool( index( index'high ) );
     ps := bool( index( index'high - 1 ) );
     tilt := bool( index( index'high - 2 ) );
-    eta := uint( index( index'high - 3 downto index'high - 2 - widthLSectorEta + 1 ) );
-    cot := ( real( sint( index( index'high - widthLSectorEta + 1 - 3 downto 0 ) ) ) + 0.5 ) * baseZHTcot;
-    cot := cot + ( sinh( etaBoundaries( numSectorsEta / 2 + eta + 1 ) ) +  sinh( etaBoundaries( numSectorsEta / 2 + eta ) ) ) / 2.0;
-    cot := abs( cot );
+    cot := ( real( uint( index( index'high - 3 downto 0 ) ) ) + 0.5 ) * baseZHTcot * 2.0 ** (-baseShiftFlutCot);
     lengthZ := length2S;
     if ps then
       lengthZ := lengthPS;
@@ -551,7 +547,7 @@ begin
     index := stdu( k, widthAddrBRAM18 );
     r := ( real( sint( index ) ) + 0.5 ) * baseZHTr * 2.0 ** unusedLSBFinvRr + chosenRofPhi;
     invR := 1.0 / r;
-    if invR < baseFinvR * 2.0 ** widthDspbu then
+    if r > 0.0 and invR < baseFinvR * 2.0 ** widthDspbu then
       ram( k ) := stdu( invR / baseFinvR, widthDspbu );
     end if;
   end loop;
@@ -573,8 +569,8 @@ begin
     if ps then
       pitch := pitchPS;
     end if;
-    if pitch / r < baseZHTphi * 2.0 ** ( baseShiftF + widthPitchOverR ) then
-      ram( k ) := stds( pitch / r / baseZHTphi / 2.0 ** baseShiftF, widthPitchOverR );
+    if r > 0.0 and pitch / r < baseZHTphi * 2.0 ** ( baseShiftF + widthPitchOverR ) then
+      ram( k ) := stdu( pitch / r / baseZHTphi / 2.0 ** baseShiftF, widthPitchOverR );
     end if;
   end loop;
   return ram;
