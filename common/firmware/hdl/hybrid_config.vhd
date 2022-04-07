@@ -67,7 +67,7 @@ constant numSectorsPhi: natural :=   2;   -- number of phi sectors within a regi
 constant numSectorsEta: natural :=  16;   -- number of eta sectors within a region
 constant rangeGPz     : real    := 160.0; -- range of stub z residual w.r.t. sector center which needs to be covered
 constant numSectors   : natural := numSectorsPhi * numSectorsEta; --total numbers of sectors within a region
-constant etaBoundaries: reals( 0 to numSectorsEta ) := ( -2.50, -2.08, -1.68, -1.26, -0.90, -0.62, -0.41, -0.20, 0.0, 0.20, 0.41, 0.62, 0.90, 1.26, 1.68, 2.08, 2.50 ); -- eta boundaries defining eta sectors
+constant etaBoundaries: reals( 0 to numSectorsEta ) := ( -2.50, -2.23, -1.88, -1.36, -0.90, -0.62, -0.41, -0.20, 0.0, 0.20, 0.41, 0.62, 0.90, 1.36, 1.88, 2.23, 2.50 ); -- eta boundaries defining eta sectors
 
 -- HT
 
@@ -91,14 +91,6 @@ constant rangeZHTzT: real; -- range of variable zT
 
 function init_sectorCots return reals;
 constant sectorCots: reals( numSectorsEta - 1 downto 0 );
-
--- KF
-
-constant rangeFactor: real    := 2.0; -- search window of each track parameter in initial uncertainties
-constant maxStubs   : natural := 4;   -- maximum number of  layers added to a track
-constant minLayersKF: natural := 4;   -- required number of stub layers to form a track
-constant maxLayersKF: natural := 4;   -- maximum number of  layers added to a track
-constant numNodesKF : natural := 2;   -- number of KF workes
 
 -- PP
 
@@ -178,6 +170,14 @@ function init_limitsChannelTB return naturals;
 constant limitsChannelTB: naturals( 0 to numSeedTypes );
 
 constant numLinksTB: natural := 1 + maxNumProjectionLayers;
+
+-- KF
+
+constant rangeFactor: real    := 2.0; -- search window of each track parameter in initial uncertainties
+constant maxStubs   : natural := 4;   -- maximum number of  layers added to a track
+constant minLayersKF: natural := 4;   -- required number of stub layers to form a track
+constant maxLayersKF: natural := 7;   -- maximum number of  layers added to a track
+constant numNodesKF : natural := numSeedTypes;   -- number of KF workes
 
 -- TFP
 

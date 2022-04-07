@@ -1,16 +1,15 @@
 library ieee;
 use ieee.std_logic_1164.all;
-
-use work.tfp_config.all;
-use work.tfp_tools.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_tools.all;
+use work.hybrid_data_types.all;
 use work.kf_data_types.all;
 
 entity kf_fit is
 port (
-    clk: in std_logic;
-    fit_din: in t_channelProto;
-    fit_dout: out t_stateFit
+  clk: in std_logic;
+  fit_din: in t_channelProto;
+  fit_dout: out t_stateFit
 );
 end;
 
@@ -19,13 +18,13 @@ architecture rtl of kf_fit is
 signal states: t_states( 0 to numLayers ) := ( others => nulll );
 component kf_fit_layer
 generic (
-    index: natural
+  index: natural
 );
 port (
-    clk: in std_logic;
-    layer_state: in t_state;
-    layer_stub: in t_stubProto;
-    layer_dout: out t_state
+  clk: in std_logic;
+  layer_state: in t_state;
+  layer_stub: in t_stubProto;
+  layer_dout: out t_state
 );
 end component;
 
@@ -56,20 +55,19 @@ end;
 
 library ieee;
 use ieee.std_logic_1164.all;
-
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 use work.kf_data_types.all;
 
 entity kf_fit_layer is
 generic (
-    index: natural :=0
+  index: natural
 );
 port (
-    clk: in std_logic;
-    layer_state: in t_state;
-    layer_stub: in t_stubProto;
-    layer_dout: out t_state
+  clk: in std_logic;
+  layer_state: in t_state;
+  layer_stub: in t_stubProto;
+  layer_dout: out t_state
 );
 end;
 
@@ -80,13 +78,13 @@ signal associator_stub: t_stubProto := nulll;
 signal associator_dout: t_state := nulll;
 component kf_associator
 generic (
-    index: natural
+  index: natural
 );
 port (
-    clk: in std_logic;
-    associator_state: in t_state;
-    associator_stub: in t_stubProto;
-    associator_dout: out t_state
+  clk: in std_logic;
+  associator_state: in t_state;
+  associator_stub: in t_stubProto;
+  associator_dout: out t_state
 );
 end component;
 
@@ -94,12 +92,12 @@ signal updater_din: t_state := nulll;
 signal updater_dout: t_state := nulll;
 component kf_updater
 generic (
-    index: natural
+  index: natural
 );
 port (
-    clk: in std_logic;
-    updater_din: in t_state;
-    updater_dout: out t_state
+  clk: in std_logic;
+  updater_din: in t_state;
+  updater_dout: out t_state
 );
 end component;
 

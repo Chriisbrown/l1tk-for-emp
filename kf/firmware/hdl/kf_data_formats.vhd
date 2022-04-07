@@ -1,18 +1,17 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.math_real.all;
-
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_formats.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_formats.all;
 
 
 package kf_data_formats is
 
 
 constant widthTrack: natural := widthFrames;
-constant widthLMap : natural := widthSFlmap;
-constant widthLayer: natural := widthMHTlayer;
+constant widthLMap : natural := 24;
+constant widthLayer: natural := width( numLayers );
 constant widthStubs: natural := width( numStubsPerLayer );
 constant widthMaybe: natural := numLayers;
 constant widthHitsT: natural := numLayers;
@@ -20,17 +19,17 @@ constant widthHits : natural := numLayers;
 
 constant widthH00: natural := width( 2.0 * maxRPhi / baseDTCr );
 constant widthH12: natural := width( 2.0 * maxRz   / baseDTCr );
-constant widthm0 : natural := widthSFphi;
-constant widthm1 : natural := widthSFz;
-constant widthd0 : natural := widthSFdPhi;
-constant widthd1 : natural := widthSFdZ;
+constant widthm0 : natural := widthZHTphi;
+constant widthm1 : natural := widthZHTz;
+constant widthd0 : natural := widthZHTdPhi;
+constant widthd1 : natural := widthZHTdZ;
 
 constant baseH00: real := baseDTCr;
 constant baseH12: real := baseDTCr;
-constant basem0 : real := baseSFphi;
-constant basem1 : real := baseSFz;
-constant based0 : real := baseSFdPhi;
-constant based1 : real := baseSFdZ;
+constant basem0 : real := baseZHTphi;
+constant basem1 : real := baseZHTz;
+constant based0 : real := baseZHTdPhi;
+constant based1 : real := baseZHTdZ;
 
 constant widthx0          : natural := widthDSPb;
 constant widthx1          : natural := widthDSPb;
@@ -65,30 +64,30 @@ constant widthC22         : natural := widthDSPbu;
 constant widthC23         : natural := widthDSPb;
 constant widthC33         : natural := widthDSPbu;
 
-constant baseShiftx0          : integer :=  -2;
-constant baseShiftx1          : integer :=  -9;
-constant baseShiftx2          : integer :=  -5;
-constant baseShiftx3          : integer :=  -6;
-constant baseShiftv0          : integer :=  -6;
-constant baseShiftv1          : integer :=   7;
-constant baseShiftr0          : integer :=  -8;
-constant baseShiftr1          : integer :=  -4;
-constant baseShiftS00         : integer :=  -2;
+constant baseShiftx0          : integer :=  -4;
+constant baseShiftx1          : integer := -10;
+constant baseShiftx2          : integer :=  -2;
+constant baseShiftx3          : integer :=  -3;
+constant baseShiftv0          : integer :=  -4;
+constant baseShiftv1          : integer :=   8;
+constant baseShiftr0          : integer :=  -9;
+constant baseShiftr1          : integer :=  -1;
+constant baseShiftS00         : integer :=   0;
 constant baseShiftS01         : integer :=  -7;
 constant baseShiftS12         : integer :=   3;
 constant baseShiftS13         : integer :=   1;
 constant baseShiftK00         : integer := -16;
-constant baseShiftK10         : integer := -23;
+constant baseShiftK10         : integer := -22;
 constant baseShiftK21         : integer := -22;
 constant baseShiftK31         : integer := -23;
-constant baseShiftR00         : integer :=  -5;
-constant baseShiftR11         : integer :=   6;
-constant baseShiftInvR00Approx: integer := -26;
-constant baseShiftInvR11Approx: integer := -37;
+constant baseShiftR00         : integer :=  -4;
+constant baseShiftR11         : integer :=   7;
+constant baseShiftInvR00Approx: integer := -27;
+constant baseShiftInvR11Approx: integer := -38;
 constant baseShiftInvR00Cor   : integer := -15;
 constant baseShiftInvR11Cor   : integer := -15;
 constant baseShiftInvR00      : integer := -24;
-constant baseShiftInvR11      : integer := -34;
+constant baseShiftInvR11      : integer := -33;
 constant baseShiftC00         : integer :=   5;
 constant baseShiftC01         : integer :=  -3;
 constant baseShiftC11         : integer :=  -7;
@@ -138,10 +137,10 @@ constant baseShiftH12: integer := integer( round( log2( baseH12 / baseKFzT   * b
 constant baseShiftm0 : integer := integer( round( log2( basem0  / baseKFphiT               ) ) );
 constant baseShiftm1 : integer := integer( round( log2( basem1  / baseKFzT                 ) ) );
 
-constant cov_00: std_logic_vector( widthC00 - 1 downto 0 ) := stdu( integer( floor( baseSFinv2R ** 2 / baseC00 ) ), widthC00 );
-constant cov_11: std_logic_vector( widthC11 - 1 downto 0 ) := stdu( integer( floor( baseSFphiT  ** 2 / baseC11 ) ), widthC11 );
-constant cov_22: std_logic_vector( widthC22 - 1 downto 0 ) := stdu( integer( floor( baseSFcot   ** 2 / baseC22 ) ), widthC22 );
-constant cov_33: std_logic_vector( widthC33 - 1 downto 0 ) := stdu( integer( floor( baseSFzT    ** 2 / baseC33 ) ), widthC33 );
+constant cov_00: std_logic_vector( widthC00 - 1 downto 0 ) := stdu( integer( floor( baseZHTinv2R ** 2 / baseC00 ) ), widthC00 );
+constant cov_11: std_logic_vector( widthC11 - 1 downto 0 ) := stdu( integer( floor( baseZHTphiT  ** 2 / baseC11 ) ), widthC11 );
+constant cov_22: std_logic_vector( widthC22 - 1 downto 0 ) := stdu( integer( floor( baseZHTcot   ** 2 / baseC22 ) ), widthC22 );
+constant cov_33: std_logic_vector( widthC33 - 1 downto 0 ) := stdu( integer( floor( baseZHTzT    ** 2 / baseC33 ) ), widthC33 );
 
 
 end;

@@ -1,12 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 use ieee.math_real.all;
-
-use work.tfp_config.all;
-use work.tfp_tools.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
+use work.hybrid_config.all;
+use work.hybrid_tools.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
 use work.kf_data_formats.all;
 
 
@@ -61,12 +59,12 @@ type t_stubProto is
 record
     reset: std_logic;
     valid: std_logic;
-    track: std_logic_vector( widthTrack  - 1 downto 0 );
-    r    : std_logic_vector( widthSFr    - 1 downto 0 );
-    phi  : std_logic_vector( widthSFphi  - 1 downto 0 );
-    z    : std_logic_vector( widthSFz    - 1 downto 0 );
-    dPhi : std_logic_vector( widthSFdPhi - 1 downto 0 );
-    dZ   : std_logic_vector( widthSFdZ   - 1 downto 0 );
+    track: std_logic_vector( widthTrack   - 1 downto 0 );
+    r    : std_logic_vector( widthZHTr    - 1 downto 0 );
+    phi  : std_logic_vector( widthZHTphi  - 1 downto 0 );
+    z    : std_logic_vector( widthZHTz    - 1 downto 0 );
+    dPhi : std_logic_vector( widthZHTdPhi - 1 downto 0 );
+    dZ   : std_logic_vector( widthZHTdZ   - 1 downto 0 );
 end record;
 type t_stubsProto is array ( natural range <> ) of t_stubProto;
 function nulll return t_stubProto;
@@ -77,13 +75,6 @@ record
     stubs: t_stubsProto( numLayers - 1 downto 0 );
 end record;
 function nulll return t_channelProto;
-
-type t_channelProtoSF is
-record
-    track: t_trackSF;
-    stubs: t_stubsProto( numLayers - 1 downto 0 );
-end record;
-function nulll return t_channelProtoSF;
 
 type t_stateFit is
 record
@@ -484,19 +475,10 @@ subtype r_z is natural range widthKFz + baseShiftm1 - ( baseShiftx2 + baseShiftH
 type t_r0s is array ( natural range <> ) of std_logic_vector( widthr0 - 1 downto 0 );
 type t_r1s is array ( natural range <> ) of std_logic_vector( widthr1 - 1 downto 0 );
 
-constant baseShift0: integer := integer( round( log2( baseSFinv2R / baseKFinv2R ) ) );
-constant baseShift1: integer := integer( round( log2( baseSFphiT  / baseKFphiT  ) ) );
-constant baseShift2: integer := integer( round( log2( baseSFcot   / baseKFcot   ) ) );
-constant baseShift3: integer := integer( round( log2( baseSFzT    / baseKFzT    ) ) );
-
---constant widthValidx0: natural := widthx0 + baseShiftx0 - baseShift0;
---constant widthValidx1: natural := widthx1 + baseShiftx1 - baseShift1;
---constant widthValidx2: natural := widthx2 + baseShiftx2 - baseShift2;
---constant widthValidx3: natural := widthx3 + baseShiftx3 - baseShift3;
---subtype r_validx0 is natural range widthx0 - 1 downto widthx0 - widthValidx0;
---subtype r_validx1 is natural range widthx1 - 1 downto widthx1 - widthValidx1;
---subtype r_validx2 is natural range widthx2 - 1 downto widthx2 - widthValidx2;
---subtype r_validx3 is natural range widthx3 - 1 downto widthx3 - widthValidx3;
+constant baseShift0: integer := integer( round( log2( baseZHTinv2R / baseKFinv2R ) ) );
+constant baseShift1: integer := integer( round( log2( baseZHTphiT  / baseKFphiT  ) ) );
+constant baseShift2: integer := integer( round( log2( baseZHTcot   / baseKFcot   ) ) );
+constant baseShift3: integer := integer( round( log2( baseZHTzT    / baseKFzT    ) ) );
 
 type t_inv2R is
 record
@@ -554,7 +536,6 @@ function nulll return t_stubProto is begin return ( '0', '0', others => ( others
 function nulll return t_stateFit is begin return ( '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_stateResidual is begin return ( '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_channelProto is begin return ( nulll, ( others => nulll ) ); end function;
-function nulll return t_channelProtoSF is begin return ( nulll, ( others => nulll ) ); end function;
 function nulll return t_channelFit is begin return ( nulll, ( others => nulll ) ); end function;
 function nulll return t_channelResidual is begin return ( nulll, ( others => nulll ) ); end function;
 

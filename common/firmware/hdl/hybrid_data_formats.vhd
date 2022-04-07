@@ -126,8 +126,10 @@ constant widthKFinv2R: natural := width( rangeKFinv2R / baseKFinv2R );
 constant widthKFphiT : natural := width( rangeKFphiT  / baseKFphiT  );
 constant widthKFzT   : natural := width( rangeKFzT    / baseKFzT    );
 constant widthKFcot  : natural := width( rangeKFcot   / baseKFcot   );
-constant widthKFphi  : natural := width( rangeKFphi   / baseKFphi   );
-constant widthKFz    : natural := width( rangeKFz     / baseKFz     );
+--constant widthKFphi  : natural := width( rangeKFphi   / baseKFphi   );
+--constant widthKFz    : natural := width( rangeKFz     / baseKFz     );
+constant widthKFphi  : natural := widthZHTphi;
+constant widthKFz    : natural := widthZHTz;
 
 constant widthKFhits  : natural := numLayers;
 constant widthKFsector: natural := widthZHTsector;

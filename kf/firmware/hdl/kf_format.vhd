@@ -1,121 +1,78 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.math_real.all;
-
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 use work.kf_data_formats.all;
 use work.kf_data_types.all;
 
 entity kf_format_in is
 port (
-    clk: in std_logic;
-    in_din: in t_channelSF;
-    in_dout: out t_channelProto
+  clk: in std_logic;
+  in_din: in t_channelZHT;
+  in_dout: out t_channelProto
 );
 end;
 
 architecture rtl of kf_format_in is
 
-function f_valid( c: t_channelSF ) return boolean is
+function conv( t: std_logic_vector; ss: t_stubsZHT ) return t_stubsProto is
+  variable p: t_stubsProto( ss'range ) := ( others => nulll );
+  variable s: t_stubZHT := nulll;
 begin
-    for k in c.stubs'range loop
-        if c.stubs( k ).valid = '1' then
-            return true;
-        end if;
-    end loop;
-    return false;
-end function;
-function f_valid( c: t_channelProto ) return boolean is
-begin
-    for k in c.stubs'range loop
-        if c.stubs( k ).valid = '1' then
-            return true;
-        end if;
-    end loop;
-    return false;
-end function;
-function f_lmap( l: std_logic_vector; c: t_channelSF ) return std_logic_vector is
-    variable lmap: t_lmap := conv( l );
-begin
-    for k in c.stubs'range loop
-        if c.stubs( k ).valid = '1' then
-            lmap( k ) := incr( lmap( k ) );
-        end if;
-    end loop;
-    return conv( lmap );
-end function;
-function conv( t: std_logic_vector; ss: t_stubsSF ) return t_stubsProto is
-    variable p: t_stubsProto( ss'range ) := ( others => nulll );
-    variable s: t_stubSF := nulll;
-begin
-    for k in ss' range loop
-        s := ss( k );
-        p( k ) := ( s.reset, s.valid, t, s.r, s.phi, s.z, s.dPhi, s.dZ );
-    end loop;
-    return p;
+  for k in ss' range loop
+    s := ss( k );
+    p( k ) := ( s.reset, s.valid, t, s.r, s.phi, s.z, s.dPhi, s.dZ );
+  end loop;
+  return p;
 end function;
 
 -- step 1
-signal din: t_channelSF := nulll;
+signal din: t_channelZHT := nulll;
 
 -- step 2
-signal first, last, lastReg: std_logic := '0';
 signal dout: t_stateProto := nulll;
-signal stubs: t_stubsSF( numLayers - 1 downto 0 ) := ( others => nulll );
+signal track: std_logic_vector( widthTrack - 1 downto 0 ) := ( others => '0' );
+signal stubs: t_stubsZHT( numLayers - 1 downto 0 ) := ( others => nulll );
 
 begin
 
 -- step 2
-first <= '1' when din.track.reset = '1' and in_din.track.reset = '0' else '0';
-last <= '1' when f_valid( din ) and not f_valid( in_din ) else '0';
 in_dout <= ( dout, conv( dout.track, stubs ) );
 
 process( clk )
 begin
 if rising_edge( clk ) then
 
-    -- step 1
+  -- step 1
 
-    din <= in_din;
+  din <= in_din;
 
-    -- step 2
+  -- step 2
 
-    stubs <= din.stubs;
-    dout <= nulll;
-    if din.track.valid = '1' then
-        dout.maybe <= din.track.maybe;
-        dout.hitsT <= ( others => '0' );
-        dout.lmap <= ( others => '0' );
-        dout.skip <= '0';
-        if din.stubs( 0 ).valid = '0' then
-            dout.skip <= '1';
-        end if;
-        for k in din.stubs'range loop
-            if din.stubs( k ).valid = '1' then
-                dout.hitsT( k ) <= '1';
-            end if;
-        end loop;
+  stubs <= din.stubs;
+  dout <= nulll;
+  if din.track.valid = '1' then
+    track <= incr( track );
+    dout.valid <= '1';
+    dout.track <= track;
+    dout.maybe <= din.track.maybe;
+    dout.hitsT <= ( others => '0' );
+    dout.skip <= '0';
+    if din.stubs( 0 ).valid = '0' then
+      dout.skip <= '1';
     end if;
+    for k in din.stubs'range loop
+      if din.stubs( k ).valid = '1' then
+        dout.hitsT( k ) <= '1';
+      end if;
+    end loop;
+  end if;
 
-    lastReg <= last;
-    if din.track.reset = '1' then
-        dout.reset <= '1';
-        lastReg <= '1';
-    elsif din.track.valid = '0' and lastReg = '0' then
-        dout <= dout;
-        dout.lmap <= f_lmap( dout.lmap, din );
-    end if;
-
-    dout.valid <= '0';
-    if ( last = '1' or ( in_din.track.valid = '1' and din.track.reset = '0' ) ) then
-        dout.valid <= '1';
-    end if;
-
-    if dout.valid = '1' and lastReg = '0' then
-        dout.track <= incr( dout.track );
-    end if;
+  if din.track.reset = '1' then
+    dout.reset <= '1';
+    track <= ( others => '0' );
+  end if;
 
 end if;
 end process;
@@ -125,21 +82,19 @@ end;
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.math_real.all;
-
-use work.tfp_tools.all;
-use work.tfp_config.all;
-use work.tfp_data_formats.all;
-use work.tfp_data_types.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_formats.all;
+use work.hybrid_data_types.all;
 use work.kf_data_formats.all;
 use work.kf_data_types.all;
 
 entity kf_format_out is
 port (
-    clk: in std_logic;
-    out_track: in t_trackSF;
-    out_channel: in t_channelResidual;
-    out_dout: out t_channelKF
+  clk: in std_logic;
+  out_track: in t_trackZHT;
+  out_channel: in t_channelResidual;
+  out_dout: out t_channelKF
 );
 end;
 
@@ -147,7 +102,7 @@ architecture rtl of kf_format_out is
 
 -- step 1
 
-signal track: t_trackSF := nulll;
+signal track: t_trackZHT := nulll;
 signal state: t_stateResidual := nulll;
 signal stubs: t_stubsKF( numLayers - 1 downto 0 ) := ( others => nulll );
 signal inv2R: t_inv2R := nulll;
@@ -189,27 +144,27 @@ process( clk )
 begin
 if rising_edge( clk ) then
 
-    -- step 1
+  -- step 1
 
-    dout <= nulll;
-    if state.valid = '1' then
-        dout.track.valid <= '1';
-        dout.track.sector <= track.sector;
-        dout.stubs <= stubs;
-        dout.track.inv2R <= inv2R.sum( r_inv2R );
-        dout.track.phiT <= phiT.sum( r_phiT );
-        dout.track.cot <= cot.sum( r_cot );
-        dout.track.zT <= zT.sum( r_zT );
-        if inv2R.match = '1' and phiT.match = '1' then
-            dout.track.match <= '1';
-        end if;
+  dout <= nulll;
+  if state.valid = '1' then
+    dout.track.valid <= '1';
+    dout.track.sector <= track.sector;
+    dout.stubs <= stubs;
+    dout.track.inv2R <= inv2R.sum( r_inv2R );
+    dout.track.phiT <= phiT.sum( r_phiT );
+    dout.track.cot <= cot.sum( r_cot );
+    dout.track.zT <= zT.sum( r_zT );
+    if inv2R.match = '1' and phiT.match = '1' then
+      dout.track.match <= '1';
     end if;
-    if state.reset = '1' then
-        dout.track.reset <= '1';
-        for k in dout.stubs'range loop
-            dout.stubs( k ).reset <= '1';
-        end loop;
-    end if;
+  end if;
+  if state.reset = '1' then
+    dout.track.reset <= '1';
+    for k in dout.stubs'range loop
+      dout.stubs( k ).reset <= '1';
+    end loop;
+  end if;
 
 end if;
 end process;

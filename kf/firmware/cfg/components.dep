@@ -1,7 +1,8 @@
+src kf_isolation.vhd
 src kf_top.vhd
+src kf_node.vhd
 src kf_updater.vhd
 src kf_residual.vhd
-src kf_node.vhd
 src kf_format.vhd
 src kf_fit.vhd
 src kf_delay.vhd

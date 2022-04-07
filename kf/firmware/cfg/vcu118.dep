@@ -1,6 +1,6 @@
 src ../ucf/vcu118.tcl
 
-include hybrid_payload.dep
+include payload.dep
 
 src emp_project_decl.vhd
 

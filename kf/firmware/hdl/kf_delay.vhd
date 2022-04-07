@@ -1,18 +1,17 @@
 library ieee;
 use ieee.std_logic_1164.all;
-
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 use work.kf_data_types.all;
 
 entity kf_delay is
 port (
-    clk: in std_logic;
-    delay_track: in t_trackSF;
-    delay_channel: in t_channelProto;
-    delay_fit: out t_channelProto;
-    delay_residual: out t_stubsProto( numLayers - 1 downto 0 );
-    delay_format: out t_trackSF
+  clk: in std_logic;
+  delay_track: in t_trackZHT;
+  delay_channel: in t_channelProto;
+  delay_fit: out t_channelProto;
+  delay_residual: out t_stubsProto( numLayers - 1 downto 0 );
+  delay_format: out t_trackZHT
 );
 end;
 
@@ -24,9 +23,9 @@ signal fit_din: t_stubsProto( numLayers - 1 downto 0 ) := ( others => nulll );
 signal fit_dout: t_stubsProto( numLayers - 1 downto 0 ) := ( others => nulll );
 component kf_delay_fit
 port (
-    clk: in std_logic;
-    fit_din: in t_stubsProto( numLayers - 1 downto 0 );
-    fit_dout: out t_stubsProto( numLayers - 1 downto 0 )
+  clk: in std_logic;
+  fit_din: in t_stubsProto( numLayers - 1 downto 0 );
+  fit_dout: out t_stubsProto( numLayers - 1 downto 0 )
 );
 end component;
 
@@ -34,19 +33,19 @@ signal residual_din: t_stubsProto( numLayers - 1 downto 0 ) := ( others => nulll
 signal residual_dout: t_stubsProto( numLayers - 1 downto 0 ) := ( others => nulll );
 component kf_delay_residual
 port (
-    clk: in std_logic;
-    residual_din: in t_stubsProto( numLayers - 1 downto 0 );
-    residual_dout: out t_stubsProto( numLayers - 1 downto 0 )
+  clk: in std_logic;
+  residual_din: in t_stubsProto( numLayers - 1 downto 0 );
+  residual_dout: out t_stubsProto( numLayers - 1 downto 0 )
 );
 end component;
 
-signal format_din: t_trackSF := nulll;
-signal format_dout: t_trackSF := nulll;
+signal format_din: t_trackZHT := nulll;
+signal format_dout: t_trackZHT := nulll;
 component kf_delay_format
 port (
-    clk: in std_logic;
-    format_din: in t_trackSF;
-    format_dout: out t_trackSF
+  clk: in std_logic;
+  format_din: in t_trackZHT;
+  format_dout: out t_trackZHT
 );
 end component;
 
@@ -56,7 +55,7 @@ process( clk ) is
 begin
 if rising_edge( clk ) then
 
-    state <= delay_channel.state;
+  state <= delay_channel.state;
 
 end if;
 end process;
@@ -83,15 +82,14 @@ end;
 
 library ieee;
 use ieee.std_logic_1164.all;
-
-use work.tfp_config.all;
+use work.hybrid_config.all;
 use work.kf_data_types.all;
 
 entity kf_delay_fit is
 port (
-    clk: in std_logic;
-    fit_din: in t_stubsProto( numLayers - 1 downto 0 );
-    fit_dout: out t_stubsProto( numLayers - 1 downto 0 )
+  clk: in std_logic;
+  fit_din: in t_stubsProto( numLayers - 1 downto 0 );
+  fit_dout: out t_stubsProto( numLayers - 1 downto 0 )
 );
 end;
 
@@ -99,12 +97,12 @@ architecture rtl of kf_delay_fit is
 
 component kf_delay_stub
 generic (
-    latency: integer
+  latency: integer
 );
 port (
-    clk: in std_logic;
-    stub_din: in t_stubProto;
-    stub_dout: out t_stubProto
+  clk: in std_logic;
+  stub_din: in t_stubProto;
+  stub_dout: out t_stubProto
 );
 end component;
 
@@ -130,16 +128,14 @@ end;
 
 library ieee;
 use ieee.std_logic_1164.all;
-
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
 use work.kf_data_types.all;
 
 entity kf_delay_residual is
 port (
-    clk: in std_logic;
-    residual_din: in t_stubsProto( numLayers - 1 downto 0 );
-    residual_dout: out t_stubsProto( numLayers - 1 downto 0 )
+  clk: in std_logic;
+  residual_din: in t_stubsProto( numLayers - 1 downto 0 );
+  residual_dout: out t_stubsProto( numLayers - 1 downto 0 )
 );
 end;
 
@@ -147,12 +143,12 @@ architecture rtl of kf_delay_residual is
 
 component kf_delay_stub
 generic (
-    latency: integer
+  latency: integer
 );
 port (
-    clk: in std_logic;
-    stub_din: in t_stubProto;
-    stub_dout: out t_stubProto
+  clk: in std_logic;
+  stub_din: in t_stubProto;
+  stub_dout: out t_stubProto
 );
 end component;
 
@@ -179,37 +175,36 @@ end;
 
 library ieee;
 use ieee.std_logic_1164.all;
-
-use work.tfp_config.all;
-use work.tfp_data_types.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
 
 entity kf_delay_format is
 port (
-    clk: in std_logic;
-    format_din: in t_trackSF;
-    format_dout: out t_trackSF
+  clk: in std_logic;
+  format_din: in t_trackZHT;
+  format_dout: out t_trackZHT
 );
 end;
 
 architecture rtl of kf_delay_format is
 
-signal event_din: t_trackSF := nulll;
-signal event_dout: t_trackSF := nulll;
+signal event_din: t_trackZHT := nulll;
+signal event_dout: t_trackZHT := nulll;
 component kf_delay_event
 port (
-    clk: in std_logic;
-    event_din: in t_trackSF;
-    event_dout: out t_trackSF
+  clk: in std_logic;
+  event_din: in t_trackZHT;
+  event_dout: out t_trackZHT
 );
 end component;
 
-signal track_din: t_trackSF := nulll;
-signal track_dout: t_trackSF := nulll;
+signal track_din: t_trackZHT := nulll;
+signal track_dout: t_trackZHT := nulll;
 component kf_delay_track
 port (
-    clk: in std_logic;
-    track_din: in t_trackSF;
-    track_dout: out t_trackSF
+  clk: in std_logic;
+  track_din: in t_trackZHT;
+  track_dout: out t_trackZHT
 );
 end component;
 
@@ -228,18 +223,16 @@ end;
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
-use work.tfp_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
+use work.hybrid_tools.all;
 
 entity kf_delay_event is
 port (
-    clk: in std_logic;
-    event_din: in t_trackSF;
-    event_dout: out t_trackSF
+  clk: in std_logic;
+  event_din: in t_trackZHT;
+  event_dout: out t_trackZHT
 );
 end;
 
@@ -247,20 +240,20 @@ architecture rtl of kf_delay_event is
 
 attribute ram_style: string;
 constant widthAddr: natural := widthFrames;
-constant widthRam: natural := widthSFhits + widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT;
+constant widthRam: natural := widthZHTmaybe + widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT;
 type t_ram is array ( 0 to 2 ** widthAddr - 1 ) of std_logic_vector( widthRam - 1 downto 0 );
-function conv( s: std_logic_vector ) return t_trackSF is
-    variable t: t_trackSF := nulll;
+function conv( s: std_logic_vector ) return t_trackZHT is
+    variable t: t_trackZHT := nulll;
 begin
-    t.maybe  := s( widthSFhits + widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1 downto widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT );
-    t.sector := s(               widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1 downto                 widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT );
-    t.inv2R  := s(                               widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1 downto                                widthSFphiT + widthSFcot + widthSFzT );
-    t.phiT   := s(                                              widthSFphiT + widthSFcot + widthSFzT - 1 downto                                              widthSFcot + widthSFzT );
-    t.cot    := s(                                                            widthSFcot + widthSFzT - 1 downto                                                           widthSFzT );
-    t.zT     := s(                                                                         widthSFzT - 1 downto                                                                   0 );
-    return t;
+  t.maybe  := s( widthZHTmaybe + widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT );
+  t.sector := s(                 widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto                  widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT );
+  t.inv2R  := s(                                  widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto                                  widthZHTphiT + widthZHTcot + widthZHTzT );
+  t.phiT   := s(                                                  widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto                                                 widthZHTcot + widthZHTzT );
+  t.cot    := s(                                                                 widthZHTcot + widthZHTzT - 1 downto                                                               widthZHTzT );
+  t.zT     := s(                                                                               widthZHTzT - 1 downto                                                                        0 );
+  return t;
 end function;
-function conv( t: t_trackSF ) return std_logic_vector is
+function conv( t: t_trackZHT ) return std_logic_vector is
 begin
     return t.maybe & t.sector & t.inv2R & t.phiT & t.cot & t.zT;
 end function;
@@ -269,12 +262,12 @@ end function;
 
 signal ram: t_ram := ( others => ( others => '0' ) );
 signal waddr, raddr, laddr: std_logic_vector( widthAddr - 1 downto 0 ) := ( others => '0' );
-signal optional: t_trackSF := nulll;
+signal optional: t_trackZHT := nulll;
 attribute ram_style of ram: signal is "block";
 
 -- step 2
 
-signal dout: t_trackSF := nulll;
+signal dout: t_trackZHT := nulll;
 
 begin
 
@@ -285,34 +278,34 @@ process( clk ) is
 begin
 if rising_edge( clk ) then
 
-    -- step 1;
+  -- step 1;
 
-    ram( uint( waddr ) ) <= conv( event_din );
-    optional <= conv( ram( uint( raddr ) ) );
-    if event_din.valid = '1' then
-        waddr <= incr( waddr );
-    end if;
-    if raddr /= laddr then
-        optional.valid <= '1';
-        raddr <= incr( raddr );
-    end if;
+  ram( uint( waddr ) ) <= conv( event_din );
+  optional <= conv( ram( uint( raddr ) ) );
+  if event_din.valid = '1' then
+    waddr <= incr( waddr );
+  end if;
+  if raddr /= laddr then
+    optional.valid <= '1';
+    raddr <= incr( raddr );
+  end if;
 
-    if event_din.reset = '1' then
-        optional.reset <= '1';
-        raddr <= laddr;
-        laddr <= waddr;
-    end if;
+  if event_din.reset = '1' then
+    optional.reset <= '1';
+    raddr <= laddr;
+    laddr <= waddr;
+  end if;
 
-    -- step 2
+  -- step 2
 
-    dout <= nulll;
-    if optional.valid = '1' then
-        dout <= optional;
-    end if;
+  dout <= nulll;
+  if optional.valid = '1' then
+    dout <= optional;
+  end if;
 
-    if optional.reset = '1' then
-        dout.reset <= '1';
-    end if;
+  if optional.reset = '1' then
+    dout.reset <= '1';
+  end if;
 
 end if;
 end process;
@@ -323,17 +316,16 @@ end;
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
-use work.tfp_config.all;
-use work.tfp_data_types.all;
-use work.tfp_data_formats.all;
-use work.tfp_tools.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_types.all;
+use work.hybrid_data_formats.all;
 
 entity kf_delay_track is
 port (
-    clk: in std_logic;
-    track_din: in t_trackSF;
-    track_dout: out t_trackSF
+  clk: in std_logic;
+  track_din: in t_trackZHT;
+  track_dout: out t_trackZHT
 );
 end;
 
@@ -341,23 +333,23 @@ architecture rtl of kf_delay_track is
 
 attribute ram_style: string;
 constant latency: natural := 1 + numLayers * ( 5 + 16 - 1 ) + 7 + 2 - 3 + 1 + 5 - 2 - 5 + 10 - 2 + 1;
-constant widthAddr: natural := widthFrames;
-constant widthRam: natural := 1 + 1 + widthSFhits + widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT;
+constant widthAddr: natural := width( latency + 2 );
+constant widthRam: natural := 1 + 1 + widthZHTmaybe + widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT;
 type t_ram is array ( 0 to 2 ** widthAddr - 1 ) of std_logic_vector( widthRam - 1 downto 0 );
-function conv( s: std_logic_vector ) return t_trackSF is
-    variable t: t_trackSF := nulll;
+function conv( s: std_logic_vector ) return t_trackZHT is
+  variable t: t_trackZHT := nulll;
 begin
-    t.reset  := s( 1 + 1 + widthSFhits + widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1);
-    t.valid  := s(     1 + widthSFhits + widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1);
-    t.maybe  := s(         widthSFhits + widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1 downto widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT );
-    t.sector := s(                       widthSFsector + widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1 downto                 widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT );
-    t.inv2R  := s(                                       widthSFinv2R + widthSFphiT + widthSFcot + widthSFzT - 1 downto                                widthSFphiT + widthSFcot + widthSFzT );
-    t.phiT   := s(                                                      widthSFphiT + widthSFcot + widthSFzT - 1 downto                                              widthSFcot + widthSFzT );
-    t.cot    := s(                                                                    widthSFcot + widthSFzT - 1 downto                                                           widthSFzT );
-    t.zT     := s(                                                                                 widthSFzT - 1 downto                                                                   0 );
-    return t;
+  t.reset  := s( 1 + 1 + widthZHTmaybe + widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 );
+  t.valid  := s(     1 + widthZHTmaybe + widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 );
+  t.maybe  := s(         widthZHTmaybe + widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT );
+  t.sector := s(                         widthZHTsector + widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto                  widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT );
+  t.inv2R  := s(                                          widthZHTinv2R + widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto                                  widthZHTphiT + widthZHTcot + widthZHTzT );
+  t.phiT   := s(                                                          widthZHTphiT + widthZHTcot + widthZHTzT - 1 downto                                                 widthZHTcot + widthZHTzT );
+  t.cot    := s(                                                                         widthZHTcot + widthZHTzT - 1 downto                                                               widthZHTzT );
+  t.zT     := s(                                                                                       widthZHTzT - 1 downto                                                                        0 );
+  return t;
 end function;
-function conv( t: t_trackSF ) return std_logic_vector is
+function conv( t: t_trackZHT ) return std_logic_vector is
 begin
     return t.reset & t.valid & t.maybe & t.sector & t.inv2R & t.phiT & t.cot & t.zT;
 end function;
@@ -366,12 +358,12 @@ end function;
 
 signal ram: t_ram := ( others => ( others => '0' ) );
 signal waddr, raddr: std_logic_vector( widthAddr - 1 downto 0 ) := ( others => '0' );
-signal optional: t_trackSF := nulll;
+signal optional: t_trackZHT := nulll;
 attribute ram_style of ram: signal is "block";
 
 -- step 2
 
-signal dout: t_trackSF := nulll;
+signal dout: t_trackZHT := nulll;
 
 begin
 
@@ -385,15 +377,15 @@ process( clk ) is
 begin
 if rising_edge( clk ) then
 
-    -- step 1;
+  -- step 1;
 
-    ram( uint( waddr ) ) <= conv( track_din );
-    optional <= conv( ram( uint( raddr ) ) );
-    raddr <= incr( raddr );
+  ram( uint( waddr ) ) <= conv( track_din );
+  optional <= conv( ram( uint( raddr ) ) );
+  raddr <= incr( raddr );
 
-    -- step 2
+  -- step 2
 
-    dout <= optional;
+  dout <= optional;
 
 end if;
 end process;
@@ -404,46 +396,45 @@ end;
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
-use work.tfp_config.all;
+use work.hybrid_tools.all;
+use work.hybrid_config.all;
+use work.hybrid_data_formats.all;
 use work.kf_data_types.all;
-use work.tfp_data_formats.all;
 use work.kf_data_formats.all;
-use work.tfp_tools.all;
 
 entity kf_delay_stub is
 generic (
-    latency: natural
+  latency: natural
 );
 port (
-    clk: in std_logic;
-    stub_din: in t_stubProto;
-    stub_dout: out t_stubProto
+  clk: in std_logic;
+  stub_din: in t_stubProto;
+  stub_dout: out t_stubProto
 );
 end;
 
 architecture rtl of kf_delay_stub is
 
 attribute ram_style: string;
-constant widthAddr: natural := widthFrames;
-constant widthRam: natural := 1 + 1 + widthTrack + widthSFr + widthSFphi + widthSFz + widthSFdPhi + widthSFdZ;
+constant widthAddr: natural := width( latency + 2 );
+constant widthRam: natural := 1 + 1 + widthTrack + widthZHTr + widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ;
 type t_ram is array ( 0 to 2 ** widthAddr - 1 ) of std_logic_vector( widthRam - 1 downto 0 );
 function conv( s: std_logic_vector ) return t_stubProto is
-    variable t: t_stubProto := nulll;
+  variable t: t_stubProto := nulll;
 begin
-    t.reset := s( 1 + 1 + widthTrack + widthSFr + widthSFphi + widthSFz + widthSFdPhi + widthSFdZ - 1 );
-    t.valid := s(   + 1 + widthTrack + widthSFr + widthSFphi + widthSFz + widthSFdPhi + widthSFdZ - 1 );
-    t.track := s(         widthTrack + widthSFr + widthSFphi + widthSFz + widthSFdPhi + widthSFdZ - 1 downto widthSFr + widthSFphi + widthSFz + widthSFdPhi + widthSFdZ );
-    t.r     := s(                      widthSFr + widthSFphi + widthSFz + widthSFdPhi + widthSFdZ - 1 downto            widthSFphi + widthSFz + widthSFdPhi + widthSFdZ );
-    t.phi   := s(                                 widthSFphi + widthSFz + widthSFdPhi + widthSFdZ - 1 downto                         widthSFz + widthSFdPhi + widthSFdZ );
-    t.z     := s(                                              widthSFz + widthSFdPhi + widthSFdZ - 1 downto                                    widthSFdPhi + widthSFdZ );
-    t.dPhi  := s(                                                         widthSFdPhi + widthSFdZ - 1 downto                                                  widthSFdZ );
-    t.dZ    := s(                                                                       widthSFdZ - 1 downto                                                          0 );
-    return t;
+  t.reset := s( 1 + 1 + widthTrack + widthZHTr + widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ - 1 );
+  t.valid := s(   + 1 + widthTrack + widthZHTr + widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ - 1 );
+  t.track := s(         widthTrack + widthZHTr + widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ - 1 downto widthZHTr + widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ );
+  t.r     := s(                      widthZHTr + widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ - 1 downto             widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ );
+  t.phi   := s(                                  widthZHTphi + widthZHTz + widthZHTdPhi + widthZHTdZ - 1 downto                           widthZHTz + widthZHTdPhi + widthZHTdZ );
+  t.z     := s(                                                widthZHTz + widthZHTdPhi + widthZHTdZ - 1 downto                                       widthZHTdPhi + widthZHTdZ );
+  t.dPhi  := s(                                                            widthZHTdPhi + widthZHTdZ - 1 downto                                                      widthZHTdZ );
+  t.dZ    := s(                                                                           widthZHTdZ - 1 downto                                                               0 );
+  return t;
 end function;
 function conv( t: t_stubProto ) return std_logic_vector is
 begin
-    return t.reset & t.valid & t.track & t.r & t.phi & t.z & t.dPhi & t.dZ;
+  return t.reset & t.valid & t.track & t.r & t.phi & t.z & t.dPhi & t.dZ;
 end function;
 
 -- step 1
@@ -469,15 +460,15 @@ process( clk ) is
 begin
 if rising_edge( clk ) then
 
-    -- step 1;
+  -- step 1;
 
-    ram( uint( waddr ) ) <= conv( stub_din );
-    optional <= conv( ram( uint( raddr ) ) );
-    raddr <= incr( raddr );
+  ram( uint( waddr ) ) <= conv( stub_din );
+  optional <= conv( ram( uint( raddr ) ) );
+  raddr <= incr( raddr );
 
-    -- step 2
+  -- step 2
 
-    dout <= optional;
+  dout <= optional;
 
 end if;
 end process;
