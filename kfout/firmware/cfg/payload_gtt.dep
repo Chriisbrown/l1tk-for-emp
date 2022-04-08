@@ -1,4 +1,4 @@
-src --vhdl2008 emp_payload.vhd
+src emp_payload_gtt.vhd
 src kfout_isolation.vhd
 
 include components.dep

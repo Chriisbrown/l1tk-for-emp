@@ -42,9 +42,11 @@ package emp_project_decl is
     13     => (gty25, buf, no_fmt, buf, gty25),
     14     => (gty25, buf, no_fmt, buf, gty25),
     15     => (gty25, buf, no_fmt, buf, gty25),
-    16     => (gty25, buf, no_fmt, buf, gty25),
-    17     => (gty25, buf, no_fmt, buf, gty25),
+    --16     => (gty25, buf, no_fmt, buf, gty25),
+    --17     => (gty25, buf, no_fmt, buf, gty25),
     others => kDummyRegion
     );
 
 end emp_project_decl;
+
+--https://gitlab.cern.ch/p2-xware/software/emp-toolbox/-/blob/master/core/etc/emp/links/serenity_dc_ku15p_so1_v1.yml

@@ -312,7 +312,7 @@ end;
 architecture rtl of kfout_isolation_out_node is
 
 -- sr
-signal sr: std_logic_vector( PAYLOAD_LATENCY - 1 downto 0 ) := ( others => '0' );
+signal sr: std_logic_vector( PAYLOAD_LATENCY - 3 downto 0 ) := ( others => '0' );
 
 -- step 1
 signal din:  t_frame := ( others => '0' );

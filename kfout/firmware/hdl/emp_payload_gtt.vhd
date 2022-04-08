@@ -86,25 +86,25 @@ end component;
 begin
 
 
-in_din <= d( 7 DOWNTO 0);
+--in_din <= d( 7 DOWNTO 0);
 
-kfout_din <= in_dout;
+--kfout_din <= in_dout;
 
-out_packet <=  conv( d );
-out_din <= kfout_dout;
+--out_packet <=  conv( d );
+--out_din <= kfout_dout;
 
-q(5 DOWNTO 4) <= out_dout( 1 DOWNTO 0 );
+--q(5 DOWNTO 4) <= out_dout( 1 DOWNTO 0 );
 
-fin: kfout_isolation_in port map ( clk_p, in_din, in_dout );
+--fin: kfout_isolation_in port map ( clk_p, in_din, in_dout );
 
-kfout: kfout_top port map ( clk_p, kfout_din, kfout_dout);
+--kfout: kfout_top port map ( clk_p, kfout_din, kfout_dout);
 
-fout: kfout_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
+--fout: kfout_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
 
---GTT: GTT_link_decode port map (clk_p, d( 47 DOWNTO 46 ), q( 9 DOWNTO 8) );
+GTT: GTT_link_decode port map (clk_p, d( 47 DOWNTO 46 ), q( 9 DOWNTO 8) );
 
---q(8).strobe <= '1';
---q(9).strobe <= '1';
+q(8).strobe <= '1';
+q(9).strobe <= '1';
 
 ipb_out <= IPB_RBUS_NULL;
 bc0 <= '0';

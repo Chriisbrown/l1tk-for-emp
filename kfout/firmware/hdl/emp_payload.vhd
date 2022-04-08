@@ -7,7 +7,7 @@ use work.emp_ttc_decl.all;
 
 use work.hybrid_config.all;
 use work.hybrid_data_types.all;
-
+use work.kfout_config.all;
 
 entity emp_payload is
 port (
@@ -31,6 +31,7 @@ end;
 
 
 architecture rtl of emp_payload is
+
 
 component kfout_isolation_in
     port (
@@ -57,11 +58,11 @@ component kfout_isolation_out
     );
 end component;
 
-function conv( l: ldata ) return std_logic_vector is
+function conv( l: ldata; LinkMap : INTEGER_VECTOR ) return std_logic_vector is
     variable s: std_logic_vector( numLinksTFP - 1 downto 0 );
 begin
     for k in s'range loop
-        s( k ) := l( k ).valid;
+        s( k ) := l( LinkMap( k ) ).valid;
     end loop;
     return s;
 end;
@@ -69,18 +70,13 @@ end;
 
 begin
 
-
-
-
 g1 : FOR i IN 0 TO 8 GENERATE
-
+    
     signal in_din: ldata( 7 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
     signal in_dout: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
 
-
     signal kfout_din: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
     signal kfout_dout: t_frames( numLinksTFP - 1 downto 0 ) := ( others => ( others => '0' ) );
-
 
     signal out_packet: std_logic_vector( numLinksTFP - 1 downto 0 ) := ( others => '0' );
     signal out_din: t_frames( numLinksTFP - 1 downto 0 ) := ( others => ( others => '0' ) );
@@ -88,16 +84,19 @@ g1 : FOR i IN 0 TO 8 GENERATE
 
 BEGIN
 
-    
-
-    in_din <= d( i*8 + 7 DOWNTO i*8 );
+    in_din <= d( InLinkMapping(i*8 + 7) DOWNTO InLinkMapping(i*8) );
 
     kfout_din <= in_dout;
 
-    out_packet <=  conv( d );
+    out_packet <=  conv( d( InLinkMapping(i*8 + 7) DOWNTO InLinkMapping(i*8) ) , (InLinkMapping(i*8 + 1),InLinkMapping(i*8)));
     out_din <= kfout_dout;
 
-    q( 2*i + 1 DOWNTO 2*i ) <= out_dout( 1 DOWNTO 0 );
+    q( OutLinkMapping(2*i + 1)).strobe <= '1';
+    q( OutLinkMapping(2*i) ).strobe <= '1';
+    q( OutLinkMapping(2*i + 1) ).start  <= '0';
+    q( OutLinkMapping(2*i) ).start  <= '0';
+
+    q( OutLinkMapping(2*i + 1) DOWNTO OutLinkMapping(2*i) ) <= out_dout( 1 DOWNTO 0 );
 
     fin: kfout_isolation_in port map ( clk_p, in_din, in_dout );
 

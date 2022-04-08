@@ -35,12 +35,12 @@ begin
 
   Reset <= kfout_din( 0 ).track.reset; 
 
-  TrackQualityInstance : ENTITY work.BDT_module
-  PORT MAP(
-    clk     => clk , -- The algorithm clock
-    tq_din  => kfout_din,
-    tq_dout => tq_dout
-  );
+  --TrackQualityInstance : ENTITY work.BDT_module
+  --PORT MAP(
+  --  clk     => clk , -- The algorithm clock
+  --  tq_din  => kfout_din,
+  --  tq_dout => tq_dout
+  --);
   -- ------------------------------------------------------------------------
   -- Convert KF tracks and KF stubs to TTTracks
   TrackTransformInstance : ENTITY work.kfout_trackTransform
