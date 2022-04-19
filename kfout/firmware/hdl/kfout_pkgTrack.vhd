@@ -51,7 +51,7 @@ PACKAGE DataType IS
   InvR       :   SIGNED( widthInvR       - 1 downto 0 );
 
   -- Utility field, used for the key in the distribution server 
-  SortKey    : INTEGER RANGE 0 TO 1;
+  SortKey    : INTEGER RANGE 0 TO (numNodesKF - 1);
 
   Reset      : STD_LOGIC;
   DataValid  : BOOLEAN;

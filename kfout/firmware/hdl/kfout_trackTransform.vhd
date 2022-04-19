@@ -42,8 +42,8 @@ ARCHITECTURE RTL OF ScaleZT IS
           A <= RESIZE((2*cot)+1, widthDSPportB);
           B <= RESIZE((2*zT)+1, widthDSPportB);
         -- Clk 2 -----------------------
-          C <= A * TO_SIGNED( INTEGER( modChosenRofZ ), widthDSPportA ); 
-          D <= B * TO_SIGNED( 2**z0Factor, widthDSPportA );
+          C <= RESIZE(A * TO_SIGNED( INTEGER( modChosenRofZ ), widthDSPportA ), widthDSPportC); 
+          D <= RESIZE(B * TO_SIGNED( 2**z0Factor, widthDSPportA ), widthDSPportC);
         -- Clk 3 -----------------------
         z0signal <= RESIZE(shift_right((D - C)/2,z0Factor),widthZ0);
         -- Delay Signal
@@ -86,7 +86,7 @@ ARCHITECTURE RTL of ScalePhi IS
     SIGNAl A : SIGNED( widthDSPportB  - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
     SIGNAL B : SIGNED( widthDSPportB  - 1 DOWNTO 0 )                  := ( OTHERS => '0' );
     SIGNAL C : SIGNED( widthDSPportC  - 1 DOWNTO 0 )             := ( OTHERS => '0' );
-    SIGNAL D : SIGNED( widthDSPportC - 1 DOWNTO 0 )              := ( OTHERS => '0' );
+    SIGNAL D : SIGNED( widthDSPportC  - 1 DOWNTO 0 )              := ( OTHERS => '0' );
     SIGNAL E : SIGNED( widthDSPportC  - 1 DOWNTO 0 )             := ( OTHERS => '0' );
     SIGNAL BaseSectorCorr : SIGNED( widthDSPportB - 1 DOWNTO 0 )      := ( OTHERS => '0' );
 
@@ -108,9 +108,9 @@ ARCHITECTURE RTL of ScalePhi IS
           A <= RESIZE((2*PhiT)+1, widthDSPportB);
           B <= RESIZE(inv2R+1, widthDSPportB);
 -- Clk 2 ------------------------------------------------------
-          C <= A * TO_SIGNED( 2**phi0Factor, widthDSPportA );
-          D <= B * TO_SIGNED( INTEGER( modChosenRofPhi ), widthDSPportA ); 
-          E <= BaseSectorCorr * TO_SIGNED( 2**phi0Factor, widthDSPportA );
+          C <= RESIZE(A * TO_SIGNED( 2**phi0Factor, widthDSPportA ), widthDSPportC);
+          D <= RESIZE(B * TO_SIGNED( INTEGER( modChosenRofPhi ), widthDSPportA ), widthDSPportC); 
+          E <= RESIZE(BaseSectorCorr * TO_SIGNED( 2**phi0Factor, widthDSPportA ), widthDSPportC);
 -- Clk 3 ------------------------------------------------------
           phi0signal <= RESIZE( SHIFT_RIGHT(( C  - D )/2 - 2*E  ,phi0Factor), widthphi0 );
 -- Delay Signal
@@ -193,8 +193,8 @@ ARCHITECTURE RTL of CalculateChi IS
           tempv1     <= TO_SIGNED( v1Bins( TO_INTEGER(SHIFT_RIGHT(dz, weightBinFraction))), widthDSPportA );
 
           --Clk 3 ------------------------------------------------
-          temprphi_0 <= SHIFT_RIGHT((phisquared  * tempv0),2);
-          temprz_0   <= SHIFT_RIGHT((zsquared  * tempv1),2);
+          temprphi_0 <= RESIZE(SHIFT_RIGHT((phisquared  * tempv0),2), widthDSPportC);
+          temprz_0   <= RESIZE(SHIFT_RIGHT((zsquared  * tempv1),2), widthDSPportC);
 
           IF validarray(frame_delay - 1) = '1' THEN
             rphi( i ) <= temprphi_0 ;
