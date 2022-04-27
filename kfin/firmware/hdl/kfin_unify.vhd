@@ -731,7 +731,7 @@ if rising_edge( clk ) then
 
   -- step 1
 
-  dspUz.a <= '0' & abs( cot ) & '1';
+  dspUz.a <= not cot & '1';
   dspUz.b <= projection_din.z & '1';
   sr <= sr( sr'high - 1 downto sr'low ) & d;
 
