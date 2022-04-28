@@ -178,6 +178,8 @@ signal ramInvR: t_ramFinvR := init_ramFinvR;
 signal optionalInvR: std_logic_vector( widthDSPbu - 1 downto 0 ) := ( others => '0' );
 signal cotSector: std_logic_vector( widthHcot - 1 downto 0 ) := ( others => '0' );
 signal cotTrack: std_logic_vector( widthLcot - 1 downto 0 ) := ( others => '0' );
+signal sectorCots: t_sectorCots := work.kfin_data_types.sectorCots;
+attribute ram_style of sectorCots: signal is "register";
 
 -- step 2
 
@@ -239,7 +241,7 @@ if rising_edge( clk ) then
   dspDz.b <= stds( chosenRofZ / baseLr, widthLr ) & '1';
   dspDz.c <= ( ( stub_track.zT & '1' & ( baseShiftFz - 1 downto 0 => '0' ) ) + ( stub_din.z & '1' ) ) & ( baseShiftFcot downto 0 => '0' );
   optionalInvR <= ramInvR( uint( indexInvR ) );
-  cotSector <= stds( sectorCots( uint( stub_track.sector( widthLSectorEta - 1 downto 0 ) ) ) / baseHcot, widthHcot );
+  cotSector <= sectorCots( uint( stub_track.sector( widthLSectorEta - 1 downto 0 ) ) );
   cotTrack <= stub_track.cot;
 
   -- step 2
