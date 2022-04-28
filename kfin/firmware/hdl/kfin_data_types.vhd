@@ -463,6 +463,10 @@ type t_ramPitchOverRs is array ( 0 to 2 ** widthAddrBRAM18 - 1 ) of std_logic_ve
 function init_ramPitchOverRs return t_ramPitchOverRs;
 constant ramPitchOverRs: t_ramPitchOverRs;
 
+type t_sectorCots is array ( 0 to numSectorsEta - 1 ) of std_logic_vector( widthHcot - 1 downto 0 );
+function init_sectorCots return t_sectorCots;
+constant sectorCots: t_sectorCots;
+
 end;
 
 
@@ -576,6 +580,16 @@ begin
   return ram;
 end function;
 constant ramPitchOverRs: t_ramPitchOverRs := init_ramPitchOverRs;
+
+function init_sectorCots return t_sectorCots is
+  variable res: t_sectorCots;
+begin
+  for k in res'range loop
+    res( k ) := stds( work.hybrid_config.sectorCots( k ) / baseHcot, widthHcot );
+  end loop;
+  return res;
+end function;
+constant sectorCots: t_sectorCots := init_sectorCots;
 
 
 end;
