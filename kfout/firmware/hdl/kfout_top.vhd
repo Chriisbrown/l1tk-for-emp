@@ -30,16 +30,25 @@ signal Reset: std_logic := '0';
 signal PacketData: PacketArray( 0 TO numOutLinks - 1)  := ( others => ( others => '0' ));
 signal PacketValid: std_logic_vector( 0 TO numOutLinks - 1 ) := ( others => '0' );
 
-
+signal tq_dout : t_channelsTQ( numNodesKF -1 DOWNTO 0 ) := ( others => nulll);
 begin
 
 
 Reset <= kfout_din( 0 ).track.reset; 
 -- ------------------------------------------------------------------------
+-- Run Track Quality BDT on output of KF
+TrackQualityInstance : ENTITY work.BDT_module
+PORT MAP(
+  clk     => clk , -- The algorithm clock
+  tq_din  => kfout_din,
+  tq_dout => tq_dout
+);
+-- ------------------------------------------------------------------------
 -- Convert KF tracks and KF stubs to TTTracks
 TrackTransformInstance : ENTITY work.kfout_trackTransform
 PORT MAP(
   clk          => clk ,
+  TQObjectsIn  => tq_dout,
   KFObjectsIn  => kfout_din ,
   TTTracksOut  => TTTracks
   );
