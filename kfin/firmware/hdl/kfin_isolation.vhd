@@ -238,9 +238,9 @@ function conv( l: std_logic_vector; t: natural ) return t_stubTB is
 begin
   case t is
     when 0 => s := ( '0', v0, ( others => '0' ), ( others => '0' ), resize( r0, widthTBr ), resize( phi0, widthTBphi ), resize( z0, widthTBz ) );
-    when 1 => s := ( '0', v1, ( others => '0' ), ( others => '0' ), resize( r1, widthTBr ), resize( phi0, widthTBphi ), resize( z1, widthTBz ) );
-    when 2 => s := ( '0', v2, ( others => '0' ), ( others => '0' ), resize( r2, widthTBr ), resize( phi0, widthTBphi ), resize( z2, widthTBz ) );
-    when 3 => s := ( '0', v3, ( others => '0' ), ( others => '0' ), resize( r3, widthTBr ), resize( phi0, widthTBphi ), resize( z3, widthTBz ) );
+    when 1 => s := ( '0', v1, ( others => '0' ), ( others => '0' ), resize( r1, widthTBr ), resize( phi1, widthTBphi ), resize( z1, widthTBz ) );
+    when 2 => s := ( '0', v2, ( others => '0' ), ( others => '0' ), resize( r2, widthTBr ), resize( phi2, widthTBphi ), resize( z2, widthTBz ) );
+    when 3 => s := ( '0', v3, ( others => '0' ), ( others => '0' ), resize( r3, widthTBr ), resize( phi3, widthTBphi ), resize( z3, widthTBz ) );
     when others => null;
   end case;
   return s;
