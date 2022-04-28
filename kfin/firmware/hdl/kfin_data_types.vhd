@@ -278,7 +278,7 @@ record
   B: std_logic_vector( widthDspUzb - 1 downto 0 );
   P: std_logic_vector( widthDspUzP - 1 downto 0 );
 end record;
-subtype r_Uz is natural range widthUz + 2 - baseShiftTBcot - 1 downto 2 - baseShiftTBcot;
+subtype r_Uz is natural range widthUz + 2 - baseShiftTBcot - 1 - 1 downto 2 - baseShiftTBcot - 1;
 
 constant widthDspHinv2Ra: natural := widthUinv2R + 1;
 constant widthDspHinv2Rb: natural := widthDSPportB;
