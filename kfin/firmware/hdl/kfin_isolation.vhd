@@ -219,11 +219,30 @@ begin
 end function;
 function conv( l: std_logic_vector; t: natural ) return t_stubTB is
   variable s: t_stubTB := nulll;
+  variable v0  : std_logic                                         := l( 1 + widthsTBr( 0 ) + widthsTBphi( 0 ) + widthsTBz( 0 ) - 1 );
+  variable v1  : std_logic                                         := l( 1 + widthsTBr( 1 ) + widthsTBphi( 1 ) + widthsTBz( 1 ) - 1 );
+  variable v2  : std_logic                                         := l( 1 + widthsTBr( 2 ) + widthsTBphi( 2 ) + widthsTBz( 2 ) - 1 );
+  variable v3  : std_logic                                         := l( 1 + widthsTBr( 3 ) + widthsTBphi( 3 ) + widthsTBz( 3 ) - 1 );
+  variable r0  : std_logic_vector( widthsTBr( 0 )   - 1 downto 0 ) := l(     widthsTBr( 0 ) + widthsTBphi( 0 ) + widthsTBz( 0 ) - 1 downto widthsTBphi( 0 ) + widthsTBz( 0 ) );
+  variable r1  : std_logic_vector( widthsTBr( 1 )   - 1 downto 0 ) := l(     widthsTBr( 1 ) + widthsTBphi( 1 ) + widthsTBz( 1 ) - 1 downto widthsTBphi( 1 ) + widthsTBz( 1 ) );
+  variable r2  : std_logic_vector( widthsTBr( 2 )   - 1 downto 0 ) := l(     widthsTBr( 2 ) + widthsTBphi( 2 ) + widthsTBz( 2 ) - 1 downto widthsTBphi( 2 ) + widthsTBz( 2 ) );
+  variable r3  : std_logic_vector( widthsTBr( 3 )   - 1 downto 0 ) := l(     widthsTBr( 3 ) + widthsTBphi( 3 ) + widthsTBz( 3 ) - 1 downto widthsTBphi( 3 ) + widthsTBz( 3 ) );
+  variable phi0: std_logic_vector( widthsTBphi( 0 ) - 1 downto 0 ) := l(                      widthsTBphi( 0 ) + widthsTBz( 0 ) - 1 downto                    widthsTBz( 0 ) );
+  variable phi1: std_logic_vector( widthsTBphi( 1 ) - 1 downto 0 ) := l(                      widthsTBphi( 1 ) + widthsTBz( 1 ) - 1 downto                    widthsTBz( 1 ) );
+  variable phi2: std_logic_vector( widthsTBphi( 2 ) - 1 downto 0 ) := l(                      widthsTBphi( 2 ) + widthsTBz( 2 ) - 1 downto                    widthsTBz( 2 ) );
+  variable phi3: std_logic_vector( widthsTBphi( 3 ) - 1 downto 0 ) := l(                      widthsTBphi( 3 ) + widthsTBz( 3 ) - 1 downto                    widthsTBz( 3 ) );
+  variable z0  : std_logic_vector( widthsTBz( 0 )   - 1 downto 0 ) := l(                                         widthsTBz( 0 ) - 1 downto                                 0 );
+  variable z1  : std_logic_vector( widthsTBz( 1 )   - 1 downto 0 ) := l(                                         widthsTBz( 1 ) - 1 downto                                 0 );
+  variable z2  : std_logic_vector( widthsTBz( 2 )   - 1 downto 0 ) := l(                                         widthsTBz( 2 ) - 1 downto                                 0 );
+  variable z3  : std_logic_vector( widthsTBz( 3 )   - 1 downto 0 ) := l(                                         widthsTBz( 3 ) - 1 downto                                 0 );
 begin
-  s.valid :=         l( 1 + widthsTBr( t ) + widthsTBphi( t ) + widthsTBz( t ) - 1 );
-  s.r     := resize( l(     widthsTBr( t ) + widthsTBphi( t ) + widthsTBz( t ) - 1 downto widthsTBphi( t ) + widthsTBz( t ) ), widthTBr   );
-  s.phi   := resize( l(                      widthsTBphi( t ) + widthsTBz( t ) - 1 downto                    widthsTBz( t ) ), widthTBphi );
-  s.z     := resize( l(                                         widthsTBz( t ) - 1 downto                                 0 ), widthTBz   );
+  case t is
+    when 0 => s := ( '0', v0, ( others => '0' ), ( others => '0' ), resize( r0, widthTBr ), resize( phi0, widthTBphi ), resize( z0, widthTBz ) );
+    when 1 => s := ( '0', v1, ( others => '0' ), ( others => '0' ), resize( r1, widthTBr ), resize( phi0, widthTBphi ), resize( z1, widthTBz ) );
+    when 2 => s := ( '0', v2, ( others => '0' ), ( others => '0' ), resize( r2, widthTBr ), resize( phi0, widthTBphi ), resize( z2, widthTBz ) );
+    when 3 => s := ( '0', v3, ( others => '0' ), ( others => '0' ), resize( r3, widthTBr ), resize( phi0, widthTBphi ), resize( z3, widthTBz ) );
+    when others => null;
+  end case;
   return s;
 end function;
 
