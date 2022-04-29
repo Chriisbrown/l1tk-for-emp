@@ -274,6 +274,7 @@ signal sr: t_ctrls( 3 downto 2 ) := ( others => ( others => '0' ) );
 signal dsp: t_dspSB := ( others => ( others => '0' ) );
 
 -- step 3
+constant limit: std_logic_vector( widthUz - 1 downto 0 ) := stds( int( tiltedLayerLimitsZ( index ), baseUz ), widthUz );
 signal z: std_logic_vector( widthSBz - 1 - 1 downto 0 ) := ( others => '0' );
 signal dout: t_stubU := nulll;
 
@@ -309,7 +310,7 @@ if rising_edge( clk ) then
   elsif sr( 3 ).valid = '1' then
     dout.valid <= '1';
     dout.r <= stds( ( barrelLayersRadii( index ) - chosenRofPhi ) / baseUr, widthUr );
-    if index < numBarrelLayersPS and uint( z ) < int( tiltedLayerLimitsZ( index ), baseUz ) then
+    if index < numBarrelLayersPS and ( '0' & abs( z ) ) < limit then
       dout.pst <= '1';
     end if;
   end if;
