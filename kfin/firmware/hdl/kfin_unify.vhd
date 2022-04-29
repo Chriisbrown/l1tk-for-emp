@@ -248,6 +248,7 @@ end;
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.math_real.all;
+use ieee.numeric_std.all;
 use work.hybrid_tools.all;
 use work.hybrid_config.all;
 use work.hybrid_data_types.all;
@@ -310,8 +311,8 @@ if rising_edge( clk ) then
   elsif sr( 3 ).valid = '1' then
     dout.valid <= '1';
     dout.r <= stds( ( barrelLayersRadii( index ) - chosenRofPhi ) / baseUr, widthUr );
-    if index < numBarrelLayersPS and ( '0' & abs( z ) ) < limit then
-      dout.pst <= '1';
+    if index < numBarrelLayersPS and unsigned( z ) < unsigned( limit ) then
+     dout.pst <= '1';
     end if;
   end if;
 
@@ -487,6 +488,7 @@ end;
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 use ieee.math_real.all;
 use work.hybrid_tools.all;
 use work.hybrid_config.all;
@@ -561,6 +563,15 @@ signal z0dz: std_logic_vector( max( widthUz, widthTBz0 ) + 1 - 1 downto 0 ) := (
 signal dsp: t_dspPB := ( others => ( others => '0' ) );
 
 -- step 3
+function init_limit return std_logic_vector is
+  variable res: std_logic_vector( widthUz - 1 downto 0 ) := ( others => '0' );
+begin
+  if index < numBarrelLayersPS then
+    res := stds( int( tiltedLayerLimitsZ( index ), baseUz ), widthUz );
+  end if;
+  return res;
+end function;
+constant limit: std_logic_vector( widthUz - 1 downto 0 ) := init_limit;
 signal z: std_logic_vector( widthPBz - 1 - 1 downto 0 ) := ( others => '0' );
 signal dout: t_stubU := nulll;
 
@@ -600,7 +611,7 @@ if rising_edge( clk ) then
     dout.r <= sr( 3 ).r;
     dout.phi <= sr( 3 ).phi;
     dout.z <= sr( 3 ).z;
-    if index < numBarrelLayersPS and uint( z ) < int( tiltedLayerLimitsZ( index ), baseUz ) then
+    if index < numBarrelLayersPS and unsigned( z ) < unsigned( limit ) then
       dout.pst <= '1';
     end if; 
   end if;
