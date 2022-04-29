@@ -69,20 +69,30 @@ port (
 );
 end component;
 
-signal out_packet: std_logic_vector( numLayers + 1 - 1 downto 0 ) := ( others => '0' );
-signal out_din: t_channelsZHT( numSeedTypes - 1 downto 0 ) := ( others => nulll );
-signal out_dout: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
-component kfin_isolation_out
+signal kf_din: t_channelsZHT( numNodesKF - 1 downto 0 ) := ( others => nulll );
+signal kf_dout: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
+component kf_top
 port (
   clk: in std_logic;
-  out_packet: in std_logic_vector( numLayers + 1 - 1 downto 0 );
-  out_din: in t_channelsZHT( numSeedTypes - 1 downto 0 );
+  kf_din: in t_channelsZHT( numNodesKF - 1 downto 0 );
+  kf_dout: out t_channelsKF( numNodesKF - 1 downto 0 )
+);
+end component;
+
+signal out_packet: std_logic_vector( numNodesKF * ( numLayers + 1 ) - 1 downto 0 ) := ( others => '0' );
+signal out_din: t_channelsKF( numNodesKF - 1 downto 0 ) := ( others => nulll );
+signal out_dout: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+component kf_isolation_out
+port (
+  clk: in std_logic;
+  out_packet: in std_logic_vector( numNodesKF * ( numLayers + 1 ) - 1 downto 0 );
+  out_din: in t_channelsKF( numNodesKF - 1 downto 0 );
   out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
 );
 end component;
 
 function conv( l: ldata ) return std_logic_vector is
-  variable s: std_logic_vector( numLayers + 1 - 1 downto 0 );
+  variable s: std_logic_vector( numNodesKF * ( numLayers + 1 ) - 1 downto 0 );
 begin
   for k in s'range loop
     s( k ) := l( k ).valid;
@@ -102,8 +112,10 @@ tracklet_din <= in_dout;
 
 kfin_din <= tracklet_dout;
 
+kf_din <= kfin_dout;
+
 out_packet <=  conv( d );
-out_din <= kfin_dout;
+out_din <= kf_dout;
 
 q <= out_dout;
 
@@ -113,7 +125,9 @@ tracklet: tracklet_top port map ( clk_p, tracklet_reset, tracklet_din, tracklet_
 
 kfin: kfin_top port map ( clk_p, kfin_din, kfin_dout );
 
-fout: kfin_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
+kf: kf_top port map ( clk, kf_din, kf_dout );
+
+fout: kf_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
 
 
 ipb_out <= IPB_RBUS_NULL;
