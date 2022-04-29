@@ -125,7 +125,7 @@ tracklet: tracklet_top port map ( clk_p, tracklet_reset, tracklet_din, tracklet_
 
 kfin: kfin_top port map ( clk_p, kfin_din, kfin_dout );
 
-kf: kf_top port map ( clk, kf_din, kf_dout );
+kf: kf_top port map ( clk_p, kf_din, kf_dout );
 
 fout: kf_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
 
