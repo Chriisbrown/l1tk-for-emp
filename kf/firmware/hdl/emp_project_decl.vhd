@@ -28,26 +28,15 @@ constant REGION_CONF : region_conf_array_t := (
      6 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
      7 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
      8 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-     9 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
+    ---- Cross-chip
     10 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
     11 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
     12 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
     13 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    ---- Cross-chip
     14 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
     15 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
     16 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
     17 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    18 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    19 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    20 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    21 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    22 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    23 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    24 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    25 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    26 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
-    27 => ( no_mgt, no_buf, no_fmt, no_buf, no_mgt ),
     others => kDummyRegion
 );
 
