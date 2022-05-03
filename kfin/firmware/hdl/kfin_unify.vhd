@@ -275,7 +275,15 @@ signal sr: t_ctrls( 3 downto 2 ) := ( others => ( others => '0' ) );
 signal dsp: t_dspSB := ( others => ( others => '0' ) );
 
 -- step 3
-constant limit: std_logic_vector( widthUz - 1 downto 0 ) := stds( int( tiltedLayerLimitsZ( index ), baseUz ), widthUz );
+function init_limit return std_logic_vector is
+  variable res: std_logic_vector( widthUz - 1 downto 0 ) := ( others => '0' );
+begin
+  if index < numBarrelLayersPS then
+    res := stdu( int( tiltedLayerLimitsZ( index ), baseUz ), widthUz );
+  end if;
+  return res;
+end function;
+constant limit: std_logic_vector( widthUz - 1 downto 0 ) := init_limit;
 signal z: std_logic_vector( widthSBz - 1 - 1 downto 0 ) := ( others => '0' );
 signal dout: t_stubU := nulll;
 
@@ -567,7 +575,7 @@ function init_limit return std_logic_vector is
   variable res: std_logic_vector( widthUz - 1 downto 0 ) := ( others => '0' );
 begin
   if index < numBarrelLayersPS then
-    res := stds( int( tiltedLayerLimitsZ( index ), baseUz ), widthUz );
+    res := stdu( int( tiltedLayerLimitsZ( index ), baseUz ), widthUz );
   end if;
   return res;
 end function;
