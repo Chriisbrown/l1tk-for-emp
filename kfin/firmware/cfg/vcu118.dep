@@ -1,4 +1,4 @@
-src ../ucf/vcu118.tcl
+#src ../ucf/vcu118.tcl
 
 include payload.dep
 
