@@ -32,12 +32,16 @@ end;
 
 architecture rtl of emp_payload is
 
-signal in_din: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+signal in_din: ldata( 51 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
 signal in_dout: t_channlesTB( numSeedTypes - 1 downto 0 ) := ( others => nulll );
+signal d_mapped : ldata(51 downto 0);   -- mapped data in
+signal q_mapped : ldata( numLinksTFP - 1 downto 0);  -- mapped data out
+
+
 component kfin_isolation_in
 port (
   clk: in std_logic;
-  in_din: in ldata( 4 * N_REGION - 1 downto 0 );
+  in_din: in ldata( 51 downto 0 );
   in_dout: out t_channlesTB( numSeedTypes - 1 downto 0 )
 );
 end component;
@@ -74,13 +78,13 @@ end component;
 
 signal out_packet: std_logic_vector( numLinksTFP - 1 downto 0 ) := ( others => '0' );
 signal out_din: t_frames( numLinksTFP - 1 downto 0 ) := ( others => ( others => '0' ) );
-signal out_dout: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+signal out_dout: ldata( numLinksTFP - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
 component kfout_isolation_out
 port (
     clk: in std_logic;
     out_packet: in std_logic_vector( numLinksTFP - 1 downto 0 );
     out_din: in t_frames( numLinksTFP - 1 downto 0 );
-    out_dout: out ldata( 4 * N_REGION - 1 downto 0 )
+    out_dout: out ldata( numLinksTFP - 1 downto 0 )
 );
 end component;
 
@@ -96,17 +100,31 @@ end;
 
 begin
 
+LinkMapInstance : entity work.link_map
+  port map(
+    d        => d,
+    d_mapped => d_mapped,
+    q_mapped => q_mapped,
+    q        => q
+);
 
-in_din <= d;
+
+
+in_din <= d_mapped;
 
 kfin_din <= in_dout;
 kf_din <= kfin_dout;
 kfout_din <= kf_dout;
 
-out_packet <=  conv( d );
+out_packet <=  conv( d_mapped );
 out_din <= kfout_dout;
 
-q <= out_dout;
+q_mapped <= out_dout;
+q_mapped(0).strobe <= '1';
+q_mapped(0).start  <= '0';
+q_mapped(1).strobe <= '1';
+q_mapped(1).start  <= '0';
+
 
 fin: kfin_isolation_in port map ( clk_p, in_din, in_dout );
 

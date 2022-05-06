@@ -9,7 +9,7 @@ package Constants is
   constant maxDepth : integer := 3;
   constant nNodes : integer := 15;
   constant nLeaves : integer := 8;
-  constant nFeatures : integer := 28;
+  constant nFeatures : integer := 24;
   constant nClasses : integer := 1;
 
   subtype tx is signed(17 downto 0);

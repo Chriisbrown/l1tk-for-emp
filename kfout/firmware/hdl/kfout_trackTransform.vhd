@@ -331,13 +331,13 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
   BEGIN 
 
-    scaleZentity : ScaleZT GENERIC MAP ( zdelay => chiLatency - zscaleLatency )
+    scaleZentity : ScaleZT GENERIC MAP ( zdelay => frame_delay - 1 - zscaleLatency )
                            PORT MAP    ( clk    => clk, 
                                           zT    => zT, 
                                          cot    => cot, 
                                           z0    => z0);
                                        
-    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => chiLatency - phiscaleLatency )
+    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => frame_delay -1 - phiscaleLatency )
                               PORT MAP    ( clk       => clk, 
                                             phiT      => phiT, 
                                             inv2R     => inv2R, 
@@ -398,16 +398,16 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
           Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 2 ) );
           Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
           Output( i ).TQMVA      <=  TO_UNSIGNED( temp_MVA, widthTQMVA );     --Blank for now
-          Output( i ).HitPattern <=  HitPattern_array(frame_delay - 2 );
+          Output( i ).HitPattern <=  HitPattern_array(frame_delay - 1 );
           Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
           Output( i ).Chi2RPhi   <=  Chi2Rphi_array( frame_delay - chiLatency - 2 );
           Output( i ).Chi2RZ     <=  Chi2RZ_array( frame_delay - chiLatency - 2 );
           Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
           Output( i ).Z0         <=  z0;
-          Output( i ).TanL       <=  Tanl_array( frame_delay - 2 );
+          Output( i ).TanL       <=  Tanl_array( frame_delay - 3 );
           Output( i ).Phi0       <=  phi0;
-          Output( i ).InvR       <=  InvR_array( frame_delay - 2 );
-          Output( i ).SortKey    <=  1 WHEN (sign_array(frame_delay - 3) = '1') ELSE 0;
+          Output( i ).InvR       <=  InvR_array( frame_delay - 3 );
+          Output( i ).SortKey    <=  1 WHEN (sign_array(frame_delay - 4) = '1') ELSE 0;
 
           TrackCounter := TrackCounter + 1;
 
@@ -416,7 +416,7 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
           Output( i ).TrackValid <=  '0';
           Output( i ).DataValid  <=  True;
-          Output( i ).SortKey    <=  i;
+          Output( i ).SortKey    <=  0;
           Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );
           Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );   
           Output( i ).HitPattern <=  TO_UNSIGNED( 0, widthHitPattern);

@@ -23,7 +23,7 @@ package emp_project_decl is
   constant CLOCK_AUX_DIV      : clock_divisor_array_t := (18, 9, 4); -- Dividers of CLOCK_COMMON_RATIO * 40 MHz
 
   -- Only used by nullalgo   
-  constant PAYLOAD_LATENCY : integer := 253 + 19 - 2 + 22;
+  constant PAYLOAD_LATENCY : integer := 253 + 19 - 2 + 22 + 31;
 
 
   constant REGION_CONF : region_conf_array_t := (
