@@ -13,4 +13,4 @@ src kfin_data_types.vhd
 src kfin_data_formats.vhd
 src kfin_config.vhd
 
-#src ../luts/layerEncoding.txt
+src ../luts/layerEncoding.mem
