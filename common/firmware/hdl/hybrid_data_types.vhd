@@ -156,14 +156,6 @@ end record;
 type t_channelsKF is array ( natural range <> ) of t_channelKF;
 function nulll return t_channelKF;
 
-type t_channelTQ is
-  record
-    valid : BOOLEAN;
-    TQscore : INTEGER;
-end record;
-type t_channelsTQ is array ( natural range <> ) of t_channelTQ;
-function nulll return t_channelTQ;
-
 subtype t_frame is std_logic_vector( LWORD_WIDTH - 1 downto 0 );
 type t_frames is array ( natural range <> ) of t_frame;
 
@@ -187,7 +179,6 @@ function nulll return t_channelZHT is begin return ( nulll, ( others => nulll ) 
 function nulll return t_stubKF is begin return ( '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_trackKF is begin return ( '0', '0', '0', others => ( others => '0' ) ); end function;
 function nulll return t_channelKF is begin return ( nulll, ( others => nulll ) ); end function;
-function nulll return t_channelTQ is begin return ( FALSE, 0 ); end function;
 
 
 end;

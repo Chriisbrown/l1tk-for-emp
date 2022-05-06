@@ -252,7 +252,6 @@ use work.hybrid_data_formats.all;
 ENTITY kfout_trackTransform IS
 PORT(
   clk          : IN STD_LOGIC; -- The algorithm clock
-  TQObjectsIn  : IN t_channelsTQ;
   KFObjectsIn  : IN t_channelsKF;
   TTTracksOut  : OUT Vector
 );
@@ -268,7 +267,7 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
   SIGNAL Output : VECTOR( 0 TO numNodesKF - 1 ):= NullVector( numNodesKF );
   SIGNAL reset  : STD_LOGIC_VECTOR( 0 TO numNodesKF - 1 ) := ( OTHERS => '0' );
 
-  CONSTANT frame_delay : INTEGER := TQLatency; --Constant latency of algorithm steps
+  CONSTANT frame_delay : INTEGER := chiLatency; --Constant latency of algorithm steps
 
   BEGIN
   g1 : FOR i IN 0 TO numNodesKF-1 GENERATE
@@ -356,7 +355,6 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
       VARIABLE EtaSign   : STD_LOGIC := '0';
       VARIABLE modCot   : SIGNED( widthTanL -1 DOWNTO 0 ) := ( OTHERS => '0' );
       VARIABLE TrackCounter : INTEGER := 0;
-      VARIABLE temp_MVA     : INTEGER := 0;
 
     BEGIN
       IF RISING_EDGE(clk) THEN
@@ -384,20 +382,13 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
         Chi2Rphi_array   <= Chi2Rphi & Chi2Rphi_array( 0 TO frame_delay - chiLatency - 2 );
         Chi2RZ_array     <= Chi2RZ & Chi2RZ_array( 0 TO frame_delay - chiLatency - 2 );
 
-        -- Satrurate BDT output
-        temp_MVA := TQObjectsIn( i ).TQscore / 8;
-        if temp_MVA > 8 THEN
-          temp_MVA := 8;
-        elsif temp_MVA < 0 THEN
-          temp_MVA := 0;
-        end if;
 
         IF TO_BOOLEAN( frame_array( frame_delay- 2 ) ) THEN 
 
           Output( i ).TrackValid <=  frame_array( frame_delay- 2 );
           Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 2 ) );
           Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
-          Output( i ).TQMVA      <=  TO_UNSIGNED( temp_MVA, widthTQMVA );     --Blank for now
+          Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );     --Blank for now
           Output( i ).HitPattern <=  HitPattern_array(frame_delay - 1 );
           Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
           Output( i ).Chi2RPhi   <=  Chi2Rphi_array( frame_delay - chiLatency - 2 );

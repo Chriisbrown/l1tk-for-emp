@@ -4,7 +4,6 @@ src -c l1tk-for-emp:common link_map.vhd
 src pkg_link_map_dcvu13p.vhd
 
 include -c l1tk-for-emp:kfout components.dep
-include -c l1tk-for-emp:tq components.dep
 include -c l1tk-for-emp:kf components.dep
 include -c l1tk-for-emp:kfin components.dep
 include -c l1tk-for-emp:common components.dep
