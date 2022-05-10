@@ -19,8 +19,9 @@ constant pitchPS            : real :=   0.01;                               -- p
 constant pitch2S            : real :=   0.009;                              -- strip pitch of outer tracker sensors in cm
 constant lengthPS           : real :=   0.1467;                             -- pixel length of outer tracker sensors in cm
 constant length2S           : real :=   5.025;                              -- strip length of outer tracker sensors in cm 
-constant tiltApproxSlope    : real :=   1.02399;                            -- 
-constant tiltApproxIntercept: real :=  -0.279601;                           --
+constant tiltApproxSlope    : real :=   0.884;                              -- In tilted barrel, grad*|z|/r + int approximates |cosTilt| + |sinTilt * cotTheta|
+constant tiltApproxIntercept: real :=   0.507;                              -- In tilted barrel, grad*|z|/r + int approximates |cosTilt| + |sinTilt * cotTheta|
+constant tiltUncertaintyR   : real :=   0.12;                               -- In tilted barrel, constant assumed stub radial uncertainty * sqrt(12) in cm
 constant scattering         : real :=   0.131283;                           -- additional radial uncertainty in cm used to calculate stub phi residual uncertainty to take multiple scattering into account
 
 constant tmp           : natural := 18;                                 -- time multiplexed period in number of BX
@@ -140,28 +141,28 @@ constant maxNumSeedingLayer: natural := 2;                               --
 type t_seedingLayers is array ( natural range <> ) of naturals( 0 to maxNumSeedingLayer - 1 ); 
 constant seedTypesSeedLayers: t_seedingLayers( 0 to numSeedTypes - 1 ) := (                    -- seeding layers of seed types using default layer id [barrel: 1-6, discs: 11-15]
 --  t_seedTypes'pos( L1L2 ) => (  1,  2 )
- t_seedTypes'pos( L1L2 ) => (  1,  2 ),
- t_seedTypes'pos( L2L3 ) => (  2,  3 ),
- t_seedTypes'pos( L3L4 ) => (  3,  4 ),
- t_seedTypes'pos( L5L6 ) => (  5,  6 ),
- t_seedTypes'pos( D1D2 ) => ( 11, 12 ),
- t_seedTypes'pos( D3D4 ) => ( 13, 14 ),
- t_seedTypes'pos( L1D1 ) => (  1, 11 ),
- t_seedTypes'pos( L2D1 ) => (  2, 11 )
+  t_seedTypes'pos( L1L2 ) => (  1,  2 ),
+  t_seedTypes'pos( L2L3 ) => (  2,  3 ),
+  t_seedTypes'pos( L3L4 ) => (  3,  4 ),
+  t_seedTypes'pos( L5L6 ) => (  5,  6 ),
+  t_seedTypes'pos( D1D2 ) => ( 11, 12 ),
+  t_seedTypes'pos( D3D4 ) => ( 13, 14 ),
+  t_seedTypes'pos( L1D1 ) => (  1, 11 ),
+  t_seedTypes'pos( L2D1 ) => (  2, 11 )
 );
 constant maxNumProjectionLayers: natural := 8;                        -- max number layers a sedd type may project to
 --constant maxNumProjectionLayers: natural := 4;                        -- max number layers a sedd type may project to
 type t_projectionLayers is array ( natural range <> ) of naturals( 0 to maxNumProjectionLayers - 1 );
 constant seedTypesProjectionLayers: t_projectionLayers( 0 to numSeedTypes - 1 ) := (           -- layers a seed types can project to using default layer id [barrel: 1-6, discs: 11-15]
 --  t_seedTypes'pos( L1L2 ) => (  3,  4,  5,  6, others => 0 )
- t_seedTypes'pos( L1L2 ) => (  3,  4,  5,  6, 11, 12, 13, 14, others => 0 ),
- t_seedTypes'pos( L2L3 ) => (  1,  4,  5,  6, 11, 12, 13, 14, others => 0 ),
- t_seedTypes'pos( L3L4 ) => (  1,  2,  5,  6, 11, 12,         others => 0 ),
- t_seedTypes'pos( L5L6 ) => (  1,  2,  3,  4,                 others => 0 ),
- t_seedTypes'pos( D1D2 ) => (  1,  2, 13, 14, 15,             others => 0 ),
- t_seedTypes'pos( D3D4 ) => (  1, 11, 12, 15,                 others => 0 ),
- t_seedTypes'pos( L1D1 ) => ( 12, 13, 14, 15,                 others => 0 ),
- t_seedTypes'pos( L2D1 ) => (  1, 12, 13, 14,                 others => 0 )
+  t_seedTypes'pos( L1L2 ) => (  3,  4,  5,  6, 11, 12, 13, 14, others => 0 ),
+  t_seedTypes'pos( L2L3 ) => (  1,  4,  5,  6, 11, 12, 13, 14, others => 0 ),
+  t_seedTypes'pos( L3L4 ) => (  1,  2,  5,  6, 11, 12,         others => 0 ),
+  t_seedTypes'pos( L5L6 ) => (  1,  2,  3,  4,                 others => 0 ),
+  t_seedTypes'pos( D1D2 ) => (  1,  2, 13, 14, 15,             others => 0 ),
+  t_seedTypes'pos( D3D4 ) => (  1, 11, 12, 15,                 others => 0 ),
+  t_seedTypes'pos( L1D1 ) => ( 12, 13, 14, 15,                 others => 0 ),
+  t_seedTypes'pos( L2D1 ) => (  1, 12, 13, 14,                 others => 0 )
 );
 constant maxNumLayers: natural := maxNumSeedingLayer + maxNumProjectionLayers;
 function init_numsProjectionLayers return naturals;
