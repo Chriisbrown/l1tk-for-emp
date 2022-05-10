@@ -12,4 +12,4 @@ src --vhdl2008 kfin_data_types.vhd
 src --vhdl2008 kfin_data_formats.vhd
 src --vhdl2008 kfin_config.vhd
 
-#src ../luts/layerEncoding.txt
+src ../luts/layerEncoding.mem

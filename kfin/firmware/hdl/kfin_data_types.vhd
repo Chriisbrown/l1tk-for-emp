@@ -506,7 +506,7 @@ function init_ramLengths return t_ramLengths is
   variable ram: t_ramLengths := ( others => ( others => '0' ) );
   variable index: std_logic_vector( widthAddrBRAM18 - 1 downto 0 );
   variable barrel, ps, tilt: boolean;
-  variable cot, lengthZ, lengthR: real;
+  variable cot, length, lengthZ, lengthR: real;
 begin
   for k in ram'range loop
     index := stdu( k, widthAddrBRAM18 );
@@ -514,21 +514,18 @@ begin
     ps := bool( index( index'high - 1 ) );
     tilt := bool( index( index'high - 2 ) );
     cot := ( real( uint( index( index'high - 3 downto 0 ) ) ) + 0.5 ) * baseZHTcot * 2.0 ** (-baseShiftFlutCot);
-    lengthZ := length2S;
+    length := length2S;
     if ps then
-      lengthZ := lengthPS;
+      length := lengthPS;
     end if;
+    lengthZ := length;
+    lengthR := 0.0;
     if not barrel then
-      lengthZ := lengthZ * cot;
+      lengthZ := length * cot;
+      lengthR := length;
     elsif tilt then
       lengthZ := lengthZ * abs( tiltApproxSlope * cot + tiltApproxIntercept );
-    end if;
-    lengthR := 0.0;
-    if cot > 0.4 then
-      lengthR := lengthZ / cot;
-    end if;
-    if barrel and not tilt then
-      lengthR := 0.0;
+      lengthR := tiltUncertaintyR;
     end if;
     lengthZ := lengthZ + baseZHTz;
     if lengthZ < baseZHTz * 2.0 ** widthLengthZ then
