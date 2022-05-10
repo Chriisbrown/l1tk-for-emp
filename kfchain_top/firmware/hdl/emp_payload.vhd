@@ -32,16 +32,16 @@ end;
 
 architecture rtl of emp_payload is
 
-signal in_din: ldata( 51 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+signal in_din: ldata( numInputLinks - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
 signal in_dout: t_channlesTB( numSeedTypes - 1 downto 0 ) := ( others => nulll );
-signal d_mapped : ldata(51 downto 0);   -- mapped data in
+signal d_mapped : ldata( numInputLinks - 1 downto 0);   -- mapped data in
 signal q_mapped : ldata( numLinksTFP - 1 downto 0);  -- mapped data out
 
 
 component kfin_isolation_in
 port (
   clk: in std_logic;
-  in_din: in ldata( 51 downto 0 );
+  in_din: in ldata( numInputLinks - 1 downto 0 );
   in_dout: out t_channlesTB( numSeedTypes - 1 downto 0 )
 );
 end component;
