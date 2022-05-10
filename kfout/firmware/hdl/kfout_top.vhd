@@ -30,11 +30,11 @@ signal Reset: std_logic := '0';
 signal PacketData: PacketArray( 0 TO numOutLinks - 1)  := ( others => ( others => '0' ));
 signal PacketValid: std_logic_vector( 0 TO numOutLinks - 1 ) := ( others => '0' );
 
-
 begin
 
 
 Reset <= kfout_din( 0 ).track.reset; 
+
 -- ------------------------------------------------------------------------
 -- Convert KF tracks and KF stubs to TTTracks
 TrackTransformInstance : ENTITY work.kfout_trackTransform

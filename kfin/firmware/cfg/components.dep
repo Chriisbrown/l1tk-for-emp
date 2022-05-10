@@ -1,16 +1,15 @@
-src kfin_isolation.vhd
-src kfin_isolation.vhd
+src --vhdl2008 kfin_isolation.vhd
 
-src kfin_format.vhd
-src kfin_router.vhd
-src kfin_low.vhd
-src kfin_sector.vhd
-src kfin_high.vhd
-src kfin_unify.vhd
-src kfin_top.vhd
-src kfin_layerEncoding.vhd
-src kfin_data_types.vhd
-src kfin_data_formats.vhd
-src kfin_config.vhd
+src --vhdl2008 kfin_format.vhd
+src --vhdl2008 kfin_router.vhd
+src --vhdl2008 kfin_low.vhd
+src --vhdl2008 kfin_sector.vhd
+src --vhdl2008 kfin_high.vhd
+src --vhdl2008 kfin_unify.vhd
+src --vhdl2008 kfin_top.vhd
+src --vhdl2008 kfin_layerEncoding.vhd
+src --vhdl2008 kfin_data_types.vhd
+src --vhdl2008 kfin_data_formats.vhd
+src --vhdl2008 kfin_config.vhd
 
 src ../luts/layerEncoding.mem

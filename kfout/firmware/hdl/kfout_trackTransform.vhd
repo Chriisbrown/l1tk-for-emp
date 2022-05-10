@@ -262,18 +262,19 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
   type hitpatternARRAY is array ( NATURAL range <>) of UNSIGNED( widthHitPattern - 1 DOWNTO 0 );
   type TanlARRAY is array ( NATURAL range <>) of SIGNED( widthTanL - 1 DOWNTO 0 );
   type InvRARRAY is array ( NATURAL range <>) of SIGNED( widthInvR - 1 DOWNTO 0 );
+  type ChiARRAY is array ( NATURAL range <>) of UNSIGNED( widthChi2RPhi - 1 DOWNTO 0 );
 
   SIGNAL Output : VECTOR( 0 TO numNodesKF - 1 ):= NullVector( numNodesKF );
   SIGNAL reset  : STD_LOGIC_VECTOR( 0 TO numNodesKF - 1 ) := ( OTHERS => '0' );
 
-  CONSTANT frame_delay : INTEGER := chiLatency + 1; --Constant latency of algorithm steps
+  CONSTANT frame_delay : INTEGER := chiLatency; --Constant latency of algorithm steps
 
   BEGIN
   g1 : FOR i IN 0 TO numNodesKF-1 GENERATE
     
     SIGNAL frame_signal : STD_LOGIC := '0';
     SIGNAL frame_array  : STD_LOGIC_VECTOR( 0 TO frame_delay - 1 ) := ( OTHERS => '0' );  --Delaying frame valid signals
-    SIGNAL sign_array   : STD_LOGIC_VECTOR( 0 TO chiLatency - 1 )  := ( OTHERS => '0' );  --Delaying track num signals
+    SIGNAL sign_array   : STD_LOGIC_VECTOR( 0 TO frame_delay - 1 )  := ( OTHERS => '0' );  --Delaying track num signals
 
     SIGNAL z0  : SIGNED( widthZ0 - 1 DOWNTO 0 )    := ( OTHERS =>'0' );
     SIGNAL zT  : SIGNED( widthKFZT - 1 DOWNTO 0 )  := ( OTHERS =>'0' );
@@ -288,9 +289,11 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
     SIGNAL Chi2RZ   : UNSIGNED( widthChi2RZ - 1 DOWNTO 0 )   := ( OTHERS =>'0' );
     SIGNAL stubs    : t_stubsKF( numLayers-1 DOWNTO 0 )      := ( OTHERS => nulll);
 
-    SIGNAL HitPattern_array : hitpatternARRAY( 0 TO chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
-    SIGNAL Tanl_array       : TanlARRAY( 0 TO chiLatency - 1 )       := ( OTHERS => ( OTHERS =>'0'));
-    SIGNAL InvR_array       : InvRARRAY( 0 TO chiLatency - 1 )       := ( OTHERS => ( OTHERS =>'0'));
+    SIGNAL HitPattern_array : hitpatternARRAY( 0 TO frame_delay - 1 ) := ( OTHERS => ( OTHERS =>'0'));
+    SIGNAL Tanl_array       : TanlARRAY( 0 TO frame_delay - 1 )       := ( OTHERS => ( OTHERS =>'0'));
+    SIGNAL InvR_array       : InvRARRAY( 0 TO frame_delay - 1 )       := ( OTHERS => ( OTHERS =>'0'));
+    SIGNAL Chi2Rphi_array   : ChiARRAY( 0 TO frame_delay - chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
+    SIGNAL Chi2RZ_array     : ChiARRAY( 0 TO frame_delay - chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
     
     SIGNAL EtaSector : INTEGER RANGE 0 TO 16 := 0 ;
 
@@ -327,13 +330,13 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
   BEGIN 
 
-    scaleZentity : ScaleZT GENERIC MAP ( zdelay => chiLatency - zscaleLatency )
+    scaleZentity : ScaleZT GENERIC MAP ( zdelay => frame_delay - 1 - zscaleLatency )
                            PORT MAP    ( clk    => clk, 
                                           zT    => zT, 
                                          cot    => cot, 
                                           z0    => z0);
                                        
-    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => chiLatency - phiscaleLatency )
+    scalePhientity : ScalePhi GENERIC MAP ( phidelay  => frame_delay -1 - phiscaleLatency )
                               PORT MAP    ( clk       => clk, 
                                             phiT      => phiT, 
                                             inv2R     => inv2R, 
@@ -356,7 +359,7 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
     BEGIN
       IF RISING_EDGE(clk) THEN
         frame_array <= KFObjectsIn( i ).track.valid & frame_array( 0 TO frame_delay - 2 );
-        sign_array  <= EtaSign & sign_array( 0 TO chiLatency - 2 );
+        sign_array  <= EtaSign & sign_array( 0 TO frame_delay - 2 );
 
         zT  <= SIGNED( KFObjectsIn( i ).track.zT );
         cot <= SIGNED( KFObjectsIn( i ).track.cot );
@@ -372,10 +375,13 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
         EtaSign := '1' WHEN EtaSector < INTEGER(numSectorsEta/2) ELSE '0';
 
-        HitPattern_array <= UNSIGNED(HitPattern(stubs)) & HitPattern_array( 0 TO chiLatency - 2 );
+        HitPattern_array <= UNSIGNED(HitPattern(stubs)) & HitPattern_array( 0 TO frame_delay - 2 );
         modCot           := TO_SIGNED((TO_INTEGER(cot) + CotBins(EtaSector)),widthTanL);
-        Tanl_array       <= modCot & Tanl_array( 0 TO chiLatency - 2 );
-        InvR_array       <= RESIZE(-inv2R - 1,widthinvr ) & InvR_array( 0 TO chiLatency - 2 );
+        Tanl_array       <= modCot & Tanl_array( 0 TO frame_delay - 2 );
+        InvR_array       <= RESIZE(-inv2R - 1,widthinvr ) & InvR_array( 0 TO frame_delay - 2 );
+        Chi2Rphi_array   <= Chi2Rphi & Chi2Rphi_array( 0 TO frame_delay - chiLatency - 2 );
+        Chi2RZ_array     <= Chi2RZ & Chi2RZ_array( 0 TO frame_delay - chiLatency - 2 );
+
 
         IF TO_BOOLEAN( frame_array( frame_delay- 2 ) ) THEN 
 
@@ -383,16 +389,16 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
           Output( i ).DataValid  <=  TO_BOOLEAN( frame_array( frame_delay- 2 ) );
           Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
           Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );     --Blank for now
-          Output( i ).HitPattern <=  HitPattern_array(chiLatency - 2 );
+          Output( i ).HitPattern <=  HitPattern_array(frame_delay - 1 );
           Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
-          Output( i ).Chi2RPhi   <=  Chi2Rphi;
-          Output( i ).Chi2RZ     <=  Chi2RZ;   
+          Output( i ).Chi2RPhi   <=  Chi2Rphi_array( frame_delay - chiLatency - 2 );
+          Output( i ).Chi2RZ     <=  Chi2RZ_array( frame_delay - chiLatency - 2 );
           Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
           Output( i ).Z0         <=  z0;
-          Output( i ).TanL       <=  Tanl_array( chiLatency - 2 );
+          Output( i ).TanL       <=  Tanl_array( frame_delay - 3 );
           Output( i ).Phi0       <=  phi0;
-          Output( i ).InvR       <=  InvR_array( chiLatency - 2 );
-          Output( i ).SortKey    <=  1 WHEN (sign_array(chiLatency - 3) = '1') ELSE 0;
+          Output( i ).InvR       <=  InvR_array( frame_delay - 3 );
+          Output( i ).SortKey    <=  1 WHEN (sign_array(frame_delay - 4) = '1') ELSE 0;
 
           TrackCounter := TrackCounter + 1;
 
@@ -401,14 +407,14 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
 
           Output( i ).TrackValid <=  '0';
           Output( i ).DataValid  <=  True;
-          Output( i ).SortKey    <=  i;
-          Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );  --Blank for now
-          Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );     --Blank for now
+          Output( i ).SortKey    <=  0;
+          Output( i ).extraMVA   <=  TO_UNSIGNED( 0, widthExtraMVA );
+          Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );   
           Output( i ).HitPattern <=  TO_UNSIGNED( 0, widthHitPattern);
-          Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
+          Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );
           Output( i ).Chi2RPhi   <=  TO_UNSIGNED( 0, widthChi2RPhi ); 
           Output( i ).Chi2RZ     <=  TO_UNSIGNED( 0, widthChi2RZ );   
-          Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
+          Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );        
           Output( i ).Z0         <=  TO_SIGNED( 0, widthZ0 ); 
           Output( i ).TanL       <=  TO_SIGNED( 0, widthTanL ); 
           Output( i ).Phi0       <=  TO_SIGNED( 0, widthphi0 ); 
