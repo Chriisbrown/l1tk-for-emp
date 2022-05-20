@@ -8,7 +8,7 @@ use work.hybrid_data_types.all;
 entity kfin_isolation_in is
 port (
   clk: in std_logic;
-  in_din: in ldata( 4 * N_REGION - 1 downto 0 );
+  in_din: in ldata( numInputLinks - 1 downto 0 );
   in_dout: out t_channlesTB( numSeedTypes - 1 downto 0 )
 );
 end;

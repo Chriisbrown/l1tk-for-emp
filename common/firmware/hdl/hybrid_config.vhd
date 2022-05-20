@@ -183,6 +183,7 @@ constant numNodesKF : natural := numSeedTypes;   -- number of KF workes
 -- TFP
 
 constant numLinksTFP: natural := 2;
+constant numInputLinks : natural := 52;
 
 
 end;
