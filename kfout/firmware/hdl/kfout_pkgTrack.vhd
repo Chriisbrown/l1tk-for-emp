@@ -51,7 +51,7 @@ PACKAGE DataType IS
   InvR       :   SIGNED( widthInvR       - 1 downto 0 );
 
   -- Utility field, used for the key in the distribution server 
-  SortKey    : INTEGER RANGE 0 TO 1;
+  SortKey    : INTEGER RANGE 0 TO (numLinksTFP - 1);
 
   Reset      : STD_LOGIC;
   DataValid  : BOOLEAN;
@@ -99,19 +99,16 @@ ATTRIBUTE SIZE of tData : TYPE IS widthTTTrack + 3;
 
   --CONSTANT bitloc                      : tFieldLocations := ( 0  , 14 ,   --InvR
   --                                                            15 , 26 ,   --Phi
-  --                                                            27 , 30 ,   --TanlInt
-  --                                                            31 , 42 ,   --Tanlfrac
-  --                                                            43 , 47 ,   --Z0Int
-  --                                                            48 , 54 ,   --Z0Frac
+  --                                                            27 , 42 ,   --Tanl
+  --                                                            43 , 54 ,   --Z0
   --                                                            55 , 57 ,   --MVAQ
   --                                                            58 , 63 ,   --MVAres
-  --                                                            0  , 5  ,   --D0Int
-  --                                                            6  , 12 ,   --D0Frac
+  --                                                            0  , 12 ,   --D0
   --                                                            13 , 16 ,   --Chirphi
   --                                                            17 , 20 ,   --Chirz
   --                                                            21 , 23 ,   --BendChi
   --                                                            24 , 30 ,   --HitPattern
-  --                                                            31         --TrackValid
+  --                                                            31          --TrackValid
   --                                                            );
 
   CONSTANT bitloc                      : tFieldLocations := (                     0  ,                                                           widthExtraMVA - 1 ,   --extra_MVA
@@ -162,21 +159,21 @@ PACKAGE BODY DataType IS
 
   FUNCTION ToStdLogicVector( aData : tData ) RETURN STD_LOGIC_VECTOR IS
     VARIABLE lRet                  : STD_LOGIC_VECTOR( widthTTTrack + 2 DOWNTO 0 ) := ( OTHERS => '0' );
-  BEGIN
+  BEGIN 
+    lRet( bitloc.extraMVAh   DOWNTO bitloc.extraMVAl   )  := STD_LOGIC_VECTOR( aData.extraMVA   );
+    lRet( bitloc.TQMVAh      DOWNTO bitloc.TQMVAl      )  := STD_LOGIC_VECTOR( aData.TQMVA      );
+    lRet( bitloc.Hitpatternh DOWNTO bitloc.Hitpatternl )  := STD_LOGIC_VECTOR( aData.Hitpattern );
+    lRet( bitloc.BendChi2h   DOWNTO bitloc.BendChi2l   )  := STD_LOGIC_VECTOR( aData.BendChi2   );
+    lRet( bitloc.D0h         DOWNTO bitloc.D0l         )  := STD_LOGIC_VECTOR( aData.D0         );
 
-    lRet( bitloc.InvRh       DOWNTO bitloc.InvRl       )        := STD_LOGIC_VECTOR( aData.InvR       );
-    lRet( bitloc.Phi0h       DOWNTO bitloc.Phi0l       )        := STD_LOGIC_VECTOR( aData.Phi0       );
-    lRet( bitloc.TanLh       DOWNTO bitloc.TanLl       )        := STD_LOGIC_VECTOR( aData.TanL       );
-    lRet( bitloc.Z0h         DOWNTO bitloc.Z0l         )        := STD_LOGIC_VECTOR( aData.Z0         );
-    lRet( bitloc.TQMVAh      DOWNTO bitloc.TQMVAl      )        := STD_LOGIC_VECTOR( aData.TQMVA      );
-    lRet( bitloc.extraMVAh   DOWNTO bitloc.extraMVAl   )        := STD_LOGIC_VECTOR( aData.extraMVA   );
+    lRet( bitloc.Chi2rzh     DOWNTO bitloc.Chi2rzl     )  := STD_LOGIC_VECTOR( aData.Chi2rz     );
+    lRet( bitloc.Z0h         DOWNTO bitloc.Z0l         )  := STD_LOGIC_VECTOR( aData.Z0         );
+    lRet( bitloc.TanLh       DOWNTO bitloc.TanLl       )  := STD_LOGIC_VECTOR( aData.TanL       );
 
-    lRet( bitloc.D0h         DOWNTO bitloc.D0l         )         := STD_LOGIC_VECTOR( aData.D0         );
-    lRet( bitloc.Chi2rphih   DOWNTO bitloc.Chi2rphil   )         := STD_LOGIC_VECTOR( aData.Chi2rphi   );
-    lRet( bitloc.Chi2rzh     DOWNTO bitloc.Chi2rzl     )         := STD_LOGIC_VECTOR( aData.Chi2rz     );
-    lRet( bitloc.BendChi2h   DOWNTO bitloc.BendChi2l   )         := STD_LOGIC_VECTOR( aData.BendChi2   );
-    lRet( bitloc.Hitpatternh DOWNTO bitloc.Hitpatternl )         := STD_LOGIC_VECTOR( aData.Hitpattern );
-    lRet( bitloc.TrackValidi  )         := to_std_logic( aData.DataValid );
+    lRet( bitloc.Chi2rphih   DOWNTO bitloc.Chi2rphil   )  := STD_LOGIC_VECTOR( aData.Chi2rphi   );
+    lRet( bitloc.Phi0h       DOWNTO bitloc.Phi0l       )  := STD_LOGIC_VECTOR( aData.Phi0       );
+    lRet( bitloc.InvRh       DOWNTO bitloc.InvRl       )  := STD_LOGIC_VECTOR( aData.InvR       );
+    lRet( bitloc.TrackValidi  )                           := aData.TrackValid ;
 
     lRet( bitloc.TrackValidi + 1 )                               := to_std_logic( aData.DataValid );
     lRet( bitloc.TrackValidi + 2 )                               := aData.Reset ;
@@ -190,27 +187,26 @@ PACKAGE BODY DataType IS
 
   FUNCTION ToDataType( aStdLogicVector : STD_LOGIC_VECTOR ) RETURN tData IS
     VARIABLE lRet                      : tData := cNull;
-  BEGIN
-
-    lRet.InvR       :=   SIGNED ( aStdLogicVector( bitloc.InvRh       DOWNTO bitloc.InvRl       ) );        
-    lRet.Phi0       :=   SIGNED ( aStdLogicVector( bitloc.Phi0h        DOWNTO bitloc.Phi0l      ) );        
-    lRet.TanL       :=   SIGNED ( aStdLogicVector( bitloc.TanLh       DOWNTO bitloc.TanLl       ) );      
-    lRet.Z0         :=   SIGNED ( aStdLogicVector( bitloc.Z0h         DOWNTO bitloc.Z0l         ) );
-
-    lRet.D0         :=   SIGNED ( aStdLogicVector( bitloc.D0h         DOWNTO bitloc.D0l         ) );      
-    lRet.Chi2rphi   := UNSIGNED ( aStdLogicVector( bitloc.Chi2rphih   DOWNTO bitloc.Chi2rphil   ) );        
-    lRet.Chi2rz     := UNSIGNED ( aStdLogicVector( bitloc.Chi2rzh     DOWNTO bitloc.Chi2rzl     ) );        
-    lRet.BendChi2   := UNSIGNED ( aStdLogicVector( bitloc.BendChi2h   DOWNTO bitloc.BendChi2l   ) );        
+  BEGIN      
+    lRet.extraMVA   := UNSIGNED ( aStdLogicVector( bitloc.extraMVAh   DOWNTO bitloc.extraMVAl   ) );        
+    lRet.TQMVA      := UNSIGNED ( aStdLogicVector( bitloc.TQMVAh      DOWNTO bitloc.TQMVAl  ) );        
     lRet.Hitpattern := UNSIGNED ( aStdLogicVector( bitloc.Hitpatternh DOWNTO bitloc.Hitpatternl ) );        
-    lRet.TQMVA      := UNSIGNED ( aStdLogicVector( bitloc.TQMVAh  DOWNTO bitloc.TQMVAl  ) );        
-    lRet.extraMVA   := UNSIGNED ( aStdLogicVector( bitloc.extraMVAh   DOWNTO bitloc.extraMVAl   ) ); 
+    lRet.BendChi2   := UNSIGNED ( aStdLogicVector( bitloc.BendChi2h   DOWNTO bitloc.BendChi2l   ) );  
+    lRet.D0         :=   SIGNED ( aStdLogicVector( bitloc.D0h         DOWNTO bitloc.D0l         ) );      
+
+    lRet.Chi2rz     := UNSIGNED ( aStdLogicVector( bitloc.Chi2rzh     DOWNTO bitloc.Chi2rzl     ) );      
+    lRet.Z0         :=   SIGNED ( aStdLogicVector( bitloc.Z0h         DOWNTO bitloc.Z0l         ) );
+    lRet.TanL       :=   SIGNED ( aStdLogicVector( bitloc.TanLh       DOWNTO bitloc.TanLl       ) );      
+
+    lRet.Chi2rphi   := UNSIGNED ( aStdLogicVector( bitloc.Chi2rphih   DOWNTO bitloc.Chi2rphil   ) );        
+    lRet.Phi0       :=   SIGNED ( aStdLogicVector( bitloc.Phi0h       DOWNTO bitloc.Phi0l      ) ); 
+    lRet.InvR       :=   SIGNED ( aStdLogicVector( bitloc.InvRh       DOWNTO bitloc.InvRl       ) );  
     lRet.TrackValid := aStdLogicVector( bitloc.TrackValidi  ) ; 
 
     lRet.DataValid  := to_boolean( aStdLogicVector( bitloc.TrackValidi + 1 ) );
     lRet.Reset      := ( aStdLogicVector( bitloc.TrackValidi + 2 ) );
     lRet.SortKey    := TO_INTEGER( UNSIGNED( aStdLogicVector( bitloc.TrackValidi + 3 DOWNTO bitloc.TrackValidi + 3 ) ) );
     
-
     RETURN lRet;
   END FUNCTION;
 
