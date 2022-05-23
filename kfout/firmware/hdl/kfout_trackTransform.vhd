@@ -292,8 +292,8 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
     SIGNAL HitPattern_array : hitpatternARRAY( 0 TO frame_delay - 1 ) := ( OTHERS => ( OTHERS =>'0'));
     SIGNAL Tanl_array       : TanlARRAY( 0 TO frame_delay - 1 )       := ( OTHERS => ( OTHERS =>'0'));
     SIGNAL InvR_array       : InvRARRAY( 0 TO frame_delay - 1 )       := ( OTHERS => ( OTHERS =>'0'));
-    SIGNAL Chi2Rphi_array   : ChiARRAY( 0 TO frame_delay - chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
-    SIGNAL Chi2RZ_array     : ChiARRAY( 0 TO frame_delay - chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
+    SIGNAL Chi2Rphi_array   : ChiARRAY( 0 TO  chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
+    SIGNAL Chi2RZ_array     : ChiARRAY( 0 TO  chiLatency - 1 ) := ( OTHERS => ( OTHERS =>'0'));
     
     SIGNAL EtaSector : INTEGER RANGE 0 TO 16 := 0 ;
 
@@ -379,8 +379,8 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
         modCot           := TO_SIGNED((TO_INTEGER(cot) + CotBins(EtaSector)),widthTanL);
         Tanl_array       <= modCot & Tanl_array( 0 TO frame_delay - 2 );
         InvR_array       <= RESIZE(-inv2R - 1,widthinvr ) & InvR_array( 0 TO frame_delay - 2 );
-        Chi2Rphi_array   <= Chi2Rphi & Chi2Rphi_array( 0 TO frame_delay - chiLatency - 2 );
-        Chi2RZ_array     <= Chi2RZ & Chi2RZ_array( 0 TO frame_delay - chiLatency - 2 );
+        Chi2Rphi_array   <= Chi2Rphi & Chi2Rphi_array( 0 TO  chiLatency - 2 );
+        Chi2RZ_array     <= Chi2RZ & Chi2RZ_array( 0 TO chiLatency - 2 );
 
 
         IF TO_BOOLEAN( frame_array( frame_delay- 2 ) ) THEN 
@@ -391,8 +391,8 @@ ARCHITECTURE RTL OF kfout_trackTransform IS
           Output( i ).TQMVA      <=  TO_UNSIGNED( 0, widthTQMVA );     --Blank for now
           Output( i ).HitPattern <=  HitPattern_array(frame_delay - 1 );
           Output( i ).BendChi2   <=  TO_UNSIGNED( 0, widthBendChi2 );  --Blank for now
-          Output( i ).Chi2RPhi   <=  Chi2Rphi_array( frame_delay - chiLatency - 2 );
-          Output( i ).Chi2RZ     <=  Chi2RZ_array( frame_delay - chiLatency - 2 );
+          Output( i ).Chi2RPhi   <=  Chi2Rphi_array(  chiLatency - 2 );
+          Output( i ).Chi2RZ     <=  Chi2RZ_array(  chiLatency - 2 );
           Output( i ).D0         <=  TO_SIGNED( 0, widthD0 );          --Blank for now
           Output( i ).Z0         <=  z0;
           Output( i ).TanL       <=  Tanl_array( frame_delay - 3 );

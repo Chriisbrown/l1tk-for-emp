@@ -67,8 +67,7 @@ CONSTANT BendChi2Conv : REAL := 1.0;
 
 --- LINK OUTPUT formatting specific constants
 
-CONSTANT frame_delay        : INTEGER := 13; --Constant latency of all algorithm steps
-CONSTANT null_packets       : INTEGER := 6;  --Number of null packets to send between events
+CONSTANT total_frame_delay  : INTEGER := 15; --Constant latency of all algorithm steps
 CONSTANT PacketBufferLength : INTEGER := 104;  --Depth of buffer for output packets
 
 TYPE PacketArray IS ARRAY( INTEGER RANGE <> ) of STD_LOGIC_VECTOR( widthpartialTTTrack*2  - 1 DOWNTO 0 );

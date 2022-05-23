@@ -32,17 +32,34 @@ end;
 
 architecture rtl of emp_payload is
 
-signal in_din: ldata( numInputLinks - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
-signal in_dout: t_channlesTB( numSeedTypes - 1 downto 0 ) := ( others => nulll );
+
 signal d_mapped : ldata( numInputLinks - 1 downto 0);   -- mapped data in
 signal q_mapped : ldata( numLinksTFP - 1 downto 0);  -- mapped data out
 
+signal in_ttc: ttc_stuff_array( N_REGION - 1 downto 0 ) := ( others => TTC_STUFF_NULL );
+signal in_din: ldata( 4 * N_REGION - 1 downto 0 ) := ( others => ( ( others => '0' ), '0', '0', '1' ) );
+signal in_reset: t_resets( numPPquads - 1 downto 0 ) := ( others => nulll );
+signal in_dout: t_stubsDTC := nulll;
 
-component kfin_isolation_in
+component tracklet_isolation_in
 port (
   clk: in std_logic;
-  in_din: in ldata( numInputLinks - 1 downto 0 );
-  in_dout: out t_channlesTB( numSeedTypes - 1 downto 0 )
+  in_ttc: in ttc_stuff_array( N_REGION - 1 downto 0 );
+  in_din: in ldata( 4 * N_REGION - 1 downto 0 );
+  in_reset: out t_resets( numPPquads - 1 downto 0 );
+  in_dout: out t_stubsDTC
+);
+end component;
+
+signal tracklet_reset: t_resets( numPPquads - 1 downto 0 ) := ( others => nulll );
+signal tracklet_din: t_stubsDTC := nulll;
+signal tracklet_dout: t_channlesTB( numSeedTypes - 1 downto 0 ) := ( others => nulll );
+component tracklet_top
+port (
+  clk: in std_logic;
+  tracklet_reset: in t_resets( numPPquads - 1 downto 0 );
+  tracklet_din: in t_stubsDTC;
+  tracklet_dout: out t_channlesTB( numSeedTypes - 1 downto 0 )
 );
 end component;
 
@@ -108,11 +125,14 @@ LinkMapInstance : entity work.link_map
     q        => q
 );
 
+in_ttc <= ctrs;
+in_din <= d;
 
+tracklet_reset <= in_reset;
+tracklet_din <= in_dout;
 
-in_din <= d_mapped;
+kfin_din <= tracklet_dout;
 
-kfin_din <= in_dout;
 kf_din <= kfin_dout;
 kfout_din <= kf_dout;
 
@@ -125,8 +145,9 @@ q_mapped(0).start  <= '0';
 q_mapped(1).strobe <= '1';
 q_mapped(1).start  <= '0';
 
+fin: tracklet_isolation_in port map ( clk_p, in_ttc, in_din, in_reset, in_dout );
 
-fin: kfin_isolation_in port map ( clk_p, in_din, in_dout );
+tracklet: tracklet_top port map ( clk_p, tracklet_reset, tracklet_din, tracklet_dout );
 
 kfin: kfin_top port map ( clk_p, kfin_din, kfin_dout );
 
@@ -136,11 +157,9 @@ kfout: kfout_top port map ( clk_p, kfout_din, kfout_dout);
 
 fout: kfout_isolation_out port map ( clk_p, out_packet, out_din, out_dout );
 
-
 ipb_out <= IPB_RBUS_NULL;
 bc0 <= '0';
 gpio <= (others => '0');
 gpio_en <= (others => '0');
-
 
 end;

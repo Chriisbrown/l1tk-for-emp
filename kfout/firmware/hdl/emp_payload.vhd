@@ -82,7 +82,7 @@ in_din <= d;
 
 kfout_din <= in_dout;
 
-out_packet <=  conv( d );
+out_packet <=  conv(d);
 out_din <= kfout_dout;
 
 q <= out_dout;

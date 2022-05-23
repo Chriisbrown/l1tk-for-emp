@@ -104,26 +104,26 @@ constant phiBins: t_phiBins( 0 to numIR - 1 ) := (
   others => x"00000002"
 );
 
-type t_lut_files is array ( natural range <> ) of string( 1 to 54 );
+type t_lut_files is array ( natural range <> ) of string( 1 to 138 );
 constant lut_files: t_lut_files( 0 to 2 * numTE - 1 ) := (
-  "../emData/LUTs/TE_L1PHID14_L2PHIB15_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID14_L2PHIB15_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID14_L2PHIB16_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID14_L2PHIB16_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB13_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB13_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB14_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB14_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB15_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB15_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB16_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID15_L2PHIB16_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID16_L2PHIB14_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID16_L2PHIB14_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID16_L2PHIB15_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID16_L2PHIB15_stubptoutercut.tab",
-  "../emData/LUTs/TE_L1PHID16_L2PHIB16_stubptinnercut.tab",
-  "../emData/LUTs/TE_L1PHID16_L2PHIB16_stubptoutercut.tab"
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID14_L2PHIB15_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID14_L2PHIB15_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID14_L2PHIB16_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID14_L2PHIB16_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB13_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB13_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB14_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB14_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB15_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB15_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB16_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID15_L2PHIB16_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID16_L2PHIB14_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID16_L2PHIB14_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID16_L2PHIB15_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID16_L2PHIB15_stubptoutercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID16_L2PHIB16_stubptinnercut.tab",
+  "/home/cebrown/Documents/Tracker/NewKF/Firmware/work/src/l1tk-for-emp/tracklet/firmware/emData/LUTs/TE_L1PHID16_L2PHIB16_stubptoutercut.tab"
 );
 
 constant numPages : natural := 8;

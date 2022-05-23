@@ -252,7 +252,7 @@ port (
     clk: in std_logic;
     out_packet: in std_logic_vector( numLinksTFP - 1 downto 0 );
     out_din: in t_frames( numLinksTFP - 1 downto 0 );
-    out_dout: out ldata( numLinksTFP - 1 downto 0 )
+    out_dout: out ldata( numLinksTFP - 1 downto 0 )  
 );
 end;
 

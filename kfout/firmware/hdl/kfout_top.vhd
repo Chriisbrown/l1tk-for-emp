@@ -51,7 +51,6 @@ RouterInstance : ENTITY work.kfout_distributionServer
     clk     => clk ,
     DataIn  => TTTracks,
     DataOut => SortedTracks 
-    
   );
 ----------------------------------------------------------------------
 -------------------------------------------------------------------
@@ -61,24 +60,8 @@ PORT MAP(
   clk                 => clk ,
   rst                 => Reset,
   SortedTracks        => SortedTracks,
-  PacketValid         => PacketValid,
-  PacketData          => PacketData
+  PacketData          => kfout_dout
 );
 -- ------------------------------------------------------------------------
-
-links : FOR i IN 0 TO numOutLinks-1 GENERATE
-  signal dout: lword;
-  begin
-  kfout_dout( i ) <= dout.data;
-  PacketsToEMPLinks : ENTITY work.EMPDataOut
-  PORT MAP(
-    clk                 => clk ,
-    PacketValid         => PacketValid( i ),
-    PacketData          => PacketData( i ),
-    linkOut             => dout
-  );
-END GENERATE;
-
-
 -- ------------------------------------------------------------------------
 END rtl;
